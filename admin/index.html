@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · Universo Católico Kids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --azul:#1f57c3; --azul-esc:#15418c; --amarelo:#f5b21a; --vermelho:#e8533f;
+    --verde:#2fa15a; --roxo:#7c4dd6; --azul-claro:#2f8fd6;
+    --bg:#faf9f5; --card:#ffffff; --borda:#ececdf; --texto:#2a2a2a; --suave:#7a7a72;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--texto)}
+  h1,h2,h3,h4,.titulo{font-family:'Baloo 2',sans-serif}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit;font-size:15px}
+  .oculto{display:none!important}
+
+  /* ---------- Tela de carregamento / login ---------- */
+  .tela-centro{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .login{background:#fff;border:1px solid var(--borda);border-radius:20px;max-width:400px;width:100%;padding:34px 30px;box-shadow:0 14px 50px rgba(20,40,90,.10)}
+  .login .marca{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:22px}
+  .login .marca .m{width:46px;height:46px;border-radius:12px;background:var(--amarelo);display:flex;align-items:center;justify-content:center;font-size:24px}
+  .login .marca b{font-family:'Baloo 2';font-size:19px;color:var(--azul-esc);display:block;line-height:1}
+  .login .marca span{font-size:11px;color:var(--suave);letter-spacing:.5px}
+  .login h2{font-size:20px;color:var(--azul-esc);text-align:center;margin-bottom:4px}
+  .login p.sub{font-size:13px;color:var(--suave);text-align:center;margin-bottom:22px}
+  .login .campo{margin-bottom:14px}
+  .erro{background:#fdecea;color:var(--vermelho);font-weight:700;font-size:13px;padding:10px 13px;border-radius:10px;margin-bottom:14px}
+  .aviso{background:#fff3d6;color:#9a6b00;font-weight:700;font-size:12.5px;padding:11px 14px;border-radius:11px;line-height:1.45;margin-top:16px}
+
+  /* Layout */
+  .app{display:flex;min-height:100vh}
+  .sidebar{width:248px;background:var(--azul-esc);color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+  .logo{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding:4px}
+  .logo-mark{width:42px;height:42px;border-radius:11px;background:var(--amarelo);display:flex;align-items:center;justify-content:center;font-size:22px}
+  .logo b{font-family:'Baloo 2';font-size:18px;line-height:1.05;display:block}
+  .logo span{font-size:11px;opacity:.75;letter-spacing:.5px}
+  .navbtn{display:flex;align-items:center;gap:11px;width:100%;background:transparent;border:0;color:#dfe7f7;padding:12px 14px;border-radius:11px;font-size:15px;font-weight:700;text-align:left;transition:.15s}
+  .navbtn:hover{background:rgba(255,255,255,.08)}
+  .navbtn.ativo{background:var(--amarelo);color:var(--azul-esc)}
+  .navbtn .ico{font-size:18px;width:22px;text-align:center}
+  .sidebar .rodape{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+  .sidebar .usuario{font-size:12px;opacity:.85;padding:8px;line-height:1.5;border-top:1px solid rgba(255,255,255,.12);padding-top:14px}
+  .btn-sair{background:rgba(255,255,255,.1);border:0;color:#fff;padding:10px;border-radius:10px;font-weight:700;font-size:13px}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topo{background:var(--card);border-bottom:1px solid var(--borda);padding:18px 30px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:20}
+  .topo h1{font-size:24px;color:var(--azul-esc)}
+  .topo p{font-size:13px;color:var(--suave);margin-top:2px}
+  .acoes{display:flex;gap:10px;flex-wrap:wrap}
+  .conteudo{padding:30px;max-width:1180px;width:100%}
+  .selo-modo{font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;margin-left:10px;vertical-align:middle}
+  .selo-banco{background:#e4f5ea;color:#1c7a42}
+  .selo-demo{background:#fff3d6;color:#9a6b00}
+
+  .btn{border:0;border-radius:11px;padding:11px 18px;font-weight:800;font-size:14px;display:inline-flex;align-items:center;gap:8px;transition:.15s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:disabled{opacity:.55;cursor:default;transform:none}
+  .btn-azul{background:var(--azul);color:#fff}
+  .btn-claro{background:#eef1f9;color:var(--azul)}
+  .btn-borda{background:#fff;color:var(--texto);border:1.5px solid var(--borda)}
+  .btn-perigo{background:#fdecea;color:var(--vermelho)}
+  .btn-bloco{width:100%;justify-content:center;padding:13px}
+  .btn-sm{padding:7px 12px;font-size:13px;border-radius:9px}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
+  .stat{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:20px}
+  .stat .num{font-family:'Baloo 2';font-size:34px;line-height:1;color:var(--azul-esc)}
+  .stat .lbl{color:var(--suave);font-weight:700;font-size:14px;margin-top:6px}
+  .stat .ico{font-size:24px;margin-bottom:10px;display:inline-flex;width:46px;height:46px;align-items:center;justify-content:center;border-radius:12px}
+
+  .secao-titulo{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:14px;flex-wrap:wrap}
+  .secao-titulo h2{font-size:21px;color:var(--azul-esc)}
+  .secao-titulo .cont{background:#eef1f9;color:var(--azul);font-weight:800;font-size:13px;padding:3px 11px;border-radius:20px}
+
+  .grid{display:grid;gap:16px}
+  .grid-cat{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+  .grid-livro{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+  .grid-ativ{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+
+  .item{background:var(--card);border:1px solid var(--borda);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+  .item .corpo{padding:15px 16px;flex:1}
+  .item .rodape{padding:10px 14px;border-top:1px solid var(--borda);display:flex;gap:8px;background:#fcfcf9}
+  .item .rodape .btn-sm{flex:1;justify-content:center}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:12px;padding:4px 10px;border-radius:20px}
+  .ponto{width:11px;height:11px;border-radius:50%;display:inline-block}
+
+  .capa{height:120px;display:flex;align-items:flex-end;padding:12px;color:#fff;background-size:cover;background-position:center}
+  .capa .preco{background:rgba(0,0,0,.30);backdrop-filter:blur(3px);padding:4px 10px;border-radius:20px;font-weight:800;font-size:14px}
+  .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .meta span{background:#f3f3ec;color:var(--suave);font-weight:700;font-size:11px;padding:3px 9px;border-radius:7px}
+  .item h3{font-size:17px;line-height:1.2;margin-bottom:5px}
+  .item .desc{font-size:13px;color:var(--suave);line-height:1.45}
+  .item .sub{font-size:12px;color:var(--suave);font-weight:700}
+
+  .vazio{background:var(--card);border:2px dashed var(--borda);border-radius:16px;padding:46px 20px;text-align:center;color:var(--suave)}
+  .vazio .ico{font-size:40px;display:block;margin-bottom:10px}
+  .carregando{text-align:center;color:var(--suave);padding:50px;font-weight:700}
+
+  .overlay{position:fixed;inset:0;background:rgba(20,30,60,.45);display:flex;align-items:flex-start;justify-content:center;padding:30px 16px;z-index:100;overflow:auto}
+  .modal{background:#fff;border-radius:20px;width:100%;max-width:560px;box-shadow:0 18px 60px rgba(0,0,0,.25);animation:sobe .2s ease}
+  @keyframes sobe{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .modal-topo{padding:20px 24px;border-bottom:1px solid var(--borda);display:flex;align-items:center;justify-content:space-between}
+  .modal-topo h3{font-size:20px;color:var(--azul-esc)}
+  .modal-topo button{background:#f3f3ec;border:0;width:34px;height:34px;border-radius:50%;font-size:18px;color:var(--suave)}
+  .modal-corpo{padding:22px 24px;display:grid;gap:15px}
+  .modal-rodape{padding:16px 24px;border-top:1px solid var(--borda);display:flex;justify-content:flex-end;gap:10px}
+  .campo label{display:block;font-weight:800;font-size:13px;margin-bottom:6px;color:#444}
+  .campo input,.campo select,.campo textarea{width:100%;padding:11px 13px;border:1.5px solid var(--borda);border-radius:11px;background:#fcfcf9;transition:.15s}
+  .campo input:focus,.campo select:focus,.campo textarea:focus{outline:0;border-color:var(--azul);background:#fff}
+  .campo textarea{resize:vertical;min-height:74px}
+  .linha{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .cores{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .cores button{width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--borda)}
+  .cores button.sel{box-shadow:0 0 0 2.5px var(--azul);transform:scale(1.1)}
+  .dica{font-size:12px;color:var(--suave);margin-top:4px}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--azul-esc);color:#fff;padding:13px 22px;border-radius:14px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:200;animation:sobe .2s}
+  .toast.erro-toast{background:var(--vermelho)}
+
+  @media(max-width:820px){
+    .sidebar{position:fixed;left:-260px;z-index:60;transition:.25s;box-shadow:0 0 40px rgba(0,0,0,.3)}
+    .sidebar.aberta{left:0}
+    .menu-mobile{display:inline-flex!important}
+    .conteudo{padding:18px}
+    .topo{padding:14px 18px}
+    .linha{grid-template-columns:1fr}
+  }
+  .menu-mobile{display:none;background:#eef1f9;color:var(--azul);border:0;width:42px;height:42px;border-radius:11px;font-size:20px;align-items:center;justify-content:center}
+  .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55}
+  .scrim.on{display:block}
+</style>
+</head>
+<body>
+
+<!-- ============ TELA DE LOGIN ============ -->
+<div id="telaLogin" class="tela-centro oculto">
+  <form class="login" id="formLogin">
+    <div class="marca"><div class="m">📖</div><div><b>Universo Católico</b><span>PAINEL ADMIN</span></div></div>
+    <h2>Entrar</h2>
+    <p class="sub">Acesso restrito aos administradores</p>
+    <div id="loginErro" class="erro oculto"></div>
+    <div class="campo"><label>E-mail</label><input type="email" id="loginEmail" placeholder="seu@email.com" required></div>
+    <div class="campo"><label>Senha</label><input type="password" id="loginSenha" placeholder="••••••••" required></div>
+    <button type="submit" class="btn btn-azul btn-bloco" id="btnEntrar">Entrar</button>
+    <div id="loginAviso" class="aviso oculto"></div>
+  </form>
+</div>
+
+<!-- ============ TELA DE CARREGANDO ============ -->
+<div id="telaCarregando" class="tela-centro">
+  <div class="carregando">Carregando painel…</div>
+</div>
+
+<!-- ============ APP ============ -->
+<div class="app oculto" id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">📖</div>
+      <div><b>Universo Católico</b><span>PAINEL ADMIN</span></div>
+    </div>
+    <button class="navbtn ativo" data-aba="dashboard"><span class="ico">📊</span> Dashboard</button>
+    <button class="navbtn" data-aba="categorias"><span class="ico">🏷️</span> Categorias</button>
+    <button class="navbtn" data-aba="livros"><span class="ico">📚</span> Livros</button>
+    <button class="navbtn" data-aba="atividades"><span class="ico">🎨</span> Atividades</button>
+    <div class="rodape">
+      <div class="usuario" id="infoUsuario"></div>
+      <button class="btn-sair" id="btnSair">Sair</button>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="main">
+    <header class="topo">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="menu-mobile" id="abreMenu">☰</button>
+        <div><h1 id="tituloAba">Dashboard <span id="seloModo" class="selo-modo"></span></h1><p id="subAba">Visão geral do conteúdo do site</p></div>
+      </div>
+      <div class="acoes">
+        <button class="btn btn-claro btn-sm" id="btnExportar">⬇ Exportar</button>
+        <button class="btn btn-azul" id="btnNovo">+ Novo</button>
+      </div>
+    </header>
+    <main class="conteudo" id="conteudo"></main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
+<script>
+/* =====================================================================
+ *  CAMADA DE DADOS — usa Supabase se configurado, senão modo demo.
+ * ===================================================================== */
+const CFG = window.UCK_CONFIG || {};
+const TEM_SUPABASE = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
+let sb = null;
+if(TEM_SUPABASE){ sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY); }
+
+const TABELAS = ['categorias','livros','atividades'];
+
+/* ---- Modo DEMO (localStorage) ---- */
+const CHAVE='uck_admin_demo_v1';
+const SEMENTE = {
+  categorias:[
+    {id:'c1',nome:'Histórias da Bíblia',cor:'#1f57c3',cor_fundo:'#e7efff',ordem:1},
+    {id:'c2',nome:'Vida de Jesus',cor:'#e8533f',cor_fundo:'#fde9e5',ordem:2},
+    {id:'c3',nome:'Nossa Senhora',cor:'#2f8fd6',cor_fundo:'#e6f3fc',ordem:3},
+    {id:'c4',nome:'Santos',cor:'#f5b21a',cor_fundo:'#fff3d6',ordem:4},
+    {id:'c5',nome:'Virtudes',cor:'#2fa15a',cor_fundo:'#e4f5ea',ordem:5},
+    {id:'c6',nome:'Sacramentos',cor:'#7c4dd6',cor_fundo:'#efe7fb',ordem:6},
+    {id:'c7',nome:'Primeira Comunhão',cor:'#d6a015',cor_fundo:'#fbf1d2',ordem:7},
+    {id:'c8',nome:'Catequese',cor:'#1f57c3',cor_fundo:'#e7efff',ordem:8},
+    {id:'c9',nome:'Parábolas',cor:'#e8533f',cor_fundo:'#fde9e5',ordem:9},
+    {id:'c10',nome:'Orações',cor:'#2fa15a',cor_fundo:'#e4f5ea',ordem:10},
+  ],
+  livros:[
+    {id:'b1',titulo:'Minha Primeira Bíblia',categoria_id:'c1',descricao:'As mais belas histórias bíblicas, ilustradas para os pequenos.',faixa_etaria:'3-6 anos',tempo_leitura:'10 min/dia',preco:49.90,preco_antigo:69.90,desconto:'-28%',avaliacao:4.9,capa_cor1:'#2f8fd6',capa_cor2:'#1f57c3',capa_url:'',destaque:true},
+    {id:'b2',titulo:'A Vida de Jesus',categoria_id:'c2',descricao:'Do nascimento à ressurreição, contada com ternura para crianças.',faixa_etaria:'5-9 anos',tempo_leitura:'15 min',preco:59.90,preco_antigo:79.90,desconto:'-25%',avaliacao:4.8,capa_cor1:'#f5803a',capa_cor2:'#e8533f',capa_url:'',destaque:true},
+    {id:'b3',titulo:'Maria, Mãe de Todos',categoria_id:'c3',descricao:'A história de Nossa Senhora e seu amor por cada família.',faixa_etaria:'4-8 anos',tempo_leitura:'12 min',preco:44.90,preco_antigo:59.90,desconto:'-25%',avaliacao:5.0,capa_cor1:'#4aa8e0',capa_cor2:'#2f8fd6',capa_url:'',destaque:true},
+    {id:'b4',titulo:'Pequenos Grandes Santos',categoria_id:'c4',descricao:'Conheça os santos que foram crianças corajosas na fé.',faixa_etaria:'6-10 anos',tempo_leitura:'20 min',preco:64.90,preco_antigo:84.90,desconto:'-24%',avaliacao:4.9,capa_cor1:'#f5b21a',capa_cor2:'#d6a015',capa_url:'',destaque:true},
+  ],
+  atividades:[
+    {id:'a1',titulo:'Jesus ama as crianças',tipo:'Colorir',faixa_etaria:'3 anos',cor:'#e8533f',cor_fundo:'#fde9e5',arquivo_url:''},
+    {id:'a2',titulo:'Cruzadinha dos Apóstolos',tipo:'Cruzadinha',faixa_etaria:'7 anos',cor:'#1f57c3',cor_fundo:'#e7efff',arquivo_url:''},
+    {id:'a3',titulo:'Memória dos Santos',tipo:'Jogo',faixa_etaria:'5 anos',cor:'#2fa15a',cor_fundo:'#e4f5ea',arquivo_url:''},
+    {id:'a4',titulo:'Labirinto da Arca de Noé',tipo:'Labirinto',faixa_etaria:'4 anos',cor:'#7c4dd6',cor_fundo:'#efe7fb',arquivo_url:''},
+  ],
+};
+const demo = {
+  _ler(){ try{ const b=localStorage.getItem(CHAVE); if(b) return JSON.parse(b);}catch(e){} return JSON.parse(JSON.stringify(SEMENTE)); },
+  _gravar(d){ localStorage.setItem(CHAVE, JSON.stringify(d)); },
+};
+
+/* ---- Interface unificada ---- */
+const store = {
+  modo: TEM_SUPABASE ? 'supabase' : 'demo',
+  async list(tabela){
+    if(this.modo==='demo'){ return (demo._ler()[tabela]||[]).slice(); }
+    const ordem = tabela==='categorias' ? 'ordem' : 'criado_em';
+    const { data, error } = await sb.from(tabela).select('*').order(ordem, { ascending:true });
+    if(error) throw error; return data||[];
+  },
+  async create(tabela, obj){
+    if(this.modo==='demo'){ const d=demo._ler(); obj.id=uid(tabela[0]); d[tabela].push(obj); demo._gravar(d); return obj; }
+    const { data, error } = await sb.from(tabela).insert(obj).select().single();
+    if(error) throw error; return data;
+  },
+  async update(tabela, id, obj){
+    if(this.modo==='demo'){ const d=demo._ler(); const i=d[tabela].findIndex(x=>x.id===id); d[tabela][i]={...d[tabela][i],...obj}; demo._gravar(d); return d[tabela][i]; }
+    const { data, error } = await sb.from(tabela).update(obj).eq('id', id).select().single();
+    if(error) throw error; return data;
+  },
+  async remove(tabela, id){
+    if(this.modo==='demo'){ const d=demo._ler(); d[tabela]=d[tabela].filter(x=>x.id!==id); demo._gravar(d); return; }
+    const { error } = await sb.from(tabela).delete().eq('id', id); if(error) throw error;
+  },
+  async upload(arquivo){
+    if(this.modo==='demo'){ return await arquivoParaDataUrl(arquivo); }
+    const nome = Date.now()+'_'+arquivo.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const { error } = await sb.storage.from('midia').upload(nome, arquivo, { upsert:false });
+    if(error) throw error;
+    return sb.storage.from('midia').getPublicUrl(nome).data.publicUrl;
+  },
+  async sessao(){ if(this.modo==='demo') return { email:'modo-demonstração' }; const { data } = await sb.auth.getUser(); return data.user; },
+  async login(email, senha){ const { error } = await sb.auth.signInWithPassword({ email, password:senha }); if(error) throw error; },
+  async logout(){ if(this.modo!=='demo') await sb.auth.signOut(); },
+};
+
+/* ===================== UTILIDADES ===================== */
+function uid(p){ return p + Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-3); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function brl(n){ if(n===''||n==null||isNaN(n)) return ''; return 'R$ '+Number(n).toFixed(2).replace('.',','); }
+function arquivoParaDataUrl(f){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(f); }); }
+function toast(msg, erro){ const t=document.createElement('div'); t.className='toast'+(erro?' erro-toast':''); t.textContent=msg; document.body.appendChild(t); setTimeout(()=>{ t.style.transition='.3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, erro?3000:1800); }
+
+const META = {
+  dashboard:{ t:'Dashboard', s:'Visão geral do conteúdo do site' },
+  categorias:{ t:'Categorias', s:'Organize os livros e atividades por tema' },
+  livros:{ t:'Livros', s:'Cadastro completo dos livros da loja' },
+  atividades:{ t:'Atividades', s:'Atividades para imprimir e brincar' },
+};
+const PALETA = ['#1f57c3','#15418c','#2f8fd6','#4aa8e0','#e8533f','#f5803a','#f5b21a','#d6a015','#2fa15a','#7c4dd6'];
+const TIPOS_ATIV = ['Colorir','Cruzadinha','Jogo','Labirinto','Caça-palavras','Ligar pontos','Recortar','Quebra-cabeça'];
+
+/* Cache local das listas (recarregado a cada gravação) */
+let cache = { categorias:[], livros:[], atividades:[] };
+let abaAtual = 'dashboard';
+
+async function recarregar(){
+  const [categorias, livros, atividades] = await Promise.all([ store.list('categorias'), store.list('livros'), store.list('atividades') ]);
+  cache = { categorias, livros, atividades };
+}
+function nomeCategoria(id){ const c=cache.categorias.find(x=>String(x.id)===String(id)); return c?c.nome:''; }
+function contarLivros(catId){ return cache.livros.filter(b=>String(b.categoria_id)===String(catId)).length; }
+
+/* ===================== RENDER ===================== */
+function render(){
+  document.getElementById('tituloAba').firstChild.textContent = META[abaAtual].t + ' ';
+  document.getElementById('subAba').textContent = META[abaAtual].s;
+  document.getElementById('btnNovo').style.display = abaAtual==='dashboard' ? 'none' : 'inline-flex';
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('ativo', b.dataset.aba===abaAtual));
+  const el = document.getElementById('conteudo');
+  if(abaAtual==='dashboard') el.innerHTML = viewDashboard();
+  else if(abaAtual==='categorias') el.innerHTML = viewCategorias();
+  else if(abaAtual==='livros') el.innerHTML = viewLivros();
+  else if(abaAtual==='atividades') el.innerHTML = viewAtividades();
+  ligarBotoesItem();
+}
+
+function viewDashboard(){
+  const med = cache.livros.length ? (cache.livros.reduce((s,b)=>s+(parseFloat(b.avaliacao)||0),0)/cache.livros.length).toFixed(1) : '—';
+  const cards = [
+    { ico:'🏷️', bg:'#e7efff', n:cache.categorias.length, l:'Categorias' },
+    { ico:'📚', bg:'#fde9e5', n:cache.livros.length, l:'Livros cadastrados' },
+    { ico:'🎨', bg:'#e4f5ea', n:cache.atividades.length, l:'Atividades' },
+    { ico:'⭐', bg:'#fff3d6', n:med, l:'Avaliação média' },
+  ];
+  const ultimos = cache.livros.slice(-4).reverse();
+  return `
+    <div class="stats">${cards.map(c=>`<div class="stat"><div class="ico" style="background:${c.bg}">${c.ico}</div><div class="num">${esc(c.n)}</div><div class="lbl">${esc(c.l)}</div></div>`).join('')}</div>
+    <div class="secao-titulo"><h2>Atalhos rápidos</h2></div>
+    <div class="stats">
+      <button class="stat" style="text-align:left;cursor:pointer" data-ir="categorias"><div class="ico" style="background:#e7efff">➕</div><div class="num" style="font-size:20px">Nova categoria</div><div class="lbl">Adicionar um tema</div></button>
+      <button class="stat" style="text-align:left;cursor:pointer" data-ir="livros"><div class="ico" style="background:#fde9e5">➕</div><div class="num" style="font-size:20px">Novo livro</div><div class="lbl">Cadastrar um livro</div></button>
+      <button class="stat" style="text-align:left;cursor:pointer" data-ir="atividades"><div class="ico" style="background:#e4f5ea">➕</div><div class="num" style="font-size:20px">Nova atividade</div><div class="lbl">Adicionar atividade</div></button>
+    </div>
+    <div class="secao-titulo" style="margin-top:8px"><h2>Últimos livros</h2><span class="cont">${cache.livros.length}</span></div>
+    ${ultimos.length? `<div class="grid grid-livro">${ultimos.map(cardLivro).join('')}</div>` : vazio('📚','Nenhum livro cadastrado ainda.')}
+  `;
+}
+function vazio(ico,txt){ return `<div class="vazio"><span class="ico">${ico}</span>${esc(txt)}<br><span style="font-size:13px">Clique em “+ Novo” para começar.</span></div>`; }
+
+function viewCategorias(){ if(!cache.categorias.length) return vazio('🏷️','Nenhuma categoria cadastrada.'); return `<div class="grid grid-cat">${cache.categorias.map(cardCat).join('')}</div>`; }
+function cardCat(c){
+  return `<div class="item"><div class="corpo">
+      <span class="chip" style="background:${c.cor_fundo||'#eee'};color:${c.cor}"><span class="ponto" style="background:${c.cor}"></span>${esc(c.nome)}</span>
+      <div class="sub" style="margin-top:12px">📚 ${contarLivros(c.id)} livro(s) nesta categoria</div>
+    </div><div class="rodape">
+      <button class="btn btn-sm btn-claro" data-edit="categorias" data-id="${c.id}">✏ Editar</button>
+      <button class="btn btn-sm btn-perigo" data-del="categorias" data-id="${c.id}">🗑 Excluir</button>
+    </div></div>`;
+}
+
+function viewLivros(){ if(!cache.livros.length) return vazio('📚','Nenhum livro cadastrado.'); return `<div class="grid grid-livro">${cache.livros.map(cardLivro).join('')}</div>`; }
+function cardLivro(b){
+  const fundo = b.capa_url ? `url('${esc(b.capa_url)}')` : `linear-gradient(160deg,${b.capa_cor1||'#2f8fd6'},${b.capa_cor2||'#1f57c3'})`;
+  return `<div class="item">
+    <div class="capa" style="background:${fundo}"><span class="preco">${esc(brl(b.preco)||'—')}</span></div>
+    <div class="corpo">
+      <span class="chip" style="background:#f3f3ec;color:#555;font-size:11px">${esc(nomeCategoria(b.categoria_id)||'Sem categoria')}</span>
+      <h3 style="margin-top:8px">${esc(b.titulo)}</h3>
+      <div class="desc">${esc(b.descricao||'')}</div>
+      <div class="meta">
+        ${b.faixa_etaria?`<span>👶 ${esc(b.faixa_etaria)}</span>`:''}
+        ${b.tempo_leitura?`<span>⏱ ${esc(b.tempo_leitura)}</span>`:''}
+        ${b.avaliacao?`<span>⭐ ${esc(b.avaliacao)}</span>`:''}
+        ${b.desconto?`<span>🏷 ${esc(b.desconto)}</span>`:''}
+      </div>
+    </div><div class="rodape">
+      <button class="btn btn-sm btn-claro" data-edit="livros" data-id="${b.id}">✏ Editar</button>
+      <button class="btn btn-sm btn-perigo" data-del="livros" data-id="${b.id}">🗑 Excluir</button>
+    </div></div>`;
+}
+
+function viewAtividades(){ if(!cache.atividades.length) return vazio('🎨','Nenhuma atividade cadastrada.'); return `<div class="grid grid-ativ">${cache.atividades.map(cardAtiv).join('')}</div>`; }
+function cardAtiv(a){
+  return `<div class="item">
+    <div class="capa" style="height:80px;background:${a.cor_fundo||'#eee'};align-items:center;justify-content:center;color:${a.cor}">
+      <span style="font-family:'Baloo 2';font-weight:800;font-size:15px">${esc(a.tipo||'Atividade')}</span></div>
+    <div class="corpo"><h3>${esc(a.titulo)}</h3>
+      <div class="meta"><span>👶 ${esc(a.faixa_etaria||'—')}</span><span>🎨 ${esc(a.tipo||'—')}</span>${a.arquivo_url?`<span>📄 PDF</span>`:''}</div>
+    </div><div class="rodape">
+      <button class="btn btn-sm btn-claro" data-edit="atividades" data-id="${a.id}">✏ Editar</button>
+      <button class="btn btn-sm btn-perigo" data-del="atividades" data-id="${a.id}">🗑 Excluir</button>
+    </div></div>`;
+}
+
+/* ===================== EVENTOS LISTA ===================== */
+function ligarBotoesItem(){
+  document.querySelectorAll('[data-ir]').forEach(b=> b.onclick=()=>{ irPara(b.dataset.ir); setTimeout(()=>abrirModal(),60); });
+  document.querySelectorAll('[data-edit]').forEach(b=> b.onclick=()=> abrirModal(b.dataset.edit, b.dataset.id));
+  document.querySelectorAll('[data-del]').forEach(b=> b.onclick=()=> excluir(b.dataset.del, b.dataset.id));
+}
+async function excluir(tabela,id){
+  const item = cache[tabela].find(x=>String(x.id)===String(id));
+  const nome = item ? (item.nome||item.titulo) : '';
+  if(!confirm(`Excluir "${nome}"? Esta ação não pode ser desfeita.`)) return;
+  try{ await store.remove(tabela,id); await recarregar(); render(); toast('Excluído com sucesso'); }
+  catch(e){ toast('Erro ao excluir: '+e.message, true); }
+}
+
+/* ===================== MODAL / FORM ===================== */
+function abrirModal(tabela, id){
+  tabela = tabela || abaAtual;
+  if(tabela==='dashboard') return;
+  const editando = !!id;
+  const item = editando ? cache[tabela].find(x=>String(x.id)===String(id)) : {};
+  let corpo='', titulo='';
+
+  if(tabela==='categorias'){
+    titulo = editando?'Editar categoria':'Nova categoria';
+    corpo = `
+      <div class="campo"><label>Nome da categoria *</label><input id="f_nome" value="${esc(item.nome||'')}" placeholder="Ex.: Histórias da Bíblia"></div>
+      <div class="campo"><label>Cor principal</label>${seletorCor('cor', item.cor||'#1f57c3')}</div>
+      <div class="campo"><label>Cor de fundo (tom suave)</label>
+        <input id="f_cor_fundo" type="color" value="${esc(item.cor_fundo||'#e7efff')}" style="height:46px;padding:4px">
+        <div class="dica">Tom claro usado no fundo do selo da categoria.</div></div>
+      <div class="campo"><label>Ordem de exibição</label><input id="f_ordem" type="number" value="${esc(item.ordem!=null?item.ordem:'')}" placeholder="Ex.: 1"></div>`;
+  }
+  else if(tabela==='livros'){
+    titulo = editando?'Editar livro':'Cadastrar livro';
+    const opts = cache.categorias.map(c=>`<option value="${c.id}" ${String(item.categoria_id)===String(c.id)?'selected':''}>${esc(c.nome)}</option>`).join('');
+    corpo = `
+      <div class="campo"><label>Título *</label><input id="f_titulo" value="${esc(item.titulo||'')}" placeholder="Ex.: Minha Primeira Bíblia"></div>
+      <div class="campo"><label>Categoria</label><select id="f_categoria_id"><option value="">— selecione —</option>${opts}</select></div>
+      <div class="campo"><label>Descrição</label><textarea id="f_descricao" placeholder="Breve descrição do livro">${esc(item.descricao||'')}</textarea></div>
+      <div class="linha">
+        <div class="campo"><label>Faixa etária</label><input id="f_faixa_etaria" value="${esc(item.faixa_etaria||'')}" placeholder="Ex.: 3-6 anos"></div>
+        <div class="campo"><label>Tempo de leitura</label><input id="f_tempo_leitura" value="${esc(item.tempo_leitura||'')}" placeholder="Ex.: 10 min/dia"></div>
+      </div>
+      <div class="linha">
+        <div class="campo"><label>Preço (R$) *</label><input id="f_preco" type="number" step="0.01" value="${esc(item.preco!=null?item.preco:'')}" placeholder="49.90"></div>
+        <div class="campo"><label>Preço antigo (R$)</label><input id="f_preco_antigo" type="number" step="0.01" value="${esc(item.preco_antigo!=null?item.preco_antigo:'')}" placeholder="69.90"></div>
+      </div>
+      <div class="linha">
+        <div class="campo"><label>Desconto</label><input id="f_desconto" value="${esc(item.desconto||'')}" placeholder="Ex.: -28%"></div>
+        <div class="campo"><label>Avaliação (0-5)</label><input id="f_avaliacao" type="number" step="0.1" min="0" max="5" value="${esc(item.avaliacao!=null?item.avaliacao:'')}" placeholder="4.9"></div>
+      </div>
+      <div class="campo"><label>Imagem da capa</label>
+        <input id="f_capa_arquivo" type="file" accept="image/*">
+        <input id="f_capa_url" type="hidden" value="${esc(item.capa_url||'')}">
+        <div class="dica">Opcional. Se não enviar imagem, usamos as cores abaixo.</div></div>
+      <div class="linha">
+        <div class="campo"><label>Cor da capa (topo)</label><input id="f_capa_cor1" type="color" value="${esc(item.capa_cor1||'#2f8fd6')}" style="height:46px;padding:4px"></div>
+        <div class="campo"><label>Cor da capa (base)</label><input id="f_capa_cor2" type="color" value="${esc(item.capa_cor2||'#1f57c3')}" style="height:46px;padding:4px"></div>
+      </div>
+      <div class="campo"><label>Link de compra (opcional)</label><input id="f_link_compra" value="${esc(item.link_compra||'')}" placeholder="https://..."></div>`;
+  }
+  else if(tabela==='atividades'){
+    titulo = editando?'Editar atividade':'Nova atividade';
+    const opts = TIPOS_ATIV.map(t=>`<option ${item.tipo===t?'selected':''}>${esc(t)}</option>`).join('');
+    corpo = `
+      <div class="campo"><label>Título *</label><input id="f_titulo" value="${esc(item.titulo||'')}" placeholder="Ex.: Jesus ama as crianças"></div>
+      <div class="linha">
+        <div class="campo"><label>Tipo</label><select id="f_tipo">${opts}</select></div>
+        <div class="campo"><label>Faixa etária</label><input id="f_faixa_etaria" value="${esc(item.faixa_etaria||'')}" placeholder="Ex.: 3 anos"></div>
+      </div>
+      <div class="campo"><label>Cor</label>${seletorCor('cor', item.cor||'#e8533f')}</div>
+      <div class="campo"><label>Cor de fundo (tom suave)</label><input id="f_cor_fundo" type="color" value="${esc(item.cor_fundo||'#fde9e5')}" style="height:46px;padding:4px"></div>
+      <div class="campo"><label>Arquivo PDF para imprimir</label>
+        <input id="f_arquivo_arquivo" type="file" accept="application/pdf">
+        <input id="f_arquivo_url" type="hidden" value="${esc(item.arquivo_url||'')}">
+        <div class="dica">Opcional. Envie o PDF que a criança vai imprimir.</div></div>`;
+  }
+
+  const ov = document.createElement('div'); ov.className='overlay';
+  ov.innerHTML = `<div class="modal">
+    <div class="modal-topo"><h3>${titulo}</h3><button id="m_fechar">×</button></div>
+    <div class="modal-corpo">${corpo}</div>
+    <div class="modal-rodape">
+      <button class="btn btn-borda" id="m_cancelar">Cancelar</button>
+      <button class="btn btn-azul" id="m_salvar">${editando?'Salvar alterações':'Adicionar'}</button>
+    </div></div>`;
+  document.body.appendChild(ov);
+  const fechar=()=>ov.remove();
+  ov.onclick=e=>{ if(e.target===ov) fechar(); };
+  ov.querySelector('#m_fechar').onclick=fechar;
+  ov.querySelector('#m_cancelar').onclick=fechar;
+  ov.querySelector('#m_salvar').onclick=()=> guardar(tabela, id, ov, fechar);
+  const primeiro = ov.querySelector('input,select,textarea'); if(primeiro) primeiro.focus();
+}
+
+function seletorCor(campo, atual){
+  return `<div class="cores" data-campo="${campo}">
+    ${PALETA.map(c=>`<button type="button" style="background:${c}" class="${c===atual?'sel':''}" data-cor="${c}"></button>`).join('')}
+    <input type="color" id="f_${campo}" value="${esc(atual)}" style="width:36px;height:30px;padding:2px;border-radius:8px;border:0">
+  </div>`;
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest('.cores [data-cor]'); if(!b) return;
+  const wrap = b.closest('.cores'); wrap.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+  b.classList.add('sel'); wrap.querySelector('input[type=color]').value = b.dataset.cor;
+});
+
+function val(ov,id){ const e=ov.querySelector('#'+id); return e?e.value.trim():''; }
+function num(ov,id){ const v=val(ov,id); return v===''?null:Number(v); }
+
+async function guardar(tabela, id, ov, fechar){
+  const btn = ov.querySelector('#m_salvar'); btn.disabled=true; const txt=btn.textContent; btn.textContent='Salvando…';
+  try{
+    let obj;
+    if(tabela==='categorias'){
+      const nome=val(ov,'f_nome'); if(!nome) throw new Error('Informe o nome da categoria');
+      obj = { nome, cor:val(ov,'f_cor'), cor_fundo:val(ov,'f_cor_fundo'), ordem:num(ov,'f_ordem')||0 };
+    } else if(tabela==='livros'){
+      const titulo=val(ov,'f_titulo'); if(!titulo) throw new Error('Informe o título do livro');
+      let capa_url = val(ov,'f_capa_url');
+      const fa = ov.querySelector('#f_capa_arquivo');
+      if(fa && fa.files[0]){ btn.textContent='Enviando imagem…'; capa_url = await store.upload(fa.files[0]); }
+      obj = { titulo, categoria_id:val(ov,'f_categoria_id')||null, descricao:val(ov,'f_descricao'),
+        faixa_etaria:val(ov,'f_faixa_etaria'), tempo_leitura:val(ov,'f_tempo_leitura'),
+        preco:num(ov,'f_preco'), preco_antigo:num(ov,'f_preco_antigo'), desconto:val(ov,'f_desconto'),
+        avaliacao:num(ov,'f_avaliacao'), capa_cor1:val(ov,'f_capa_cor1'), capa_cor2:val(ov,'f_capa_cor2'),
+        capa_url, link_compra:val(ov,'f_link_compra') };
+    } else if(tabela==='atividades'){
+      const titulo=val(ov,'f_titulo'); if(!titulo) throw new Error('Informe o título da atividade');
+      let arquivo_url = val(ov,'f_arquivo_url');
+      const fa = ov.querySelector('#f_arquivo_arquivo');
+      if(fa && fa.files[0]){ btn.textContent='Enviando PDF…'; arquivo_url = await store.upload(fa.files[0]); }
+      obj = { titulo, tipo:val(ov,'f_tipo'), faixa_etaria:val(ov,'f_faixa_etaria'), cor:val(ov,'f_cor'), cor_fundo:val(ov,'f_cor_fundo'), arquivo_url };
+    }
+    if(id) await store.update(tabela, id, obj); else await store.create(tabela, obj);
+    await recarregar(); fechar(); render(); toast(id?'Alterações salvas':'Adicionado com sucesso');
+  }catch(e){ btn.disabled=false; btn.textContent=txt; toast('Erro ao salvar: '+(e.message||e), true); }
+}
+
+/* ===================== NAVEGAÇÃO ===================== */
+function irPara(aba){ abaAtual=aba; render(); fecharMenu(); }
+function fecharMenu(){ document.getElementById('sidebar').classList.remove('aberta'); document.getElementById('scrim').classList.remove('on'); }
+
+/* ===================== EXPORTAR ===================== */
+function exportar(){
+  const blob=new Blob([JSON.stringify(cache,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='universo-catolico-dados.json'; a.click(); URL.revokeObjectURL(a.href); toast('Backup exportado');
+}
+
+/* ===================== INICIALIZAÇÃO ===================== */
+function mostrar(tela){
+  document.getElementById('telaCarregando').classList.toggle('oculto', tela!=='carregando');
+  document.getElementById('telaLogin').classList.toggle('oculto', tela!=='login');
+  document.getElementById('app').classList.toggle('oculto', tela!=='app');
+}
+
+async function entrarNoApp(usuario){
+  mostrar('carregando');
+  await recarregar();
+  // selo de modo
+  const selo = document.getElementById('seloModo');
+  if(store.modo==='supabase'){ selo.className='selo-modo selo-banco'; selo.textContent='● Banco de dados'; }
+  else { selo.className='selo-modo selo-demo'; selo.textContent='● Modo demonstração'; }
+  document.getElementById('infoUsuario').innerHTML = (store.modo==='supabase'
+    ? '👤 '+esc(usuario.email)
+    : 'Modo demonstração<br><span style="opacity:.7">dados salvos só neste navegador</span>');
+  mostrar('app');
+  render();
+}
+
+async function iniciar(){
+  // Conexões de UI
+  document.querySelectorAll('.navbtn').forEach(b=> b.onclick=()=> irPara(b.dataset.aba));
+  document.getElementById('btnNovo').onclick=()=> abrirModal();
+  document.getElementById('btnExportar').onclick=exportar;
+  document.getElementById('abreMenu').onclick=()=>{ document.getElementById('sidebar').classList.add('aberta'); document.getElementById('scrim').classList.add('on'); };
+  document.getElementById('scrim').onclick=fecharMenu;
+  document.getElementById('btnSair').onclick=async()=>{ await store.logout(); location.reload(); };
+
+  // Login
+  document.getElementById('formLogin').onsubmit=async(e)=>{
+    e.preventDefault();
+    const btn=document.getElementById('btnEntrar'); const err=document.getElementById('loginErro');
+    err.classList.add('oculto'); btn.disabled=true; btn.textContent='Entrando…';
+    try{
+      await store.login(document.getElementById('loginEmail').value.trim(), document.getElementById('loginSenha').value);
+      const u = await store.sessao(); await entrarNoApp(u);
+    }catch(ex){ err.textContent='Não foi possível entrar: '+(ex.message||ex); err.classList.remove('oculto'); btn.disabled=false; btn.textContent='Entrar'; }
+  };
+
+  if(store.modo==='demo'){
+    // Sem banco configurado: entra direto em modo demonstração
+    const aviso=document.getElementById('loginAviso');
+    await entrarNoApp({ email:'modo-demonstração' });
+    return;
+  }
+
+  // Modo banco: verifica sessão existente
+  const u = await store.sessao();
+  if(u){ await entrarNoApp(u); }
+  else { mostrar('login'); document.getElementById('loginEmail').focus(); }
+}
+
+iniciar().catch(e=>{ mostrar('login'); const err=document.getElementById('loginErro'); err.textContent='Erro ao iniciar: '+(e.message||e); err.classList.remove('oculto'); });
+</script>
+</body>
+</html>
