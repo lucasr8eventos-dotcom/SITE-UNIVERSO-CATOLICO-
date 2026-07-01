@@ -187,7 +187,7 @@ function renderAba(){
       ${pedidos.length? `<table>
         <thead><tr><th>Data</th><th>Cliente</th><th>Produto</th><th>Valor</th><th>Status</th><th>Entrega</th></tr></thead>
         <tbody>${pedidos.map(p=>{
-          const fisico=tipoProd(p.produto_id)==='fisico';
+          const fisico=pedidoTemFisico(p);
           let entrega='—';
           if(fisico){
             if(p.status!=='aprovado') entrega='<span class="quem">aguardando pagamento</span>';
@@ -197,7 +197,7 @@ function renderAba(){
           return `<tr>
             <td>${data(p.criado_em)}</td>
             <td><b>${esc(p.nome||'—')}</b><br><span class="quem">${esc(p.email)}</span>${p.endereco?`<br><span class="tag-prod" data-end="${p.id}" style="cursor:pointer"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> ver endereço</span>`:''}</td>
-            <td>${esc(nomeProd(p.produto_id))}</td>
+            <td>${nomesPedido(p).map(n=>`<span class="tag-prod">${esc(n)}</span>`).join(' ')||'—'}</td>
             <td><b>${esc(brl(p.valor))}</b></td>
             <td><span class="badge b-${esc(p.status)}">${esc(p.status)}</span></td>
             <td>${entrega}</td>
@@ -210,6 +210,10 @@ function renderAba(){
   }
 }
 function tipoProd(id){ const p=produtos.find(x=>x.id===id); return p?p.tipo:''; }
+// Itens do pedido (sacola). Cai no formato antigo (1 produto) se não houver itens.
+function itensPedido(p){ return (Array.isArray(p.itens)&&p.itens.length)? p.itens : (p.produto_id?[{produto_id:p.produto_id}]:[]); }
+function nomesPedido(p){ return itensPedido(p).map(i=> i.nome || nomeProd(i.produto_id)); }
+function pedidoTemFisico(p){ return itensPedido(p).some(i=> (i.tipo||tipoProd(i.produto_id))==='fisico'); }
 
 function verEndereco(pedidoId){
   const p=pedidos.find(x=>x.id===pedidoId); const e=p&&p.endereco?p.endereco:{};
@@ -246,7 +250,7 @@ function modalEnvio(pedidoId){
 
 function exportarCsv(){
   const linhas=[['Data','Nome','Email','Produto','Valor','Status','Enviado','Rastreio','Cidade']];
-  pedidos.forEach(p=>{ const e=p.endereco||{}; linhas.push([data(p.criado_em),p.nome||'',p.email,nomeProd(p.produto_id),String(p.valor||'').replace('.',','),p.status,p.enviado?'sim':'',p.rastreio||'',e.cidade||'']); });
+  pedidos.forEach(p=>{ const e=p.endereco||{}; linhas.push([data(p.criado_em),p.nome||'',p.email,nomesPedido(p).join(' + '),String(p.valor||'').replace('.',','),p.status,p.enviado?'sim':'',p.rastreio||'',e.cidade||'']); });
   const csv=linhas.map(l=>l.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n');
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pedidos.csv'; a.click(); URL.revokeObjectURL(a.href);

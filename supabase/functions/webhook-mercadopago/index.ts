@@ -154,30 +154,54 @@ Deno.serve(async (req) => {
       mp_payment_id: String(paymentId),
     }).eq("id", pedido.id);
 
-    // Pagamento aprovado -> libera o acesso SÓ para infoproduto (que tem PDFs).
-    // Produtos físicos ficam registrados como pedido aprovado para você enviar.
+    // Pagamento aprovado -> libera o acesso de CADA item infoproduto da sacola
+    // (que tem PDFs). Produtos físicos ficam só registrados para você enviar.
     if (novoStatus === "aprovado") {
       const email = (pedido.email || emailPagador).toLowerCase();
-      const { data: prod } = await db
-        .from("produtos")
-        .select("tipo, nome")
-        .eq("id", pedido.produto_id)
-        .maybeSingle();
-      if (!prod || prod.tipo === "infoproduto") {
-        await db.from("acessos").upsert({
-          email,
-          produto_id: pedido.produto_id,
-          pedido_id: pedido.id,
-          ativo: true,
-        }, { onConflict: "email,produto_id" });
 
-        // Onboarding automático (conta + e-mail) só na primeira aprovação.
-        if (!jaEstavaAprovado && email) {
-          try {
-            await onboardingCliente(db, email, prod?.nome ?? "seu material");
-          } catch (e) {
-            console.error("onboarding falhou:", e);
+      // Itens da sacola; cai no formato antigo (1 produto) se não houver itens.
+      const itens: any[] = Array.isArray(pedido.itens) && pedido.itens.length
+        ? pedido.itens
+        : (pedido.produto_id ? [{ produto_id: pedido.produto_id }] : []);
+      const ids = [...new Set(itens.map((i) => i.produto_id).filter(Boolean))];
+
+      let liberouAlgum = false;
+      let nomeParaEmail = "seus materiais";
+      if (ids.length) {
+        // Confere o tipo no banco (não confia no que veio do cliente).
+        const { data: prods } = await db
+          .from("produtos")
+          .select("id, tipo, nome")
+          .in("id", ids);
+        const mapa: Record<string, any> = Object.fromEntries(
+          (prods ?? []).map((p) => [p.id, p]),
+        );
+        const digitais = (prods ?? []).filter((p) =>
+          !p.tipo || p.tipo === "infoproduto"
+        );
+        if (digitais.length === 1) nomeParaEmail = digitais[0].nome;
+
+        for (const it of itens) {
+          const prod = mapa[it.produto_id];
+          if (!prod || prod.tipo === "infoproduto") {
+            await db.from("acessos").upsert({
+              email,
+              produto_id: it.produto_id,
+              pedido_id: pedido.id,
+              ativo: true,
+            }, { onConflict: "email,produto_id" });
+            liberouAlgum = true;
           }
+        }
+      }
+
+      // Onboarding automático (conta + e-mail) só na primeira aprovação e
+      // apenas se algum item digital foi liberado.
+      if (!jaEstavaAprovado && email && liberouAlgum) {
+        try {
+          await onboardingCliente(db, email, nomeParaEmail);
+        } catch (e) {
+          console.error("onboarding falhou:", e);
         }
       }
     }
