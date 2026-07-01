@@ -43,6 +43,21 @@ Acesso liberado no banco  →  cliente faz login na /conta  →  baixa os PDFs
 - O **download** só acontece via link temporário (5 min), gerado depois de
   conferir a compra — ninguém repassa link.
 
+## SEO (bilíngue PT + EN)
+
+O site já vem com SEO profissional: títulos e descrições em português e inglês,
+palavras-chave (foco no público católico e em todos os produtos), Open Graph +
+Twitter Cards (prévia bonita ao compartilhar), dados estruturados (JSON-LD),
+`robots.txt`, `sitemap.xml` e imagem de compartilhamento (`assets/og-image.png`).
+
+> **⚠️ Antes de publicar, troque o domínio.** Todo o SEO usa o placeholder
+> `https://universocatolicokids.com.br`. Substitua pelo seu domínio real em
+> `robots.txt`, `sitemap.xml` e nas páginas HTML. No terminal, na raiz do projeto:
+>
+> ```bash
+> grep -rl "universocatolicokids.com.br" . | xargs sed -i 's#universocatolicokids.com.br#SEU-DOMINIO.com#g'
+> ```
+
 ## Configuração (resumo)
 
 1. Preencha `config.js` (raiz) com a URL e a chave **anon** do Supabase.
