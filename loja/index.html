@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loja · Universo Católico Kids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--azul:#1f57c3;--azul-esc:#15418c;--amarelo:#f5b21a;--vermelho:#e8533f;--verde:#2fa15a;--bg:#faf9f5;--card:#fff;--borda:#ececdf;--texto:#2a2a2a;--suave:#7a7a72}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--texto)}
+  h1,h2,h3{font-family:'Baloo 2',sans-serif}
+  button{font-family:inherit;cursor:pointer}
+  input{font-family:inherit;font-size:15px}
+  a{color:var(--azul);text-decoration:none}
+  .oculto{display:none!important}
+  .topo{background:#fff;border-bottom:1px solid var(--borda);padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+  .marca{display:flex;align-items:center;gap:11px}
+  .marca .m{width:44px;height:44px;border-radius:12px;background:var(--amarelo);display:flex;align-items:center;justify-content:center;font-size:23px}
+  .marca b{font-family:'Baloo 2';font-size:18px;color:var(--azul-esc);display:block;line-height:1}
+  .marca span{font-size:11px;color:var(--suave);letter-spacing:.5px}
+  .btn{border:0;border-radius:11px;padding:11px 18px;font-weight:800;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+  .btn:hover{transform:translateY(-1px)} .btn:disabled{opacity:.6;transform:none;cursor:default}
+  .btn-azul{background:var(--azul);color:#fff}.btn-verde{background:var(--verde);color:#fff}.btn-claro{background:#eef1f9;color:var(--azul)}
+  .hero{text-align:center;padding:44px 20px 8px}
+  .hero h1{font-size:34px;color:var(--azul-esc)}
+  .hero p{color:var(--suave);margin-top:8px;font-size:16px}
+  .wrap{max-width:1080px;margin:0 auto;padding:24px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+  .prod{background:#fff;border:1px solid var(--borda);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+  .prod .capa{height:150px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:44px}
+  .prod .corpo{padding:18px;flex:1;display:flex;flex-direction:column}
+  .prod h3{font-size:19px;color:var(--azul-esc);margin-bottom:6px}
+  .prod .desc{font-size:14px;color:var(--suave);line-height:1.5;flex:1}
+  .prod .precos{display:flex;align-items:baseline;gap:9px;margin:14px 0}
+  .prod .preco{font-family:'Baloo 2';font-size:26px;color:var(--verde);font-weight:800}
+  .prod .antigo{color:var(--suave);text-decoration:line-through;font-size:15px}
+  .vazio{text-align:center;color:var(--suave);padding:60px 20px}
+  .rodape{text-align:center;padding:26px;color:var(--suave);font-size:13px}
+
+  .overlay{position:fixed;inset:0;background:rgba(20,30,60,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+  .modal{background:#fff;border-radius:20px;max-width:420px;width:100%;padding:26px;box-shadow:0 18px 60px rgba(0,0,0,.25)}
+  .modal h3{font-size:20px;color:var(--azul-esc);margin-bottom:4px}
+  .modal p{color:var(--suave);font-size:14px;margin-bottom:16px}
+  .campo{margin-bottom:13px}
+  .campo label{display:block;font-weight:800;font-size:13px;margin-bottom:6px}
+  .campo input{width:100%;padding:12px 13px;border:1.5px solid var(--borda);border-radius:11px;background:#fcfcf9}
+  .campo input:focus{outline:0;border-color:var(--azul);background:#fff}
+  .erro{background:#fdecea;color:var(--vermelho);font-weight:700;font-size:13px;padding:10px 13px;border-radius:10px;margin-bottom:12px}
+  .fechar{float:right;background:#f3f3ec;border:0;width:32px;height:32px;border-radius:50%;font-size:17px;color:var(--suave)}
+  .seguro{text-align:center;font-size:12px;color:var(--suave);margin-top:12px}
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="marca"><div class="m">📖</div><div><b>Universo Católico</b><span>LOJA DE MATERIAIS</span></div></div>
+  <a href="../conta/" class="btn btn-claro">Minha área →</a>
+</header>
+
+<div class="hero">
+  <h1>Materiais católicos para as crianças</h1>
+  <p>Compre uma vez e acesse quando quiser na sua área de membros.</p>
+</div>
+
+<div class="wrap"><div id="lista" class="grid"></div></div>
+<div class="rodape">Pagamento seguro via Mercado Pago · Pix, cartão e boleto · Já comprou? <a href="../conta/">Acesse sua área</a></div>
+
+<div id="modal" class="overlay oculto"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../config.js"></script>
+<script>
+const CFG = window.UCK_CONFIG || {};
+const OK = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
+let sb = OK ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function brl(n){ return n==null?'':'R$ '+Number(n).toFixed(2).replace('.',','); }
+
+async function carregar(){
+  const el=document.getElementById('lista');
+  if(!OK){ el.innerHTML='<div class="vazio">Loja em configuração. Volte em breve.</div>'; return; }
+  const { data, error } = await sb.from('produtos').select('*').eq('ativo',true).order('criado_em');
+  if(error){ el.innerHTML='<div class="vazio">Não foi possível carregar os produtos.</div>'; return; }
+  if(!data||!data.length){ el.innerHTML='<div class="vazio">Nenhum produto disponível no momento.</div>'; return; }
+  el.innerHTML = data.map(p=>`
+    <div class="prod">
+      <div class="capa" style="background:linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})">📚</div>
+      <div class="corpo">
+        <h3>${esc(p.nome)}</h3>
+        <div class="desc">${esc(p.descricao||'')}</div>
+        <div class="precos"><span class="preco">${brl(p.preco)}</span>${p.preco_antigo?`<span class="antigo">${brl(p.preco_antigo)}</span>`:''}</div>
+        <button class="btn btn-verde" data-id="${p.id}" data-nome="${esc(p.nome)}">Comprar agora</button>
+      </div>
+    </div>`).join('');
+  el.querySelectorAll('[data-id]').forEach(b=> b.onclick=()=>abrirCheckout(b.dataset.id,b.dataset.nome));
+}
+
+function abrirCheckout(id,nome){
+  const m=document.getElementById('modal');
+  m.innerHTML = `<div class="modal">
+    <button class="fechar" id="fechar">×</button>
+    <h3>Comprar</h3>
+    <p>${esc(nome)}</p>
+    <div id="ckErro" class="erro oculto"></div>
+    <div class="campo"><label>Seu nome</label><input id="ckNome" placeholder="Nome completo"></div>
+    <div class="campo"><label>Seu e-mail *</label><input id="ckEmail" type="email" placeholder="usado para acessar os PDFs depois"></div>
+    <button class="btn btn-verde" id="ckPagar" style="width:100%;padding:13px">Ir para o pagamento</button>
+    <div class="seguro">🔒 Você será levado ao ambiente seguro do Mercado Pago</div>
+  </div>`;
+  m.classList.remove('oculto');
+  m.onclick=e=>{ if(e.target===m) m.classList.add('oculto'); };
+  document.getElementById('fechar').onclick=()=>m.classList.add('oculto');
+  document.getElementById('ckPagar').onclick=()=>pagar(id);
+}
+
+async function pagar(produto_id){
+  const email=document.getElementById('ckEmail').value.trim().toLowerCase();
+  const nome=document.getElementById('ckNome').value.trim();
+  const err=document.getElementById('ckErro');
+  if(!email || !/.+@.+\..+/.test(email)){ err.textContent='Digite um e-mail válido.'; err.classList.remove('oculto'); return; }
+  const btn=document.getElementById('ckPagar'); btn.disabled=true; btn.textContent='Gerando pagamento…';
+  try{
+    const r = await fetch(`${CFG.SUPABASE_URL}/functions/v1/criar-pagamento`,{
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'apikey':CFG.SUPABASE_ANON_KEY, 'Authorization':`Bearer ${CFG.SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({ produto_id, email, nome }),
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.erro||'Falha ao iniciar pagamento');
+    const url = j.init_point || j.sandbox_init_point;
+    if(!url) throw new Error('Link de pagamento não recebido');
+    window.location.href = url;
+  }catch(ex){ err.textContent=ex.message||String(ex); err.classList.remove('oculto'); btn.disabled=false; btn.textContent='Ir para o pagamento'; }
+}
+carregar();
+</script>
+</body>
+</html>

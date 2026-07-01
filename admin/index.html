@@ -168,6 +168,7 @@
     <button class="navbtn" data-aba="categorias"><span class="ico">🏷️</span> Categorias</button>
     <button class="navbtn" data-aba="livros"><span class="ico">📚</span> Livros</button>
     <button class="navbtn" data-aba="atividades"><span class="ico">🎨</span> Atividades</button>
+    <a class="navbtn" href="./produtos.html" style="text-decoration:none"><span class="ico">📦</span> Produtos &amp; PDFs</a>
     <div class="rodape">
       <div class="usuario" id="infoUsuario"></div>
       <button class="btn-sair" id="btnSair">Sair</button>
@@ -191,7 +192,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./config.js"></script>
+<script src="../config.js"></script>
 <script>
 /* =====================================================================
  *  CAMADA DE DADOS — usa Supabase se configurado, senão modo demo.
@@ -553,7 +554,7 @@ async function entrarNoApp(usuario){
 
 async function iniciar(){
   // Conexões de UI
-  document.querySelectorAll('.navbtn').forEach(b=> b.onclick=()=> irPara(b.dataset.aba));
+  document.querySelectorAll('button.navbtn').forEach(b=> b.onclick=()=> irPara(b.dataset.aba));
   document.getElementById('btnNovo').onclick=()=> abrirModal();
   document.getElementById('btnExportar').onclick=exportar;
   document.getElementById('abreMenu').onclick=()=>{ document.getElementById('sidebar').classList.add('aberta'); document.getElementById('scrim').classList.add('on'); };

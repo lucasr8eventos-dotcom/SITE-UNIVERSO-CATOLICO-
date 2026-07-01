@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minha Área · Universo Católico Kids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--azul:#1f57c3;--azul-esc:#15418c;--amarelo:#f5b21a;--vermelho:#e8533f;--verde:#2fa15a;--bg:#faf9f5;--card:#fff;--borda:#ececdf;--texto:#2a2a2a;--suave:#7a7a72}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--texto)}
+  h1,h2,h3,h4{font-family:'Baloo 2',sans-serif}
+  button{font-family:inherit;cursor:pointer}
+  input{font-family:inherit;font-size:15px}
+  .oculto{display:none!important}
+  a{color:var(--azul)}
+
+  .tela-centro{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .carregando{color:var(--suave);font-weight:700}
+
+  /* Login/cadastro */
+  .login{background:#fff;border:1px solid var(--borda);border-radius:20px;max-width:410px;width:100%;padding:34px 30px;box-shadow:0 14px 50px rgba(20,40,90,.10)}
+  .marca{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:20px}
+  .marca .m{width:46px;height:46px;border-radius:12px;background:var(--amarelo);display:flex;align-items:center;justify-content:center;font-size:24px}
+  .marca b{font-family:'Baloo 2';font-size:19px;color:var(--azul-esc);display:block;line-height:1}
+  .marca span{font-size:11px;color:var(--suave);letter-spacing:.5px}
+  .login h2{font-size:21px;color:var(--azul-esc);text-align:center}
+  .login p.sub{font-size:13px;color:var(--suave);text-align:center;margin-bottom:20px;margin-top:3px}
+  .campo{margin-bottom:14px}
+  .campo label{display:block;font-weight:800;font-size:13px;margin-bottom:6px;color:#444}
+  .campo input{width:100%;padding:12px 13px;border:1.5px solid var(--borda);border-radius:11px;background:#fcfcf9}
+  .campo input:focus{outline:0;border-color:var(--azul);background:#fff}
+  .btn{border:0;border-radius:11px;padding:12px 18px;font-weight:800;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:disabled{opacity:.55;transform:none;cursor:default}
+  .btn-azul{background:var(--azul);color:#fff}
+  .btn-bloco{width:100%;padding:13px}
+  .btn-link{background:none;color:var(--azul);font-weight:800;font-size:13px;padding:4px}
+  .troca{text-align:center;margin-top:14px;font-size:13px;color:var(--suave)}
+  .erro{background:#fdecea;color:var(--vermelho);font-weight:700;font-size:13px;padding:10px 13px;border-radius:10px;margin-bottom:14px}
+  .ok{background:#e4f5ea;color:#1c7a42;font-weight:700;font-size:13px;padding:10px 13px;border-radius:10px;margin-bottom:14px}
+
+  /* App */
+  .topo{background:#fff;border-bottom:1px solid var(--borda);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+  .topo .marca{margin:0}
+  .topo .dir{display:flex;align-items:center;gap:14px}
+  .topo .quem{font-size:13px;color:var(--suave);font-weight:700}
+  .btn-sair{background:#eef1f9;color:var(--azul);border:0;padding:9px 15px;border-radius:10px;font-weight:800;font-size:13px}
+  .wrap{max-width:1120px;margin:0 auto;padding:24px;display:grid;grid-template-columns:250px 1fr;gap:24px}
+  .lista-prod{display:flex;flex-direction:column;gap:8px;position:sticky;top:88px;align-self:start}
+  .lista-prod h4{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--suave);margin-bottom:4px;padding:0 6px}
+  .prod-btn{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--borda);border-radius:12px;padding:11px 13px;text-align:left;font-weight:700;font-size:14px;color:var(--texto);transition:.15s}
+  .prod-btn:hover{border-color:var(--azul)}
+  .prod-btn.ativo{background:var(--azul);color:#fff;border-color:var(--azul)}
+  .prod-btn .cap{width:30px;height:30px;border-radius:8px;flex-shrink:0}
+
+  .painel{min-width:0}
+  .cab{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+  .cab h1{font-size:26px;color:var(--azul-esc)}
+  .cab p{color:var(--suave);margin-top:2px}
+  .busca{margin:16px 0 22px}
+  .busca input{width:100%;padding:12px 15px;border:1.5px solid var(--borda);border-radius:12px;background:#fff}
+  .busca input:focus{outline:0;border-color:var(--azul)}
+
+  .modulo{margin-bottom:26px}
+  .modulo h3{font-size:18px;color:var(--azul-esc);margin-bottom:12px;display:flex;align-items:center;gap:9px}
+  .modulo h3 .qt{background:#eef1f9;color:var(--azul);font-size:12px;font-weight:800;padding:2px 9px;border-radius:20px}
+  .arqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+  .arq{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--borda);border-radius:13px;padding:12px 14px;transition:.15s}
+  .arq:hover{border-color:var(--azul);box-shadow:0 4px 14px rgba(20,40,90,.06)}
+  .arq .ic{width:40px;height:40px;border-radius:10px;background:#fde9e5;color:var(--vermelho);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .arq .inf{flex:1;min-width:0}
+  .arq .inf b{display:block;font-size:14px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .arq .inf span{font-size:11px;color:var(--suave);font-weight:700}
+  .arq .baixar{background:var(--azul);color:#fff;border:0;width:38px;height:38px;border-radius:10px;font-size:16px;flex-shrink:0}
+  .arq .baixar:disabled{opacity:.5}
+
+  .vazio{background:#fff;border:2px dashed var(--borda);border-radius:16px;padding:50px 22px;text-align:center;color:var(--suave)}
+  .vazio .ic{font-size:44px;display:block;margin-bottom:12px}
+  .vazio h3{color:var(--azul-esc);font-size:20px;margin-bottom:6px}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--azul-esc);color:#fff;padding:13px 22px;border-radius:14px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:200}
+  .toast.erro-toast{background:var(--vermelho)}
+
+  @media(max-width:800px){.wrap{grid-template-columns:1fr}.lista-prod{position:static;flex-direction:row;overflow-x:auto;padding-bottom:6px}.prod-btn{white-space:nowrap}.lista-prod h4{display:none}}
+</style>
+</head>
+<body>
+
+<!-- CARREGANDO -->
+<div id="telaCarregando" class="tela-centro"><div class="carregando">Carregando…</div></div>
+
+<!-- NÃO CONFIGURADO -->
+<div id="telaConfig" class="tela-centro oculto">
+  <div class="login" style="text-align:center">
+    <div class="marca"><div class="m">📖</div><div><b>Universo Católico</b><span>MINHA ÁREA</span></div></div>
+    <h2>Área em configuração</h2>
+    <p class="sub">O acesso aos produtos ainda está sendo preparado. Volte em breve.</p>
+  </div>
+</div>
+
+<!-- LOGIN / CADASTRO -->
+<div id="telaLogin" class="tela-centro oculto">
+  <div class="login">
+    <div class="marca"><div class="m">📖</div><div><b>Universo Católico</b><span>MINHA ÁREA</span></div></div>
+    <h2 id="loginTitulo">Entrar</h2>
+    <p class="sub" id="loginSub">Acesse os produtos que você comprou</p>
+    <div id="msgErro" class="erro oculto"></div>
+    <div id="msgOk" class="ok oculto"></div>
+    <form id="form">
+      <div class="campo"><label>E-mail</label><input type="email" id="email" placeholder="o e-mail usado na compra" required></div>
+      <div class="campo" id="campoSenha"><label>Senha</label><input type="password" id="senha" placeholder="••••••••" required></div>
+      <button type="submit" class="btn btn-azul btn-bloco" id="btnPrincipal">Entrar</button>
+    </form>
+    <div style="text-align:center;margin-top:10px">
+      <button class="btn-link" id="linkEsqueci">Esqueci minha senha</button>
+    </div>
+    <div class="troca" id="trocaModo">
+      Primeira vez aqui? <button class="btn-link" id="btnTrocar">Criar minha conta</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="oculto">
+  <header class="topo">
+    <div class="marca"><div class="m">📖</div><div><b>Universo Católico</b><span>MINHA ÁREA</span></div></div>
+    <div class="dir">
+      <span class="quem" id="quem"></span>
+      <button class="btn-sair" id="btnSair">Sair</button>
+    </div>
+  </header>
+  <div class="wrap">
+    <aside class="lista-prod" id="listaProd"></aside>
+    <main class="painel" id="painel"></main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../config.js"></script>
+<script>
+const CFG = window.UCK_CONFIG || {};
+const OK_CFG = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
+let sb = OK_CFG ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
+
+let modo = 'login';           // 'login' | 'cadastro'
+let produtos = [];            // produtos comprados (com modulos e arquivos)
+let atual = 0;                // índice do produto selecionado
+let filtro = '';
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function mostra(id){ ['telaCarregando','telaConfig','telaLogin','app'].forEach(t=>document.getElementById(t).classList.toggle('oculto', t!==id)); }
+function toast(m,e){ const t=document.createElement('div'); t.className='toast'+(e?' erro-toast':''); t.textContent=m; document.body.appendChild(t); setTimeout(()=>{t.style.transition='.3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);}, e?3200:2000); }
+function erro(m){ const e=document.getElementById('msgErro'); e.textContent=m; e.classList.remove('oculto'); document.getElementById('msgOk').classList.add('oculto'); }
+function okMsg(m){ const e=document.getElementById('msgOk'); e.textContent=m; e.classList.remove('oculto'); document.getElementById('msgErro').classList.add('oculto'); }
+function limpaMsg(){ document.getElementById('msgErro').classList.add('oculto'); document.getElementById('msgOk').classList.add('oculto'); }
+
+/* ---------- Autenticação ---------- */
+function aplicarModo(){
+  document.getElementById('loginTitulo').textContent = modo==='login' ? 'Entrar' : 'Criar minha conta';
+  document.getElementById('loginSub').textContent = modo==='login' ? 'Acesse os produtos que você comprou' : 'Use o mesmo e-mail que usou na compra';
+  document.getElementById('btnPrincipal').textContent = modo==='login' ? 'Entrar' : 'Criar conta';
+  document.getElementById('trocaModo').innerHTML = modo==='login'
+    ? 'Primeira vez aqui? <button class="btn-link" id="btnTrocar">Criar minha conta</button>'
+    : 'Já tem conta? <button class="btn-link" id="btnTrocar">Entrar</button>';
+  document.getElementById('linkEsqueci').classList.toggle('oculto', modo!=='login');
+  document.getElementById('btnTrocar').onclick=()=>{ modo = modo==='login'?'cadastro':'login'; limpaMsg(); aplicarModo(); };
+}
+
+async function onSubmit(e){
+  e.preventDefault();
+  limpaMsg();
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const senha = document.getElementById('senha').value;
+  const btn = document.getElementById('btnPrincipal'); btn.disabled=true; const t=btn.textContent; btn.textContent='Aguarde…';
+  try{
+    if(modo==='cadastro'){
+      const { error } = await sb.auth.signUp({ email, password:senha });
+      if(error) throw error;
+      const { data:s } = await sb.auth.getSession();
+      if(s?.session){ await carregarApp(); }         // já logado
+      else { okMsg('Conta criada! Confirme pelo e-mail (se pedido) e faça login.'); modo='login'; aplicarModo(); }
+    } else {
+      const { error } = await sb.auth.signInWithPassword({ email, password:senha });
+      if(error) throw error;
+      await carregarApp();
+    }
+  }catch(ex){ erro(traduz(ex.message||String(ex))); }
+  finally{ btn.disabled=false; btn.textContent=t; }
+}
+function traduz(m){
+  if(/Invalid login/i.test(m)) return 'E-mail ou senha incorretos.';
+  if(/already registered/i.test(m)) return 'Este e-mail já tem conta. Faça login.';
+  if(/at least 6/i.test(m)) return 'A senha precisa ter ao menos 6 caracteres.';
+  return m;
+}
+async function esqueciSenha(){
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  if(!email) return erro('Digite seu e-mail acima primeiro.');
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.href });
+  if(error) return erro(error.message);
+  okMsg('Enviamos um link de redefinição para o seu e-mail.');
+}
+
+/* ---------- Carregar produtos comprados ---------- */
+async function carregarApp(){
+  mostra('telaCarregando');
+  const { data:u } = await sb.auth.getUser();
+  document.getElementById('quem').textContent = u?.user?.email || '';
+
+  // Acessos ativos -> produtos comprados
+  const { data:acessos, error } = await sb
+    .from('acessos')
+    .select('produto:produtos(id,nome,descricao,capa_url,capa_cor1,capa_cor2)')
+    .eq('ativo', true);
+  if(error){ mostra('app'); document.getElementById('listaProd').innerHTML=''; document.getElementById('painel').innerHTML = vazioErro(error.message); return; }
+
+  // remove duplicados e produtos nulos
+  const vistos = {}; produtos = [];
+  for(const a of (acessos||[])){ const p=a.produto; if(p && !vistos[p.id]){ vistos[p.id]=1; produtos.push(p); } }
+
+  // Carrega módulos e arquivos de cada produto
+  for(const p of produtos){
+    const [{ data:mods }, { data:arqs }] = await Promise.all([
+      sb.from('modulos').select('id,nome,ordem').eq('produto_id',p.id).order('ordem'),
+      sb.from('arquivos').select('id,titulo,modulo_id,ordem,tamanho_bytes').eq('produto_id',p.id).order('ordem'),
+    ]);
+    p.modulos = mods||[]; p.arquivos = arqs||[];
+  }
+  atual = 0; filtro='';
+  mostra('app');
+  renderLista(); renderPainel();
+}
+
+function renderLista(){
+  const el = document.getElementById('listaProd');
+  if(!produtos.length){ el.innerHTML=''; return; }
+  el.innerHTML = `<h4>Meus produtos</h4>` + produtos.map((p,i)=>`
+    <button class="prod-btn ${i===atual?'ativo':''}" data-i="${i}">
+      <span class="cap" style="background:linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})"></span>
+      <span>${esc(p.nome)}</span></button>`).join('');
+  el.querySelectorAll('[data-i]').forEach(b=> b.onclick=()=>{ atual=+b.dataset.i; filtro=''; renderLista(); renderPainel(); });
+}
+
+function tamanho(b){ if(!b) return ''; const kb=b/1024; if(kb<1024) return Math.round(kb)+' KB'; return (kb/1024).toFixed(1)+' MB'; }
+
+function renderPainel(){
+  const el = document.getElementById('painel');
+  if(!produtos.length){
+    el.innerHTML = `<div class="vazio"><span class="ic">🎁</span><h3>Você ainda não tem produtos</h3>
+      Assim que sua compra for confirmada, os materiais aparecem aqui.<br>
+      <a href="../">Voltar para a loja</a></div>`;
+    return;
+  }
+  const p = produtos[atual];
+  const f = filtro.trim().toLowerCase();
+  const arqsFiltrados = p.arquivos.filter(a=> !f || a.titulo.toLowerCase().includes(f));
+
+  // agrupa por módulo
+  const grupos = [];
+  for(const m of p.modulos){ grupos.push({ nome:m.nome, id:m.id, itens:arqsFiltrados.filter(a=>a.modulo_id===m.id) }); }
+  const semModulo = arqsFiltrados.filter(a=>!a.modulo_id || !p.modulos.find(m=>m.id===a.modulo_id));
+  if(semModulo.length) grupos.push({ nome:'Materiais', id:null, itens:semModulo });
+
+  let corpo;
+  if(!p.arquivos.length){
+    corpo = `<div class="vazio"><span class="ic">📄</span><h3>Em breve</h3>Os materiais deste produto estão sendo adicionados.</div>`;
+  } else {
+    corpo = grupos.filter(g=>g.itens.length).map(g=>`
+      <div class="modulo">
+        <h3>📂 ${esc(g.nome)} <span class="qt">${g.itens.length}</span></h3>
+        <div class="arqs">${g.itens.map(a=>`
+          <div class="arq">
+            <div class="ic">📄</div>
+            <div class="inf"><b title="${esc(a.titulo)}">${esc(a.titulo)}</b><span>PDF${a.tamanho_bytes?' · '+tamanho(a.tamanho_bytes):''}</span></div>
+            <button class="baixar" data-arq="${a.id}" title="Baixar">⬇</button>
+          </div>`).join('')}</div>
+      </div>`).join('') || `<div class="vazio"><span class="ic">🔎</span>Nenhum material encontrado para "${esc(filtro)}".</div>`;
+  }
+
+  el.innerHTML = `
+    <div class="cab"><div><h1>${esc(p.nome)}</h1><p>${esc(p.descricao||'')}</p></div></div>
+    ${p.arquivos.length? `<div class="busca"><input id="inBusca" placeholder="🔎 Buscar material…" value="${esc(filtro)}"></div>`:''}
+    ${corpo}`;
+
+  const inb = document.getElementById('inBusca');
+  if(inb) inb.oninput = (e)=>{ filtro=e.target.value; const cur=el.querySelector('#inBusca'); renderPainel(); const n=document.getElementById('inBusca'); if(n){ n.focus(); n.setSelectionRange(filtro.length,filtro.length); } };
+  el.querySelectorAll('[data-arq]').forEach(b=> b.onclick=()=>baixar(b));
+}
+
+function vazioErro(m){ return `<div class="vazio"><span class="ic">⚠️</span><h3>Não foi possível carregar</h3>${esc(m)}</div>`; }
+
+/* ---------- Download seguro via Edge Function ---------- */
+async function baixar(btn){
+  const id = btn.dataset.arq;
+  btn.disabled=true; const t=btn.textContent; btn.textContent='…';
+  try{
+    const { data:s } = await sb.auth.getSession();
+    const token = s?.session?.access_token;
+    const r = await fetch(`${CFG.SUPABASE_URL}/functions/v1/baixar-arquivo`, {
+      method:'POST',
+      headers:{ 'Authorization':`Bearer ${token}`, 'Content-Type':'application/json', 'apikey':CFG.SUPABASE_ANON_KEY },
+      body: JSON.stringify({ arquivo_id:id }),
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.erro||'Falha ao gerar link');
+    window.open(j.url, '_blank');
+  }catch(ex){ toast(ex.message||String(ex), true); }
+  finally{ btn.disabled=false; btn.textContent=t; }
+}
+
+/* ---------- Início ---------- */
+async function iniciar(){
+  if(!OK_CFG){ mostra('telaConfig'); return; }
+  document.getElementById('form').onsubmit = onSubmit;
+  document.getElementById('linkEsqueci').onclick = esqueciSenha;
+  document.getElementById('btnSair').onclick = async()=>{ await sb.auth.signOut(); location.reload(); };
+  aplicarModo();
+
+  const { data:s } = await sb.auth.getSession();
+  if(s?.session){ await carregarApp(); }
+  else { mostra('telaLogin'); document.getElementById('email').focus(); }
+}
+iniciar().catch(e=>{ mostra('telaLogin'); erro('Erro ao iniciar: '+(e.message||e)); });
+</script>
+</body>
+</html>

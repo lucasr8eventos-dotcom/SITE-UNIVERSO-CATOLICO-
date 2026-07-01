@@ -110,7 +110,7 @@ Quando estiver tudo certo, troque para o **Access Token de produção**.
 | `SERVICE_ROLE_KEY` | Supabase → Project Settings → API → `service_role` |
 | `SITE_URL`         | endereço público do site |
 
-| Config do frontend (`admin/config.js` e site) | Onde pegar |
+| Config do frontend (`config.js` na raiz) | Onde pegar |
 |---|---|
 | `SUPABASE_URL`      | Supabase → Project Settings → API |
 | `SUPABASE_ANON_KEY` | Supabase → Project Settings → API (`anon public`) |

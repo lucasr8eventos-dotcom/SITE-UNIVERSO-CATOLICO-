@@ -6,13 +6,21 @@ banco de dados profissional (**PostgreSQL** via Supabase) e **login de administr
 Arquivos:
 
 ```
+config.js          ← (na RAIZ) onde você cola as chaves do Supabase (admin, loja e conta usam)
 admin/
-  index.html     ← o painel administrativo (abra no navegador)
-  config.js      ← onde você cola as chaves do Supabase
-  LEIA-ME.md     ← este guia
+  index.html       ← conteúdo do site (categorias, livros, atividades)
+  produtos.html    ← produtos à venda + upload dos PDFs (infoprodutos)
+  LEIA-ME.md       ← este guia
+loja/index.html    ← página pública de venda (checkout Mercado Pago)
+conta/index.html   ← área do cliente (login + acesso aos PDFs comprados)
 db/
-  schema.sql     ← cria as tabelas do banco de dados
+  schema.sql          ← tabelas do conteúdo do site
+  02_loja_membros.sql ← tabelas da loja/membros (rode depois)
 ```
+
+> Para a **venda de infoprodutos com pagamento** (Mercado Pago), o guia
+> completo está em **`BACKEND.md`** na raiz. Este arquivo cobre o admin de
+> conteúdo do site.
 
 ---
 
@@ -46,7 +54,7 @@ db/
    - **anon public** (chave pública) → começa com `eyJ...`
 
 ### 4. Configurar o painel
-Abra `admin/config.js` e preencha:
+Abra `config.js` (na **raiz** do projeto) e preencha:
 
 ```js
 window.UCK_CONFIG = {
