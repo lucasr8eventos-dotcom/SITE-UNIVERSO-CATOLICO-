@@ -95,6 +95,16 @@ let sb=OK?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):n
 let aba='documentarios', dados={documentarios:[],artigos:[]};
 const META={documentarios:'Documentários', artigos:'Blog / Artigos'};
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function ytId(u){ if(!u) return ''; const m=String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?[^ ]*v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{11})/); return m?m[1]:''; }
+function ytThumb(u){ const id=ytId(u); return id?`https://img.youtube.com/vi/${id}/hqdefault.jpg`:''; }
+function atualizarPreview(){
+  const inp=document.getElementById('f_link_video'), box=document.getElementById('ytPreview');
+  if(!inp||!box) return;
+  const th=ytThumb(inp.value);
+  box.innerHTML = th ? `<img src="${th}" style="width:100%;max-width:300px;border-radius:12px;border:1px solid var(--borda)" alt="capa do vídeo">`
+    : (inp.value.trim() ? '<span style="font-size:12px;color:#c0392b;font-weight:700">Link não reconhecido como YouTube.</span>' : '');
+}
+window.atualizarPreview=atualizarPreview;
 function mostra(id){['telaCarregando','telaConfig','telaLogin','app'].forEach(t=>document.getElementById(t).classList.toggle('oculto',t!==id));}
 function toast(m,e){const t=document.createElement('div');t.className='toast'+(e?' erro-toast':'');t.textContent=m;document.body.appendChild(t);setTimeout(()=>{t.style.transition='.3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},e?3200:1800);}
 
@@ -112,7 +122,8 @@ function render(){
   const el=document.getElementById('lista'); const lista=dados[aba];
   if(!lista.length){ el.innerHTML='<div class="vazio">Nada cadastrado ainda. Clique em “+ Novo”.</div>'; return; }
   el.innerHTML='<div class="grid">'+lista.map(x=>{
-    const fundo=x.capa_url?`url('${esc(x.capa_url)}')`:`linear-gradient(160deg,${esc(x.capa_cor1||'#2f8fd6')},${esc(x.capa_cor2||'#1f57c3')})`;
+    const thumb=x.capa_url||(aba==='documentarios'?ytThumb(x.link_video):'');
+    const fundo=thumb?`url('${esc(thumb)}')`:`linear-gradient(160deg,${esc(x.capa_cor1||'#2f8fd6')},${esc(x.capa_cor2||'#1f57c3')})`;
     const sub = aba==='documentarios'
       ? `${esc(x.tema||'')} ${x.duracao?'· '+esc(x.duracao):''} ${x.faixa?'· '+esc(x.faixa):''}`
       : `${esc(x.tag||'')} ${x.tempo_leitura?'· '+esc(x.tempo_leitura):''}`;
@@ -134,12 +145,20 @@ function abrir(id){
   if(aba==='documentarios'){
     corpo=`
       ${campo('Título *','f_titulo',it.titulo,'Ex.: A Vida de Jesus')}
-      <div class="linha">${campo('Tema','f_tema',it.tema,'Ex.: Santos')}${campo('Duração','f_duracao',it.duracao,'Ex.: 48 min')}</div>
-      <div class="linha">${campo('Faixa etária','f_faixa',it.faixa,'Ex.: Livre / 6+')}${campo('Ordem','f_ordem',it.ordem,'1','number')}</div>
-      <div class="campo"><label>Descrição</label><textarea id="f_descricao" placeholder="Sobre o documentário">${esc(it.descricao||'')}</textarea></div>
-      ${campo('Link do vídeo (YouTube/Vimeo)','f_link_video',it.link_video,'https://...')}
-      <div class="campo"><label>Imagem de capa (opcional)</label><input id="f_capa_arquivo" type="file" accept="image/*"><input type="hidden" id="f_capa_url" value="${esc(it.capa_url||'')}"></div>
-      <div class="linha"><div class="campo"><label>Cor capa (topo)</label><input id="f_capa_cor1" type="color" value="${esc(it.capa_cor1||'#2f8fd6')}" style="height:44px"></div><div class="campo"><label>Cor capa (base)</label><input id="f_capa_cor2" type="color" value="${esc(it.capa_cor2||'#15418c')}" style="height:44px"></div></div>
+      <div class="campo"><label>Link do YouTube *</label>
+        <input id="f_link_video" value="${esc(it.link_video||'')}" placeholder="Cole o link do vídeo (ex.: https://youtu.be/…)" oninput="atualizarPreview()">
+        <div class="nota" style="margin:8px 0 0">🎬 A <b>capa é puxada automaticamente</b> do YouTube. Ao clicar no site, o visitante é levado ao vídeo.</div>
+        <div id="ytPreview" style="margin-top:10px"></div>
+      </div>
+      <details style="margin:2px 0 6px"><summary style="cursor:pointer;font-weight:800;font-size:13px;color:var(--suave)">Mais opções (tema, duração, capa própria…)</summary>
+        <div style="margin-top:12px">
+          <div class="linha">${campo('Tema','f_tema',it.tema,'Ex.: Santos')}${campo('Duração','f_duracao',it.duracao,'Ex.: 48 min')}</div>
+          <div class="linha">${campo('Faixa etária','f_faixa',it.faixa,'Ex.: Livre / 6+')}${campo('Ordem','f_ordem',it.ordem,'1','number')}</div>
+          <div class="campo"><label>Descrição (opcional)</label><textarea id="f_descricao" placeholder="Sobre o documentário">${esc(it.descricao||'')}</textarea></div>
+          <div class="campo"><label>Imagem de capa própria (opcional — só se não quiser a do YouTube)</label><input id="f_capa_arquivo" type="file" accept="image/*"><input type="hidden" id="f_capa_url" value="${esc(it.capa_url||'')}"></div>
+          <div class="linha"><div class="campo"><label>Cor (topo)</label><input id="f_capa_cor1" type="color" value="${esc(it.capa_cor1||'#2f8fd6')}" style="height:44px"></div><div class="campo"><label>Cor (base)</label><input id="f_capa_cor2" type="color" value="${esc(it.capa_cor2||'#15418c')}" style="height:44px"></div></div>
+        </div>
+      </details>
       <div class="campo"><label><input type="checkbox" id="f_ativo" ${it.ativo!==false?'checked':''}> Publicado (aparece no site)</label></div>`;
   } else {
     corpo=`
@@ -162,6 +181,7 @@ function abrir(id){
   ov.onclick=e=>{if(e.target===ov)fechar();};
   m.querySelector('#m_x').onclick=fechar; m.querySelector('#m_cancel').onclick=fechar;
   m.querySelector('#m_save').onclick=()=>salvar(id,fechar);
+  if(aba==='documentarios') atualizarPreview();
 }
 
 function v(id){const e=document.getElementById(id);return e?e.value.trim():'';}

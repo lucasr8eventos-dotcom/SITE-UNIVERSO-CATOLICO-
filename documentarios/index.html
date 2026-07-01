@@ -67,7 +67,10 @@ const CFG=window.UCK_CONFIG||{};
 const OK=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase);
 const sb=OK?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-const PLAY='<svg width="24" height="24" viewBox="0 0 24 24" fill="#1f57c3"><path d="M8 5v14l11-7z"/></svg>';
+const PLAY='<svg width="24" height="24" viewBox="0 0 24 24" fill="#e8533f"><path d="M8 5v14l11-7z"/></svg>';
+// Extrai o ID do vídeo do YouTube (aceita youtu.be, watch?v=, embed, shorts…)
+function ytId(u){ if(!u) return ''; const m=String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?[^ ]*v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{11})/); return m?m[1]:''; }
+function ytThumb(u){ const id=ytId(u); return id?`https://img.youtube.com/vi/${id}/hqdefault.jpg`:''; }
 async function carregar(){
   const el=document.getElementById('lista');
   if(!OK){ el.innerHTML='<div class="vazio">Área em configuração. Volte em breve.</div>'; return; }
@@ -75,20 +78,23 @@ async function carregar(){
   if(error){ el.innerHTML='<div class="vazio">Não foi possível carregar os documentários.</div>'; return; }
   if(!data||!data.length){ el.innerHTML='<div class="vazio">Nenhum documentário publicado ainda.</div>'; return; }
   el.innerHTML=data.map(d=>{
-    const fundo=d.capa_url?`url('${esc(d.capa_url)}')`:`linear-gradient(160deg,${esc(d.capa_cor1||'#2f8fd6')},${esc(d.capa_cor2||'#15418c')})`;
-    const play=d.link_video?`<a href="${esc(d.link_video)}" target="_blank" rel="noopener" class="assistir">▶ Assistir</a>`:'';
-    return `<div class="card">
+    const thumb=d.capa_url||ytThumb(d.link_video);
+    const fundo=thumb?`url('${esc(thumb)}')`:`linear-gradient(160deg,${esc(d.capa_cor1||'#2f8fd6')},${esc(d.capa_cor2||'#15418c')})`;
+    const temLink=!!d.link_video;
+    const tag = temLink?'a':'div';
+    const attrs = temLink?`href="${esc(d.link_video)}" target="_blank" rel="noopener"`:'';
+    return `<${tag} class="card" ${attrs} style="text-decoration:none;color:inherit">
       <div class="capa" style="background:${fundo}">
         ${d.faixa?`<span class="selo">${esc(d.faixa)}</span>`:''}
         <div class="play">${PLAY}</div>
       </div>
       <div class="corpo">
         <h3>${esc(d.titulo)}</h3>
-        <div class="desc">${esc(d.descricao||'')}</div>
+        ${d.descricao?`<div class="desc">${esc(d.descricao)}</div>`:'<div class="desc"></div>'}
         <div class="meta">${d.tema?`<span>${esc(d.tema)}</span>`:''}${d.duracao?`<span>⏱ ${esc(d.duracao)}</span>`:''}</div>
-        ${play}
+        ${temLink?`<div class="assistir">▶ Assistir no YouTube</div>`:''}
       </div>
-    </div>`;
+    </${tag}>`;
   }).join('');
 }
 carregar();
