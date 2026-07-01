@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentários católicos · Universo Católico Kids</title>
+<meta name="description" content="Documentários católicos para a família: vida de Jesus, santos, aparições de Nossa Senhora e muito mais.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2315418c'/%3E%3Ccircle cx='50' cy='44' r='20' fill='%23f5b21a'/%3E%3Crect x='34' y='66' width='32' height='14' rx='3' fill='%23e8533f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--azul:#1f57c3;--azul-esc:#15418c;--amarelo:#f5b21a;--vermelho:#e8533f;--verde:#2fa15a;--bg:#f6f4ee;--borda:#eceadf;--texto:#28303f;--suave:#7c8091}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--texto)}
+  h1,h2,h3{font-family:'Baloo 2',sans-serif}
+  a{color:var(--azul);text-decoration:none}
+  .topo{background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--borda);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
+  .marca{display:flex;align-items:center;gap:11px}
+  .marca b{font-family:'Baloo 2';font-size:18px;color:var(--azul-esc);display:block;line-height:1}
+  .marca span{font-size:11px;color:var(--suave);letter-spacing:.5px}
+  .btn{border:0;border-radius:12px;padding:11px 18px;font-weight:800;font-size:14px;display:inline-flex;align-items:center;gap:8px;transition:.15s}
+  .btn:hover{transform:translateY(-2px)} .btn-claro{background:#eef1f9;color:var(--azul)}
+  .hero{text-align:center;padding:54px 20px 6px;background:radial-gradient(1100px 300px at 50% -40px,#e9f0ff,transparent 70%)}
+  .hero h1{font-size:36px;color:var(--azul-esc)} .hero p{color:var(--suave);margin-top:8px;font-size:16px}
+  .wrap{max-width:1080px;margin:0 auto;padding:26px 24px 10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+  .card{background:#fff;border:1px solid var(--borda);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 6px 20px rgba(20,40,90,.05);transition:.2s}
+  .card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(20,40,90,.11)}
+  .capa{height:160px;position:relative;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center}
+  .play{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center}
+  .selo{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.35);backdrop-filter:blur(3px);color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px}
+  .corpo{padding:18px;flex:1;display:flex;flex-direction:column}
+  .corpo h3{font-size:19px;color:var(--azul-esc);margin-bottom:6px}
+  .corpo .desc{font-size:14px;color:var(--suave);line-height:1.5;flex:1}
+  .meta{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+  .meta span{background:#f3f3ec;color:var(--suave);font-weight:700;font-size:11px;padding:3px 9px;border-radius:7px}
+  .assistir{background:var(--azul);color:#fff;border:0;border-radius:11px;padding:10px;font-weight:800;font-size:13.5px;text-align:center;display:block}
+  .vazio{text-align:center;color:var(--suave);padding:70px 20px}
+  .rodape{text-align:center;padding:30px;color:var(--suave);font-size:13px;border-top:1px solid var(--borda);margin-top:24px}
+  .rodape a{margin:0 7px}
+</style>
+</head>
+<body>
+<header class="topo">
+  <a href="../" class="marca">
+    <svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg>
+    <div><b>Universo Católico</b><span>DOCUMENTÁRIOS</span></div>
+  </a>
+  <a href="../loja/" class="btn btn-claro">Ir para a Loja →</a>
+</header>
+
+<div class="hero">
+  <h1>Documentários católicos</h1>
+  <p>Histórias de fé para assistir com toda a família.</p>
+</div>
+
+<div class="wrap"><div id="lista" class="grid"><div class="vazio">Carregando…</div></div></div>
+
+<div class="rodape">
+  <a href="../">Início</a>·<a href="../loja/">Loja</a>·<a href="../legal/privacidade.html">Privacidade</a>·<a href="../legal/termos.html">Termos</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../config.js"></script>
+<script>
+const CFG=window.UCK_CONFIG||{};
+const OK=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase);
+const sb=OK?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+const PLAY='<svg width="24" height="24" viewBox="0 0 24 24" fill="#1f57c3"><path d="M8 5v14l11-7z"/></svg>';
+async function carregar(){
+  const el=document.getElementById('lista');
+  if(!OK){ el.innerHTML='<div class="vazio">Área em configuração. Volte em breve.</div>'; return; }
+  const { data, error } = await sb.from('documentarios').select('*').eq('ativo',true).order('ordem');
+  if(error){ el.innerHTML='<div class="vazio">Não foi possível carregar os documentários.</div>'; return; }
+  if(!data||!data.length){ el.innerHTML='<div class="vazio">Nenhum documentário publicado ainda.</div>'; return; }
+  el.innerHTML=data.map(d=>{
+    const fundo=d.capa_url?`url('${esc(d.capa_url)}')`:`linear-gradient(160deg,${esc(d.capa_cor1||'#2f8fd6')},${esc(d.capa_cor2||'#15418c')})`;
+    const play=d.link_video?`<a href="${esc(d.link_video)}" target="_blank" rel="noopener" class="assistir">▶ Assistir</a>`:'';
+    return `<div class="card">
+      <div class="capa" style="background:${fundo}">
+        ${d.faixa?`<span class="selo">${esc(d.faixa)}</span>`:''}
+        <div class="play">${PLAY}</div>
+      </div>
+      <div class="corpo">
+        <h3>${esc(d.titulo)}</h3>
+        <div class="desc">${esc(d.descricao||'')}</div>
+        <div class="meta">${d.tema?`<span>${esc(d.tema)}</span>`:''}${d.duracao?`<span>⏱ ${esc(d.duracao)}</span>`:''}</div>
+        ${play}
+      </div>
+    </div>`;
+  }).join('');
+}
+carregar();
+</script>
+</body>
+</html>
