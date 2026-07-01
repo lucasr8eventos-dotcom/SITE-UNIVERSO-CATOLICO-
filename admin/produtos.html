@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Produtos & PDFs · Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--azul:#1f57c3;--azul-esc:#15418c;--amarelo:#f5b21a;--vermelho:#e8533f;--verde:#2fa15a;--bg:#faf9f5;--card:#fff;--borda:#ececdf;--texto:#2a2a2a;--suave:#7a7a72}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--texto)}
+  h1,h2,h3,h4{font-family:'Baloo 2',sans-serif}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit;font-size:14px}
+  .oculto{display:none!important}
+  a{color:var(--azul)}
+
+  .tela-centro{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .login{background:#fff;border:1px solid var(--borda);border-radius:20px;max-width:400px;width:100%;padding:32px 28px;box-shadow:0 14px 50px rgba(20,40,90,.10)}
+  .marca{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:20px}
+  .marca .m{width:44px;height:44px;border-radius:12px;background:var(--amarelo);display:flex;align-items:center;justify-content:center;font-size:23px}
+  .marca b{font-family:'Baloo 2';font-size:18px;color:var(--azul-esc);display:block;line-height:1}
+  .marca span{font-size:11px;color:var(--suave);letter-spacing:.5px}
+  .erro{background:#fdecea;color:var(--vermelho);font-weight:700;font-size:13px;padding:10px 13px;border-radius:10px;margin-bottom:14px}
+  .campo{margin-bottom:13px}
+  .campo label{display:block;font-weight:800;font-size:13px;margin-bottom:6px;color:#444}
+  .campo input,.campo select,.campo textarea{width:100%;padding:11px 13px;border:1.5px solid var(--borda);border-radius:11px;background:#fcfcf9}
+  .campo input:focus,.campo select:focus,.campo textarea:focus{outline:0;border-color:var(--azul);background:#fff}
+  .campo textarea{resize:vertical;min-height:70px}
+  .linha{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+  .btn{border:0;border-radius:11px;padding:11px 17px;font-weight:800;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+  .btn:hover{transform:translateY(-1px)} .btn:disabled{opacity:.55;transform:none;cursor:default}
+  .btn-azul{background:var(--azul);color:#fff}.btn-verde{background:var(--verde);color:#fff}
+  .btn-claro{background:#eef1f9;color:var(--azul)}.btn-borda{background:#fff;color:var(--texto);border:1.5px solid var(--borda)}
+  .btn-perigo{background:#fdecea;color:var(--vermelho)}.btn-bloco{width:100%;padding:13px}
+  .btn-sm{padding:6px 11px;font-size:12.5px;border-radius:9px}
+
+  .topo{background:#fff;border-bottom:1px solid var(--borda);padding:13px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+  .topo .marca{margin:0}
+  .topo .dir{display:flex;gap:12px;align-items:center}
+  .quem{font-size:13px;color:var(--suave);font-weight:700}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px;display:grid;grid-template-columns:290px 1fr;gap:22px}
+  .col h4{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--suave);margin:0 0 10px 4px}
+  .prod-lista{display:flex;flex-direction:column;gap:8px}
+  .prod-btn{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--borda);border-radius:12px;padding:11px 12px;text-align:left;font-weight:700;font-size:14px;color:var(--texto)}
+  .prod-btn:hover{border-color:var(--azul)} .prod-btn.ativo{background:var(--azul);color:#fff;border-color:var(--azul)}
+  .prod-btn .cap{width:30px;height:30px;border-radius:8px;flex-shrink:0}
+  .prod-btn .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .prod-btn .off{font-size:10px;background:#fde9e5;color:var(--vermelho);padding:1px 6px;border-radius:10px;font-weight:800}
+  .prod-btn.ativo .off{background:rgba(255,255,255,.25);color:#fff}
+
+  .card{background:#fff;border:1px solid var(--borda);border-radius:16px;padding:20px;margin-bottom:18px}
+  .card h3{font-size:17px;color:var(--azul-esc);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .cab-prod{display:flex;align-items:center;gap:14px;margin-bottom:4px}
+  .cab-prod h2{font-size:22px;color:var(--azul-esc)}
+  .cab-prod .cap{width:44px;height:44px;border-radius:11px}
+
+  .mod-item,.arq-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f1f1e8}
+  .mod-item:last-child,.arq-item:last-child{border-bottom:0}
+  .mod-item .nm{flex:1;font-weight:700}
+  .arq-item .ic{width:34px;height:34px;border-radius:9px;background:#fde9e5;color:var(--vermelho);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .arq-item .nm{flex:1;min-width:0}
+  .arq-item .nm b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .arq-item .nm span{font-size:11px;color:var(--suave);font-weight:700}
+  .grupo-tit{font-family:'Baloo 2';font-weight:800;color:var(--azul-esc);font-size:14px;margin:14px 0 2px}
+  .vazio-mini{color:var(--suave);font-size:13px;padding:10px 0}
+
+  .drop{border:2px dashed var(--borda);border-radius:13px;padding:22px;text-align:center;color:var(--suave);transition:.15s;cursor:pointer}
+  .drop.hover{border-color:var(--azul);background:#f4f7ff;color:var(--azul)}
+  .prog{height:7px;background:#eef1f9;border-radius:6px;overflow:hidden;margin-top:12px}
+  .prog i{display:block;height:100%;background:var(--verde);width:0;transition:.2s}
+  .aviso{background:#fff3d6;color:#9a6b00;font-weight:700;font-size:13px;padding:12px 15px;border-radius:12px;line-height:1.5}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--azul-esc);color:#fff;padding:13px 22px;border-radius:14px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:200}
+  .toast.erro-toast{background:var(--vermelho)}
+  .sel-mini{padding:7px 10px;border:1.5px solid var(--borda);border-radius:9px;background:#fcfcf9;font-weight:700}
+  @media(max-width:820px){.wrap{grid-template-columns:1fr}.linha{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="telaCarregando" class="tela-centro"><div class="quem">Carregando…</div></div>
+
+<div id="telaConfig" class="tela-centro oculto">
+  <div class="login" style="text-align:center">
+    <div class="marca"><div class="m" style="background:none;box-shadow:none;padding:0"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div><div><b>Produtos & PDFs</b><span>ADMIN</span></div></div>
+    <div class="aviso" style="text-align:left">Esta área precisa do <b>Supabase configurado</b>. Preencha o arquivo <code>config.js</code> na raiz do site com a URL e a chave anon do seu projeto. Veja o <b>BACKEND.md</b>.</div>
+  </div>
+</div>
+
+<div id="telaLogin" class="tela-centro oculto">
+  <form class="login" id="formLogin">
+    <div class="marca"><div class="m" style="background:none;box-shadow:none;padding:0"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div><div><b>Produtos & PDFs</b><span>ADMIN</span></div></div>
+    <div id="loginErro" class="erro oculto"></div>
+    <div class="campo"><label>E-mail do admin</label><input type="email" id="loginEmail" required></div>
+    <div class="campo"><label>Senha</label><input type="password" id="loginSenha" required></div>
+    <button class="btn btn-azul btn-bloco" id="btnEntrar">Entrar</button>
+  </form>
+</div>
+
+<div id="app" class="oculto">
+  <header class="topo">
+    <div class="marca"><div class="m" style="background:none;box-shadow:none;padding:0"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div><div><b>Produtos & PDFs</b><span>ADMIN</span></div></div>
+    <div class="dir"><a href="./index.html" class="btn btn-claro btn-sm">Conteúdo</a><a href="./vendas.html" class="btn btn-claro btn-sm">Vendas & Clientes</a><span class="quem" id="quem"></span><button class="btn btn-borda btn-sm" id="btnSair">Sair</button></div>
+  </header>
+  <div class="wrap">
+    <div class="col">
+      <h4>Produtos</h4>
+      <div class="prod-lista" id="prodLista"></div>
+      <button class="btn btn-verde btn-bloco" id="btnNovoProd" style="margin-top:12px">+ Novo produto</button>
+    </div>
+    <div class="col" id="painel"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/icons.js"></script>
+<script src="../config.js"></script>
+<script>
+const CFG = window.UCK_CONFIG || {};
+const OK = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
+let sb = OK ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
+const BUCKET='produtos-pdf';
+
+let produtos=[], sel=-1;
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function slugify(s){ return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,60); }
+function mostra(id){ ['telaCarregando','telaConfig','telaLogin','app'].forEach(t=>document.getElementById(t).classList.toggle('oculto',t!==id)); }
+function toast(m,e){ const t=document.createElement('div'); t.className='toast'+(e?' erro-toast':''); t.textContent=m; document.body.appendChild(t); setTimeout(()=>{t.style.transition='.3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);}, e?3200:1900); }
+function tam(b){ if(!b) return ''; const kb=b/1024; return kb<1024?Math.round(kb)+' KB':(kb/1024).toFixed(1)+' MB'; }
+function brl(n){ return n==null||n===''?'':'R$ '+Number(n).toFixed(2).replace('.',','); }
+
+async function carregar(){
+  const { data, error } = await sb.from('produtos').select('*').order('criado_em');
+  if(error){ toast(error.message,true); produtos=[]; } else produtos=data||[];
+  for(const p of produtos){
+    const [{data:m},{data:a}] = await Promise.all([
+      sb.from('modulos').select('*').eq('produto_id',p.id).order('ordem'),
+      sb.from('arquivos').select('*').eq('produto_id',p.id).order('ordem'),
+    ]);
+    p.modulos=m||[]; p.arquivos=a||[];
+  }
+  if(sel>=produtos.length) sel=produtos.length-1;
+  renderLista(); renderPainel();
+}
+
+function renderLista(){
+  const el=document.getElementById('prodLista');
+  el.innerHTML = produtos.length ? produtos.map((p,i)=>`
+    <button class="prod-btn ${i===sel?'ativo':''}" data-i="${i}">
+      <span class="cap" style="background:linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})"></span>
+      <span class="n">${esc(p.nome)}</span>
+      ${!p.ativo?'<span class="off">off</span>':''}
+    </button>`).join('') : '<div class="vazio-mini" style="padding:0 4px">Nenhum produto ainda.</div>';
+  el.querySelectorAll('[data-i]').forEach(b=> b.onclick=()=>{ sel=+b.dataset.i; renderLista(); renderPainel(); });
+}
+
+function renderPainel(){
+  const el=document.getElementById('painel');
+  if(sel<0 || !produtos[sel]){ el.innerHTML=`<div class="card"><div class="vazio-mini">Selecione um produto à esquerda ou crie um novo.</div></div>`; return; }
+  const p=produtos[sel];
+  const isInfo=(p.tipo||'infoproduto')==='infoproduto';
+  const isExterno=p.tipo==='externo';
+
+  el.innerHTML = `
+    <div class="cab-prod">
+      <span class="cap" style="background:linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})"></span>
+      <div><h2>${esc(p.nome)}</h2><div class="quem">${brl(p.preco)} ${p.ativo?'· ativo':'· inativo'} · ${p.arquivos.length} PDF(s)</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Dados do produto <button class="btn btn-perigo btn-sm" id="delProd">Excluir produto</button></h3>
+      <div class="campo"><label>Tipo de produto *</label>
+        <select id="p_tipo">
+          <option value="infoproduto" ${isInfo?'selected':''}><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> Infoproduto (PDFs) — libera acesso após a compra</option>
+          <option value="fisico" ${p.tipo==='fisico'?'selected':''}><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Livro físico — venda com entrega</option>
+          <option value="externo" ${isExterno?'selected':''}><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg> Link externo (Amazon) — só divulgação</option>
+        </select>
+      </div>
+      <div class="campo"><label>Nome *</label><input id="p_nome" value="${esc(p.nome)}"></div>
+      <div class="campo"><label>Resumo curto (aparece no card da loja)</label><input id="p_desc_curta" value="${esc(p.descricao_curta||'')}" placeholder="Uma frase chamativa"></div>
+      <div class="campo"><label>Descrição completa (página do produto)</label><textarea id="p_desc" style="min-height:120px" placeholder="Descreva bem o produto, com todos os detalhes…">${esc(p.descricao||'')}</textarea></div>
+      ${isExterno
+        ? `<div class="campo"><label>Link externo (Amazon etc.) *</label><input id="p_link" value="${esc(p.link_externo||'')}" placeholder="https://www.amazon.com.br/…"></div>
+           <input type="hidden" id="p_preco" value="${esc(p.preco??0)}"><input type="hidden" id="p_preco_antigo" value="${esc(p.preco_antigo??'')}">`
+        : `<input type="hidden" id="p_link" value="${esc(p.link_externo||'')}">
+           <div class="linha">
+             <div class="campo"><label>Preço (R$) *</label><input id="p_preco" type="number" step="0.01" value="${esc(p.preco??'')}"></div>
+             <div class="campo"><label>Preço antigo (R$)</label><input id="p_preco_antigo" type="number" step="0.01" value="${esc(p.preco_antigo??'')}"></div>
+           </div>`}
+      ${p.tipo==='fisico'
+        ? `<div class="campo"><label>Frete fixo (R$) — deixe 0 para frete grátis</label><input id="p_frete" type="number" step="0.01" value="${esc(p.frete??0)}"></div>`
+        : `<input type="hidden" id="p_frete" value="${esc(p.frete??0)}">`}
+      <div class="campo"><label>Imagem de capa do produto (opcional)</label>
+        <input id="p_capa_arquivo" type="file" accept="image/*">
+        <input id="p_capa_url" type="hidden" value="${esc(p.capa_url||'')}">
+        ${p.capa_url?`<div style="margin-top:8px"><img src="${esc(p.capa_url)}" style="height:66px;border-radius:10px" alt="capa"></div>`:''}
+        <div class="quem" style="margin-top:5px">Aparece no portal do cliente e na loja. Sem imagem, usamos as cores abaixo.</div>
+      </div>
+      <div class="linha">
+        <div class="campo"><label>Cor capa (topo)</label><input id="p_c1" type="color" value="${esc(p.capa_cor1||'#2f8fd6')}" style="height:44px;padding:4px"></div>
+        <div class="campo"><label>Cor capa (base)</label><input id="p_c2" type="color" value="${esc(p.capa_cor2||'#1f57c3')}" style="height:44px;padding:4px"></div>
+      </div>
+      <div class="campo"><label><input type="checkbox" id="p_ativo" ${p.ativo?'checked':''}> Produto ativo (aparece na loja)</label></div>
+      <button class="btn btn-azul" id="salvarProd">Salvar dados</button>
+    </div>
+
+    ${isInfo ? `
+    <div class="card">
+      <h3>Módulos (pastas) <button class="btn btn-claro btn-sm" id="addMod">+ Módulo</button></h3>
+      <div id="mods">${p.modulos.length? p.modulos.map(m=>`
+        <div class="mod-item">
+          <span class="nm"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> ${esc(m.nome)}</span>
+          <span class="quem">${p.arquivos.filter(a=>a.modulo_id===m.id).length} PDF</span>
+          <button class="btn btn-borda btn-sm" data-renmod="${m.id}">Renomear</button>
+          <button class="btn btn-perigo btn-sm" data-delmod="${m.id}">Excluir</button>
+        </div>`).join('') : '<div class="vazio-mini">Nenhum módulo. Crie pastas para organizar os PDFs (ex.: “Antigo Testamento”).</div>'}</div>
+    </div>
+
+    <div class="card">
+      <h3>PDFs do produto <span class="quem">${p.arquivos.length} arquivo(s)</span></h3>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <label style="font-weight:800;font-size:13px">Enviar para:</label>
+        <select id="modDestino" class="sel-mini">
+          <option value="">Sem módulo</option>
+          ${p.modulos.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="drop" id="drop">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg> <b>Clique ou arraste os PDFs aqui</b><br>
+        <span style="font-size:12.5px">Pode selecionar vários de uma vez (os 300 de um pacote, por exemplo).</span>
+        <input type="file" id="inFiles" accept="application/pdf" multiple hidden>
+      </div>
+      <div class="prog oculto" id="progWrap"><i id="progBar"></i></div>
+      <div id="listaArq">${renderArqs(p)}</div>
+    </div>`
+    : `<div class="card"><div class="aviso">${isExterno
+        ? '<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg> Produto de <b>link externo</b>: aparece na loja com um botão que leva ao link (ex.: Amazon). Não tem PDFs nem área de membros.'
+        : '<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> <b>Livro físico</b>: vendido pela loja com endereço de entrega. O pedido aprovado aparece em <b>Vendas &amp; Clientes</b> para você enviar. Não tem PDFs.'}</div></div>`}`;
+
+  // eventos
+  document.getElementById('salvarProd').onclick=()=>salvarProduto(p);
+  document.getElementById('delProd').onclick=()=>excluirProduto(p);
+  document.getElementById('p_tipo').onchange=()=>{ syncForm(p); renderPainel(); };
+  if(isInfo){
+    document.getElementById('addMod').onclick=()=>addModulo(p);
+    el.querySelectorAll('[data-renmod]').forEach(b=>b.onclick=()=>renomearModulo(p,b.dataset.renmod));
+    el.querySelectorAll('[data-delmod]').forEach(b=>b.onclick=()=>excluirModulo(p,b.dataset.delmod));
+    el.querySelectorAll('[data-delarq]').forEach(b=>b.onclick=()=>excluirArquivo(p,b.dataset.delarq));
+    el.querySelectorAll('[data-renarq]').forEach(b=>b.onclick=()=>renomearArquivo(p,b.dataset.renarq));
+    const drop=document.getElementById('drop'), inp=document.getElementById('inFiles');
+    drop.onclick=()=>inp.click();
+    drop.ondragover=e=>{e.preventDefault();drop.classList.add('hover');};
+    drop.ondragleave=()=>drop.classList.remove('hover');
+    drop.ondrop=e=>{e.preventDefault();drop.classList.remove('hover');enviarArquivos(p,[...e.dataTransfer.files]);};
+    inp.onchange=e=>enviarArquivos(p,[...e.target.files]);
+  }
+}
+
+// lê o formulário atual de volta para o objeto (usado ao trocar o tipo sem perder o que foi digitado)
+function syncForm(p){
+  const g=id=>{const e=document.getElementById(id);return e?e.value:undefined;};
+  const v=g('p_nome'); if(v!==undefined) p.nome=v;
+  const d=g('p_desc'); if(d!==undefined) p.descricao=d;
+  const dc=g('p_desc_curta'); if(dc!==undefined) p.descricao_curta=dc;
+  const pr=g('p_preco'); if(pr!==undefined) p.preco=parseFloat(pr)||0;
+  const pa=g('p_preco_antigo'); if(pa!==undefined) p.preco_antigo=pa?parseFloat(pa):null;
+  const lk=g('p_link'); if(lk!==undefined) p.link_externo=lk;
+  const c1=g('p_c1'); if(c1!==undefined) p.capa_cor1=c1;
+  const c2=g('p_c2'); if(c2!==undefined) p.capa_cor2=c2;
+  const tp=g('p_tipo'); if(tp!==undefined) p.tipo=tp;
+  const fr=g('p_frete'); if(fr!==undefined) p.frete=parseFloat(fr)||0;
+  const at=document.getElementById('p_ativo'); if(at) p.ativo=at.checked;
+}
+
+function renderArqs(p){
+  if(!p.arquivos.length) return '<div class="vazio-mini">Nenhum PDF enviado ainda.</div>';
+  const grupos=[];
+  for(const m of p.modulos) grupos.push({nome:m.nome,itens:p.arquivos.filter(a=>a.modulo_id===m.id)});
+  const soltos=p.arquivos.filter(a=>!a.modulo_id||!p.modulos.find(m=>m.id===a.modulo_id));
+  if(soltos.length) grupos.push({nome:'Sem módulo',itens:soltos});
+  return grupos.filter(g=>g.itens.length).map(g=>`
+    <div class="grupo-tit">${esc(g.nome)}</div>
+    ${g.itens.map(a=>`<div class="arq-item">
+      <div class="ic"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
+      <div class="nm"><b title="${esc(a.titulo)}">${esc(a.titulo)}</b><span>${tam(a.tamanho_bytes)}</span></div>
+      <button class="btn btn-borda btn-sm" data-renarq="${a.id}">Renomear</button>
+      <button class="btn btn-perigo btn-sm" data-delarq="${a.id}">Excluir</button>
+    </div>`).join('')}`).join('');
+}
+
+/* ---------- Produto ---------- */
+async function novoProduto(){
+  const nome=prompt('Nome do novo produto:'); if(!nome) return;
+  let slug=slugify(nome)||('produto-'+Date.now());
+  // garante slug único
+  const existe=produtos.find(p=>p.slug===slug); if(existe) slug+='-'+Math.random().toString(36).slice(2,5);
+  const { error } = await sb.from('produtos').insert({ nome, slug, preco:0, ativo:false });
+  if(error) return toast(error.message,true);
+  toast('Produto criado'); sel=produtos.length; await carregar();
+}
+async function salvarProduto(p){
+  const nome=document.getElementById('p_nome').value.trim(); if(!nome) return toast('Informe o nome',true);
+  const btn=document.getElementById('salvarProd'); btn.disabled=true; btn.textContent='Salvando…';
+  try{
+    // capa (imagem opcional) -> bucket público "midia"
+    let capa_url=document.getElementById('p_capa_url').value;
+    const fa=document.getElementById('p_capa_arquivo');
+    if(fa && fa.files[0]){
+      const f=fa.files[0];
+      const caminho=`capas/${p.id}-${Date.now()}-${slugify(f.name.replace(/\.[^.]+$/,''))}`;
+      const up=await sb.storage.from('midia').upload(caminho,f,{ upsert:true, contentType:f.type });
+      if(up.error) throw new Error('capa: '+up.error.message);
+      capa_url=sb.storage.from('midia').getPublicUrl(caminho).data.publicUrl;
+    }
+    const tipo=document.getElementById('p_tipo').value;
+    const link=document.getElementById('p_link')?document.getElementById('p_link').value.trim():'';
+    if(tipo==='externo' && !link){ throw new Error('Informe o link externo (Amazon).'); }
+    const patch={ nome, tipo,
+      descricao:document.getElementById('p_desc').value.trim(),
+      descricao_curta:document.getElementById('p_desc_curta').value.trim(),
+      link_externo:link||null,
+      preco:parseFloat(document.getElementById('p_preco').value)||0,
+      preco_antigo:document.getElementById('p_preco_antigo').value?parseFloat(document.getElementById('p_preco_antigo').value):null,
+      capa_url, capa_cor1:document.getElementById('p_c1').value, capa_cor2:document.getElementById('p_c2').value,
+      frete:document.getElementById('p_frete')?parseFloat(document.getElementById('p_frete').value)||0:0,
+      ativo:document.getElementById('p_ativo').checked };
+    const { error } = await sb.from('produtos').update(patch).eq('id',p.id);
+    if(error) throw error;
+    toast('Dados salvos'); await carregar();
+  }catch(ex){ toast(ex.message||String(ex),true); btn.disabled=false; btn.textContent='Salvar dados'; }
+}
+async function excluirProduto(p){
+  if(!confirm(`Excluir o produto "${p.nome}" e TODOS os seus PDFs? Esta ação não pode ser desfeita.`)) return;
+  // remove arquivos do storage
+  if(p.arquivos.length){ await sb.storage.from(BUCKET).remove(p.arquivos.map(a=>a.caminho)); }
+  const { error } = await sb.from('produtos').delete().eq('id',p.id); // cascata remove modulos/arquivos
+  if(error) return toast(error.message,true);
+  toast('Produto excluído'); sel=-1; await carregar();
+}
+
+/* ---------- Módulos ---------- */
+async function addModulo(p){
+  const nome=prompt('Nome do módulo (pasta):'); if(!nome) return;
+  const { error } = await sb.from('modulos').insert({ produto_id:p.id, nome, ordem:p.modulos.length });
+  if(error) return toast(error.message,true); toast('Módulo criado'); await carregar();
+}
+async function renomearModulo(p,id){
+  const m=p.modulos.find(x=>x.id===id); const nome=prompt('Novo nome do módulo:',m?.nome||''); if(!nome) return;
+  const { error } = await sb.from('modulos').update({nome}).eq('id',id);
+  if(error) return toast(error.message,true); await carregar();
+}
+async function excluirModulo(p,id){
+  if(!confirm('Excluir este módulo? Os PDFs dentro dele ficam “sem módulo” (não são apagados).')) return;
+  const { error } = await sb.from('modulos').delete().eq('id',id);
+  if(error) return toast(error.message,true); toast('Módulo excluído'); await carregar();
+}
+
+/* ---------- Arquivos (upload em lote) ---------- */
+async function enviarArquivos(p, files){
+  files = files.filter(f=> f.type==='application/pdf' || /\.pdf$/i.test(f.name));
+  if(!files.length) return toast('Selecione arquivos PDF',true);
+  const modId = document.getElementById('modDestino').value || null;
+  const wrap=document.getElementById('progWrap'), bar=document.getElementById('progBar');
+  wrap.classList.remove('oculto'); let feitos=0, erros=0;
+  for(const f of files){
+    const caminho = `${p.id}/${Date.now()}-${Math.random().toString(36).slice(2,7)}-${slugify(f.name.replace(/\.pdf$/i,''))}.pdf`;
+    const up = await sb.storage.from(BUCKET).upload(caminho, f, { contentType:'application/pdf', upsert:false });
+    if(up.error){ erros++; }
+    else{
+      const ins = await sb.from('arquivos').insert({ produto_id:p.id, modulo_id:modId,
+        titulo:f.name.replace(/\.pdf$/i,''), caminho, tamanho_bytes:f.size, ordem:0 });
+      if(ins.error){ erros++; await sb.storage.from(BUCKET).remove([caminho]); }
+    }
+    feitos++; bar.style.width = Math.round(feitos/files.length*100)+'%';
+  }
+  toast(`${feitos-erros} enviado(s)`+(erros?`, ${erros} com erro`:''), erros>0);
+  setTimeout(()=>{ wrap.classList.add('oculto'); bar.style.width='0'; }, 800);
+  await carregar();
+}
+async function excluirArquivo(p,id){
+  const a=p.arquivos.find(x=>x.id===id); if(!a) return;
+  if(!confirm(`Excluir o PDF "${a.titulo}"?`)) return;
+  await sb.storage.from(BUCKET).remove([a.caminho]);
+  const { error } = await sb.from('arquivos').delete().eq('id',id);
+  if(error) return toast(error.message,true); toast('PDF excluído'); await carregar();
+}
+async function renomearArquivo(p,id){
+  const a=p.arquivos.find(x=>x.id===id); const titulo=prompt('Novo nome do PDF:',a?.titulo||''); if(!titulo) return;
+  const { error } = await sb.from('arquivos').update({titulo}).eq('id',id);
+  if(error) return toast(error.message,true); await carregar();
+}
+
+/* ---------- Início ---------- */
+async function entrar(){
+  mostra('telaCarregando');
+  const { data:u } = await sb.auth.getUser();
+  document.getElementById('quem').textContent = u?.user?.email||'';
+  // confirma que é admin
+  const { data:adm } = await sb.from('administradores').select('user_id').eq('user_id',u.user.id).maybeSingle();
+  if(!adm){ mostra('telaLogin'); document.getElementById('loginErro').textContent='Este usuário não é administrador. Cadastre-o na tabela administradores (veja BACKEND.md).'; document.getElementById('loginErro').classList.remove('oculto'); await sb.auth.signOut(); return; }
+  mostra('app'); await carregar();
+}
+async function iniciar(){
+  if(!OK){ mostra('telaConfig'); return; }
+  document.getElementById('btnNovoProd').onclick=novoProduto;
+  document.getElementById('btnSair').onclick=async()=>{ await sb.auth.signOut(); location.reload(); };
+  document.getElementById('formLogin').onsubmit=async(e)=>{
+    e.preventDefault(); const b=document.getElementById('btnEntrar'); const err=document.getElementById('loginErro');
+    err.classList.add('oculto'); b.disabled=true; b.textContent='Entrando…';
+    try{ const { error } = await sb.auth.signInWithPassword({ email:document.getElementById('loginEmail').value.trim(), password:document.getElementById('loginSenha').value }); if(error) throw error; await entrar(); }
+    catch(ex){ err.textContent='Não foi possível entrar: '+(ex.message||ex); err.classList.remove('oculto'); }
+    finally{ b.disabled=false; b.textContent='Entrar'; }
+  };
+  const { data:s } = await sb.auth.getSession();
+  if(s?.session) await entrar(); else { mostra('telaLogin'); document.getElementById('loginEmail').focus(); }
+}
+iniciar().catch(e=>{ mostra('telaLogin'); const err=document.getElementById('loginErro'); err.textContent='Erro: '+(e.message||e); err.classList.remove('oculto'); });
+</script>
+</body>
+</html>

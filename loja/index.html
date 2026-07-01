@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loja · Universo Católico Kids</title>
+<meta name="description" content="Livros, atividades e materiais católicos para crianças. Compre uma vez e acesse na sua área. Pix, cartão e boleto.">
+<meta property="og:title" content="Universo Católico Kids — Loja de Materiais">
+<meta property="og:description" content="Livros, atividades e infoprodutos católicos para crianças.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2315418c'/%3E%3Ccircle cx='50' cy='44' r='20' fill='%23f5b21a'/%3E%3Crect x='34' y='66' width='32' height='14' rx='3' fill='%23e8533f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--azul:#1f57c3;--azul-esc:#15418c;--amarelo:#f5b21a;--vermelho:#e8533f;--verde:#2fa15a;--bg:#f6f4ee;--card:#fff;--borda:#eceadf;--texto:#28303f;--suave:#7c8091}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--texto)}
+  h1,h2,h3{font-family:'Baloo 2',sans-serif}
+  button{font-family:inherit;cursor:pointer}
+  input{font-family:inherit;font-size:15px}
+  a{color:var(--azul);text-decoration:none}
+  .oculto{display:none!important}
+  .topo{background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--borda);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
+  .marca{display:flex;align-items:center;gap:11px}
+  .marca .m{width:44px;height:44px;border-radius:13px;background:linear-gradient(150deg,#f7c948,#f5941a);display:flex;align-items:center;justify-content:center;font-size:23px;box-shadow:0 6px 16px rgba(245,148,26,.35)}
+  .marca b{font-family:'Baloo 2';font-size:18px;color:var(--azul-esc);display:block;line-height:1}
+  .marca span{font-size:11px;color:var(--suave);letter-spacing:.5px}
+  .btn{border:0;border-radius:12px;padding:11px 18px;font-weight:800;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s}
+  .btn:hover{transform:translateY(-2px)} .btn:disabled{opacity:.6;transform:none;cursor:default}
+  .btn-azul{background:var(--azul);color:#fff;box-shadow:0 8px 20px rgba(31,87,195,.28)}
+  .btn-verde{background:linear-gradient(150deg,#37b866,#2f9a54);color:#fff;box-shadow:0 8px 20px rgba(47,161,90,.30)}
+  .btn-claro{background:#eef1f9;color:var(--azul)}
+  .hero{position:relative;text-align:center;padding:66px 20px 30px;overflow:hidden;background:radial-gradient(1200px 340px at 50% -60px,#e9f0ff 0,transparent 70%)}
+  .hero .selo-topo{display:inline-block;background:#fff;border:1px solid var(--borda);color:var(--azul);font-weight:800;font-size:12.5px;padding:6px 15px;border-radius:30px;margin-bottom:16px;box-shadow:0 4px 14px rgba(20,40,90,.06)}
+  .hero h1{font-size:40px;color:var(--azul-esc);line-height:1.08;letter-spacing:-.5px}
+  .hero h1 .hl{background:linear-gradient(120deg,#f5941a,#e8533f);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p{color:var(--suave);margin-top:12px;font-size:17px;max-width:560px;margin-left:auto;margin-right:auto}
+  .confia{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+  .confia div{font-size:13px;font-weight:700;color:#54596a;display:flex;align-items:center;gap:7px}
+  .wrap{max-width:1080px;margin:0 auto;padding:10px 24px 30px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px}
+  .prod{background:#fff;border:1px solid var(--borda);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 6px 22px rgba(20,40,90,.05);transition:.2s}
+  .prod:hover{transform:translateY(-4px);box-shadow:0 16px 38px rgba(20,40,90,.12)}
+  .prod .capa{height:160px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:46px;position:relative}
+  .prod .selo{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.94);color:#333;font-size:11px;font-weight:800;padding:4px 11px;border-radius:20px;box-shadow:0 3px 10px rgba(0,0,0,.12)}
+  .prod .corpo{padding:20px;flex:1;display:flex;flex-direction:column}
+  .prod h3{font-size:19px;color:var(--azul-esc);margin-bottom:6px;line-height:1.2}
+  .prod .desc{font-size:14px;color:var(--suave);line-height:1.5;flex:1}
+  .prod .precos{display:flex;align-items:baseline;gap:9px;margin:16px 0}
+  .prod .preco{font-family:'Baloo 2';font-size:28px;color:var(--verde);font-weight:800}
+  .prod .antigo{color:var(--suave);text-decoration:line-through;font-size:15px}
+  .vazio{text-align:center;color:var(--suave);padding:60px 20px}
+  .rodape{text-align:center;padding:30px;color:var(--suave);font-size:13px;border-top:1px solid var(--borda);margin-top:20px}
+
+  .overlay{position:fixed;inset:0;background:rgba(20,30,60,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+  .modal{background:#fff;border-radius:20px;max-width:420px;width:100%;padding:26px;box-shadow:0 18px 60px rgba(0,0,0,.25)}
+  .modal h3{font-size:20px;color:var(--azul-esc);margin-bottom:4px}
+  .modal p{color:var(--suave);font-size:14px;margin-bottom:16px}
+  .campo{margin-bottom:13px}
+  .campo label{display:block;font-weight:800;font-size:13px;margin-bottom:6px}
+  .campo input{width:100%;padding:12px 13px;border:1.5px solid var(--borda);border-radius:11px;background:#fcfcf9}
+  .campo input:focus{outline:0;border-color:var(--azul);background:#fff}
+  .erro{background:#fdecea;color:var(--vermelho);font-weight:700;font-size:13px;padding:10px 13px;border-radius:10px;margin-bottom:12px}
+  .fechar{float:right;background:#f3f3ec;border:0;width:32px;height:32px;border-radius:50%;font-size:17px;color:var(--suave)}
+  .seguro{text-align:center;font-size:12px;color:var(--suave);margin-top:12px}
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="marca"><div class="m" style="background:none;box-shadow:none;padding:0"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div><div><b>Universo Católico</b><span>LOJA DE MATERIAIS</span></div></div>
+  <a href="../conta/" class="btn btn-claro">Minha área <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+</header>
+
+<div class="hero">
+  <span class="selo-topo"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg> Conteúdo 100% católico para a família</span>
+  <h1>Materiais católicos<br>para <span class="hl">encantar as crianças</span></h1>
+  <p>Livros, atividades e infoprodutos para imprimir. Compre uma vez e acesse quando quiser na sua área.</p>
+  <div class="confia">
+    <div><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Acesso imediato</div>
+    <div><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Pagamento seguro</div>
+    <div><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Pix, cartão e boleto</div>
+    <div><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/></svg> Acesso vitalício</div>
+  </div>
+</div>
+
+<div class="wrap"><div id="lista" class="grid"></div></div>
+<div class="rodape">
+  Pagamento seguro via Mercado Pago · Pix, cartão e boleto · Já comprou? <a href="../conta/">Acesse sua área</a><br>
+  <span style="display:inline-block;margin-top:8px">
+    <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/termos.html">Termos de Uso</a> · <a href="../legal/reembolso.html">Reembolso</a>
+  </span>
+</div>
+
+<div id="modal" class="overlay oculto"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/icons.js"></script>
+<script src="../config.js"></script>
+<script>
+const CFG = window.UCK_CONFIG || {};
+const OK = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
+let sb = OK ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function brl(n){ return n==null?'':'R$ '+Number(n).toFixed(2).replace('.',','); }
+
+let PRODS={};
+const SELO={ infoproduto:'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> Acesso digital', fisico:'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Livro físico', externo:'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg> Disponível na Amazon' };
+
+async function carregar(){
+  const el=document.getElementById('lista');
+  if(!OK){ el.innerHTML='<div class="vazio">Loja em configuração. Volte em breve.</div>'; return; }
+  const { data, error } = await sb.from('produtos').select('*').eq('ativo',true).order('criado_em');
+  if(error){ el.innerHTML='<div class="vazio">Não foi possível carregar os produtos.</div>'; return; }
+  if(!data||!data.length){ el.innerHTML='<div class="vazio">Nenhum produto disponível no momento.</div>'; return; }
+  PRODS={}; data.forEach(p=>PRODS[p.id]=p);
+  el.innerHTML = data.map(p=>{
+    const tipo=p.tipo||'infoproduto';
+    const resumo=p.descricao_curta||p.descricao||'';
+    const href=`produto.html?id=${encodeURIComponent(p.id)}`;
+    const botao = tipo==='externo'
+      ? `<a class="btn btn-azul" href="${esc(p.link_externo||'#')}" target="_blank" rel="noopener">Ver na Amazon <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>`
+      : `<button class="btn btn-verde" data-id="${p.id}">Comprar agora</button>`;
+    const precos = tipo==='externo' ? '' :
+      `<div class="precos"><span class="preco">${brl(p.preco)}</span>${p.preco_antigo?`<span class="antigo">${brl(p.preco_antigo)}</span>`:''}</div>`;
+    return `<div class="prod">
+      <a href="${href}" class="capa" style="background:${p.capa_url?`url('${esc(p.capa_url)}') center/cover`:`linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`}">
+        <span class="selo">${SELO[tipo]||''}</span>${p.capa_url?'':'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>'}
+      </a>
+      <div class="corpo">
+        <h3><a href="${href}" style="color:inherit">${esc(p.nome)}</a></h3>
+        <div class="desc">${esc(resumo)}</div>
+        ${precos}
+        <div style="display:flex;gap:10px;align-items:center;margin-top:auto">
+          ${botao}
+          <a href="${href}" style="font-weight:800;font-size:13px">Detalhes <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-id]').forEach(b=> b.onclick=()=>abrirCheckout(b.dataset.id));
+}
+
+function abrirCheckout(id){
+  const p=PRODS[id]; if(!p) return;
+  const fisico = p.tipo==='fisico';
+  const m=document.getElementById('modal');
+  m.innerHTML = `<div class="modal">
+    <button class="fechar" id="fechar">×</button>
+    <h3>Comprar</h3>
+    <p>${esc(p.nome)} — <b>${esc(brl(p.preco))}</b></p>
+    <div id="ckErro" class="erro oculto"></div>
+    <div class="campo"><label>Seu nome ${fisico?'*':''}</label><input id="ckNome" placeholder="Nome completo"></div>
+    <div class="campo"><label>Seu e-mail *</label><input id="ckEmail" type="email" placeholder="${fisico?'para acompanhar o pedido':'usado para acessar os PDFs depois'}"></div>
+    ${fisico?`
+      <div class="campo"><label>Telefone *</label><input id="ckTel" placeholder="(00) 00000-0000"></div>
+      <div class="campo"><label>CEP *</label><input id="ckCep" placeholder="00000-000"></div>
+      <div class="campo"><label>Endereço *</label><input id="ckEnd" placeholder="Rua, número, complemento"></div>
+      <div class="campo"><label>Cidade / UF *</label><input id="ckCidade" placeholder="Cidade - UF"></div>
+    `:''}
+    <button class="btn btn-verde" id="ckPagar" style="width:100%;padding:13px">Ir para o pagamento</button>
+    <div class="seguro"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Você será levado ao ambiente seguro do Mercado Pago</div>
+  </div>`;
+  m.classList.remove('oculto');
+  m.onclick=e=>{ if(e.target===m) m.classList.add('oculto'); };
+  document.getElementById('fechar').onclick=()=>m.classList.add('oculto');
+  document.getElementById('ckPagar').onclick=()=>pagar(p);
+}
+
+async function pagar(p){
+  const email=document.getElementById('ckEmail').value.trim().toLowerCase();
+  const nome=document.getElementById('ckNome').value.trim();
+  const err=document.getElementById('ckErro'); const fisico=p.tipo==='fisico';
+  if(!email || !/.+@.+\..+/.test(email)){ err.textContent='Digite um e-mail válido.'; err.classList.remove('oculto'); return; }
+  let endereco=null;
+  if(fisico){
+    const tel=document.getElementById('ckTel').value.trim(), cep=document.getElementById('ckCep').value.trim();
+    const end=document.getElementById('ckEnd').value.trim(), cidade=document.getElementById('ckCidade').value.trim();
+    if(!nome||!tel||!cep||!end||!cidade){ err.textContent='Preencha nome, telefone e o endereço completo.'; err.classList.remove('oculto'); return; }
+    endereco={ nome, telefone:tel, cep, endereco:end, cidade };
+  }
+  const btn=document.getElementById('ckPagar'); btn.disabled=true; btn.textContent='Gerando pagamento…';
+  try{
+    const r = await fetch(`${CFG.SUPABASE_URL}/functions/v1/criar-pagamento`,{
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'apikey':CFG.SUPABASE_ANON_KEY, 'Authorization':`Bearer ${CFG.SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({ produto_id:p.id, email, nome, endereco }),
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.erro||'Falha ao iniciar pagamento');
+    const url = j.init_point || j.sandbox_init_point;
+    if(!url) throw new Error('Link de pagamento não recebido');
+    window.location.href = url;
+  }catch(ex){ err.textContent=ex.message||String(ex); err.classList.remove('oculto'); btn.disabled=false; btn.textContent='Ir para o pagamento'; }
+}
+carregar();
+</script>
+</body>
+</html>
