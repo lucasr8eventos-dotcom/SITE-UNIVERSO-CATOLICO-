@@ -200,7 +200,7 @@ function abrirCheckout(id){
   m.innerHTML = `<div class="modal">
     <button class="fechar" id="fechar">×</button>
     <h3>Comprar</h3>
-    <p>${esc(p.nome)} — <b>${esc(brl(p.preco))}</b></p>
+    <p>${esc(p.nome)} — <b>${esc(brl(p.preco))}</b>${fisico&&p.frete>0?` + frete ${esc(brl(p.frete))}`:''}</p>
     <div id="ckErro" class="erro oculto"></div>
     <div class="campo"><label>Seu nome ${fisico?'*':''}</label><input id="ckNome" placeholder="Nome completo"></div>
     <div class="campo"><label>Seu e-mail *</label><input id="ckEmail" type="email" placeholder="${fisico?'para acompanhar o pedido':'usado para acessar os PDFs depois'}"></div>
