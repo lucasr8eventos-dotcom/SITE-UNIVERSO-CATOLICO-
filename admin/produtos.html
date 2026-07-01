@@ -333,7 +333,7 @@ async function salvarProduto(p){
   }catch(ex){ toast(ex.message||String(ex),true); btn.disabled=false; btn.textContent='Salvar dados'; }
 }
 async function excluirProduto(p){
-  if(!confirm(`Excluir o produto "${p.nome}" e TODOS os seus PDFs? Esta ação não pode ser desfeita.`)) return;
+  if(!confirm(`ATENÇÃO: excluir "${p.nome}" apaga TODOS os PDFs e REMOVE O ACESSO de quem já comprou. Se o produto já teve vendas, prefira DESATIVAR (desmarque "Produto ativo" e salve). Excluir mesmo assim?`)) return;
   // remove arquivos do storage
   if(p.arquivos.length){ await sb.storage.from(BUCKET).remove(p.arquivos.map(a=>a.caminho)); }
   const { error } = await sb.from('produtos').delete().eq('id',p.id); // cascata remove modulos/arquivos
