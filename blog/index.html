@@ -75,7 +75,7 @@ async function carregar(){
     return `<a class="card" href="artigo.html?id=${encodeURIComponent(a.id)}">
       <div class="capa" style="background:${fundo}"></div>
       <div class="corpo">
-        ${a.tag?`<span class="tag" style="background:${esc(a.capa_cor1||'#eef1f9')}22;color:${esc(a.tag_cor||'#1f57c3')};background:#eef1f9">${esc(a.tag)}</span>`:''}
+        ${a.tag?`<span class="tag" style="background:#eef1f9;color:${esc(a.tag_cor||'#1f57c3')}">${esc(a.tag)}</span>`:''}
         <h3>${esc(a.titulo)}</h3>
         <div class="resumo">${esc(a.resumo||'')}</div>
         ${a.tempo_leitura?`<div class="tempo">${esc(a.tempo_leitura)}</div>`:''}
