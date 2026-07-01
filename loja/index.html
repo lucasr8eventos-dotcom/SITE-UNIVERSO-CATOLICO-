@@ -86,7 +86,7 @@ async function carregar(){
   if(!data||!data.length){ el.innerHTML='<div class="vazio">Nenhum produto disponível no momento.</div>'; return; }
   el.innerHTML = data.map(p=>`
     <div class="prod">
-      <div class="capa" style="background:linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})">📚</div>
+      <div class="capa" style="background:${p.capa_url?`url('${esc(p.capa_url)}') center/cover`:`linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`}">${p.capa_url?'':'📚'}</div>
       <div class="corpo">
         <h3>${esc(p.nome)}</h3>
         <div class="desc">${esc(p.descricao||'')}</div>

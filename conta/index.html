@@ -57,15 +57,20 @@
   .prod-btn .cap{width:30px;height:30px;border-radius:8px;flex-shrink:0}
 
   .painel{min-width:0}
-  .cab{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:6px;flex-wrap:wrap}
-  .cab h1{font-size:26px;color:var(--azul-esc)}
-  .cab p{color:var(--suave);margin-top:2px}
-  .busca{margin:16px 0 22px}
+  .ola{font-size:14px;color:var(--suave);font-weight:700;margin-bottom:12px}
+  .ola b{color:var(--azul-esc)}
+  .hero-prod{border-radius:18px;overflow:hidden;color:#fff;padding:26px;margin-bottom:20px;background-size:cover;background-position:center;position:relative;min-height:130px;display:flex;flex-direction:column;justify-content:flex-end}
+  .hero-prod::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.45))}
+  .hero-prod > *{position:relative;z-index:1}
+  .hero-prod h1{font-size:27px;text-shadow:0 1px 8px rgba(0,0,0,.25)}
+  .hero-prod p{margin-top:5px;font-size:14px;opacity:.95;max-width:600px}
+  .hero-prod .tag{display:inline-block;background:rgba(255,255,255,.22);backdrop-filter:blur(3px);font-size:12px;font-weight:800;padding:4px 11px;border-radius:20px;margin-bottom:10px;width:max-content}
+  .busca{margin:0 0 22px}
   .busca input{width:100%;padding:12px 15px;border:1.5px solid var(--borda);border-radius:12px;background:#fff}
   .busca input:focus{outline:0;border-color:var(--azul)}
 
-  .modulo{margin-bottom:26px}
-  .modulo h3{font-size:18px;color:var(--azul-esc);margin-bottom:12px;display:flex;align-items:center;gap:9px}
+  .modulo{margin-bottom:22px;background:#fff;border:1px solid var(--borda);border-radius:16px;padding:18px 18px 20px}
+  .modulo h3{font-size:18px;color:var(--azul-esc);margin-bottom:14px;display:flex;align-items:center;gap:9px}
   .modulo h3 .qt{background:#eef1f9;color:var(--azul);font-size:12px;font-weight:800;padding:2px 9px;border-radius:20px}
   .arqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
   .arq{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--borda);border-radius:13px;padding:12px 14px;transition:.15s}
@@ -238,7 +243,7 @@ function renderLista(){
   if(!produtos.length){ el.innerHTML=''; return; }
   el.innerHTML = `<h4>Meus produtos</h4>` + produtos.map((p,i)=>`
     <button class="prod-btn ${i===atual?'ativo':''}" data-i="${i}">
-      <span class="cap" style="background:linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})"></span>
+      <span class="cap" style="background:${p.capa_url?`url('${esc(p.capa_url)}') center/cover`:`linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`}"></span>
       <span>${esc(p.nome)}</span></button>`).join('');
   el.querySelectorAll('[data-i]').forEach(b=> b.onclick=()=>{ atual=+b.dataset.i; filtro=''; renderLista(); renderPainel(); });
 }
@@ -279,8 +284,17 @@ function renderPainel(){
       </div>`).join('') || `<div class="vazio"><span class="ic">🔎</span>Nenhum material encontrado para "${esc(filtro)}".</div>`;
   }
 
+  const primeiroNome = (document.getElementById('quem').textContent||'').split('@')[0];
+  const fundoHero = p.capa_url
+    ? `url('${esc(p.capa_url)}'), linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`
+    : `linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`;
   el.innerHTML = `
-    <div class="cab"><div><h1>${esc(p.nome)}</h1><p>${esc(p.descricao||'')}</p></div></div>
+    <div class="ola">👋 Olá, <b>${esc(primeiroNome)}</b>! Bem-vindo(a) à sua área. Aqui estão os materiais que você já tem acesso.</div>
+    <div class="hero-prod" style="background-image:${fundoHero}">
+      <span class="tag">${p.arquivos.length} material(is) · ${p.modulos.length} seç${p.modulos.length===1?'ão':'ões'}</span>
+      <h1>${esc(p.nome)}</h1>
+      ${p.descricao? `<p>${esc(p.descricao)}</p>`:''}
+    </div>
     ${p.arquivos.length? `<div class="busca"><input id="inBusca" placeholder="🔎 Buscar material…" value="${esc(filtro)}"></div>`:''}
     ${corpo}`;
 
