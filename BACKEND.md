@@ -62,6 +62,11 @@ supabase secrets set MP_ACCESS_TOKEN="APP_USR-xxxxxxxx"      # Access Token do M
 supabase secrets set SERVICE_ROLE_KEY="eyJ...service_role"   # Project Settings → API
 supabase secrets set SITE_URL="https://seudominio.com.br"    # endereço do site publicado
 
+# E-mail automático de acesso (opcional, mas recomendado). Sem estes, o
+# acesso é liberado normalmente — só não sai o e-mail pós-compra.
+supabase secrets set RESEND_API_KEY="re_xxxxxxxx"                    # https://resend.com → API Keys
+supabase secrets set EMAIL_FROM="Universo Católico <acesso@seudominio.com>"  # remetente verificado no Resend
+
 # Publicar as funções:
 supabase functions deploy criar-pagamento --no-verify-jwt
 supabase functions deploy baixar-arquivo --no-verify-jwt
@@ -115,6 +120,8 @@ Quando estiver tudo certo, troque para o **Access Token de produção**.
 | `MP_ACCESS_TOKEN`  | Mercado Pago → Credenciais (teste ou produção) |
 | `SERVICE_ROLE_KEY` | Supabase → Project Settings → API → `service_role` |
 | `SITE_URL`         | endereço público do site |
+| `RESEND_API_KEY`   | *(opcional)* Resend → API Keys — para o e-mail automático de acesso |
+| `EMAIL_FROM`       | *(opcional)* remetente verificado no Resend (ex.: `Nome <acesso@seudominio.com>`) |
 
 | Config do frontend (`config.js` na raiz) | Onde pegar |
 |---|---|
