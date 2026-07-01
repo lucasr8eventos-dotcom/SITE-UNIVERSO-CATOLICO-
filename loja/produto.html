@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- SEO -->
 <meta name="description" content="Materiais católicos para crianças — livros, atividades e infoprodutos. Catholic materials for kids.">
-<meta name="keywords" content="produtos católicos, infoprodutos católicos, livros católicos infantis, atividades de colorir católicas, jogos católicos para crianças, atividades católicas para imprimir, Bíblia infantil, catequese, ensino da fé, pais católicos, crianças católicas, educação católica, desenhos de santos para colorir, material para catequese, Catholic products, Catholic printables, Catholic coloring pages, Catholic games for kids, Catholic books for children, Bible activities for kids, catechism, faith formation, Catholic homeschool, Sunday school printables">
+<meta name="keywords" content="atividades católicas para imprimir, atividades bíblicas para imprimir, desenhos de Jesus para colorir, atividades de catequese, jogos católicos, jogos bíblicos, catequese infantil, livros católicos infantis, livros religiosos para crianças, atividades religiosas infantis, educação católica infantil, material para catequese, recursos para catequistas, santos para crianças, histórias da Bíblia para crianças, oração para crianças, Bíblia infantil, Primeira Comunhão, Crisma infantil, atividades católicas para imprimir grátis, desenhos católicos para colorir, caça-palavras da Bíblia, cruzadinha bíblica infantil, jogos cristãos para crianças, material completo de catequese, apostilas de catequese, livros digitais católicos, atividades para escola dominical católica, atividades para Primeira Comunhão, atividades para Advento, atividades para Quaresma, atividades para Páscoa, atividades para Natal, educação religiosa infantil, materiais para escolas católicas">
 <meta name="author" content="Universo Católico Kids">
 <meta name="theme-color" content="#15418c">
 <link rel="canonical" href="https://universocatolicokids.com.br/loja/produto.html">
@@ -124,6 +124,19 @@ async function carregar(){
   PROD=data;
   const tipo=data.tipo||'infoproduto';
   document.title = data.nome+' · Universo Católico Kids';
+  // Rich snippet: Product (+Offer / Book / Rating) para o Google
+  try{
+    const img = data.capa_url || 'https://universocatolicokids.com.br/assets/og-image.png';
+    const ld = { '@context':'https://schema.org', '@type': data.tipo==='fisico'?['Product','Book']:'Product',
+      name:data.nome, description:(data.descricao||data.descricao_curta||''), image:img,
+      brand:{'@type':'Brand',name:'Universo Católico Kids'}, inLanguage:'pt-BR' };
+    if(data.tipo!=='externo' && data.preco){
+      ld.offers={'@type':'Offer', price:Number(data.preco).toFixed(2), priceCurrency:'BRL', availability:'https://schema.org/InStock', url:location.href };
+    }
+    if(data.avaliacao){ ld.aggregateRating={'@type':'AggregateRating', ratingValue:String(data.avaliacao), reviewCount:'1', bestRating:'5'}; }
+    const s=document.createElement('script'); s.type='application/ld+json'; s.textContent=JSON.stringify(ld); document.head.appendChild(s);
+    const md=document.querySelector('meta[name="description"]'); if(md && (data.descricao_curta||data.descricao)) md.setAttribute('content',(data.descricao_curta||data.descricao).slice(0,160));
+  }catch(e){}
   const fundo = data.capa_url ? `url('${esc(data.capa_url)}')` : `linear-gradient(160deg,${data.capa_cor1||'#2f8fd6'},${data.capa_cor2||'#1f57c3'})`;
   const off = (data.preco_antigo && data.preco_antigo>data.preco) ? Math.round((1-data.preco/data.preco_antigo)*100) : 0;
   const cta = tipo==='externo'

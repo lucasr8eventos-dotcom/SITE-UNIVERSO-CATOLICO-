@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- SEO -->
 <meta name="description" content="Dicas e artigos católicos para pais e catequistas. Catholic articles for parents and catechists.">
-<meta name="keywords" content="produtos católicos, infoprodutos católicos, livros católicos infantis, atividades de colorir católicas, jogos católicos para crianças, atividades católicas para imprimir, Bíblia infantil, catequese, ensino da fé, pais católicos, crianças católicas, educação católica, desenhos de santos para colorir, material para catequese, Catholic products, Catholic printables, Catholic coloring pages, Catholic games for kids, Catholic books for children, Bible activities for kids, catechism, faith formation, Catholic homeschool, Sunday school printables">
+<meta name="keywords" content="atividades católicas para imprimir, atividades bíblicas para imprimir, desenhos de Jesus para colorir, atividades de catequese, jogos católicos, jogos bíblicos, catequese infantil, livros católicos infantis, livros religiosos para crianças, atividades religiosas infantis, educação católica infantil, material para catequese, recursos para catequistas, santos para crianças, histórias da Bíblia para crianças, oração para crianças, Bíblia infantil, Primeira Comunhão, Crisma infantil, atividades católicas para imprimir grátis, desenhos católicos para colorir, caça-palavras da Bíblia, cruzadinha bíblica infantil, jogos cristãos para crianças, material completo de catequese, apostilas de catequese, livros digitais católicos, atividades para escola dominical católica, atividades para Primeira Comunhão, atividades para Advento, atividades para Quaresma, atividades para Páscoa, atividades para Natal, educação religiosa infantil, materiais para escolas católicas">
 <meta name="author" content="Universo Católico Kids">
 <meta name="theme-color" content="#15418c">
 <link rel="canonical" href="https://universocatolicokids.com.br/blog/artigo.html">
@@ -85,6 +85,17 @@ async function carregar(){
   const { data, error } = await sb.from('artigos').select('*').eq('id',id).eq('ativo',true).maybeSingle();
   if(error||!data){ el.innerHTML='<div class="vazio">Artigo não encontrado.</div>'; return; }
   document.title=data.titulo+' · Universo Católico Kids';
+  // Rich snippet: Article para o Google
+  try{
+    const img=data.capa_url||'https://universocatolicokids.com.br/assets/og-image.png';
+    const ld={'@context':'https://schema.org','@type':'Article',headline:data.titulo,description:(data.resumo||''),image:img,inLanguage:'pt-BR',
+      author:{'@type':'Organization',name:'Universo Católico Kids'},
+      publisher:{'@type':'Organization',name:'Universo Católico Kids',logo:{'@type':'ImageObject',url:'https://universocatolicokids.com.br/assets/og-image.png'}}};
+    if(data.criado_em) ld.datePublished=data.criado_em;
+    const s=document.createElement('script');s.type='application/ld+json';s.textContent=JSON.stringify(ld);document.head.appendChild(s);
+    const md=document.querySelector('meta[name="description"]'); if(md && data.resumo) md.setAttribute('content',data.resumo.slice(0,160));
+    const ot=document.querySelector('meta[property="og:title"]'); if(ot) ot.setAttribute('content',data.titulo);
+  }catch(e){}
   const fundo=data.capa_url?`url('${esc(data.capa_url)}')`:`linear-gradient(160deg,${esc(data.capa_cor1||'#2f8fd6')},${esc(data.capa_cor2||'#1f57c3')})`;
   el.innerHTML=`
     <div class="capa" style="background:${fundo}"></div>

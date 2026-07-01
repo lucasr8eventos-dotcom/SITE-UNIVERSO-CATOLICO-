@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- SEO -->
-<meta name="description" content="Documentários católicos para a família: vida de Jesus, santos e aparições. Catholic documentaries for the whole family.">
-<meta name="keywords" content="produtos católicos, infoprodutos católicos, livros católicos infantis, atividades de colorir católicas, jogos católicos para crianças, atividades católicas para imprimir, Bíblia infantil, catequese, ensino da fé, pais católicos, crianças católicas, educação católica, desenhos de santos para colorir, material para catequese, Catholic products, Catholic printables, Catholic coloring pages, Catholic games for kids, Catholic books for children, Bible activities for kids, catechism, faith formation, Catholic homeschool, Sunday school printables">
+<meta name="description" content="Documentários católicos para assistir em família: vida de Jesus, santos, Nossa Senhora e histórias da fé para crianças.">
+<meta name="keywords" content="atividades católicas para imprimir, atividades bíblicas para imprimir, desenhos de Jesus para colorir, atividades de catequese, jogos católicos, jogos bíblicos, catequese infantil, livros católicos infantis, livros religiosos para crianças, atividades religiosas infantis, educação católica infantil, material para catequese, recursos para catequistas, santos para crianças, histórias da Bíblia para crianças, oração para crianças, Bíblia infantil, Primeira Comunhão, Crisma infantil, atividades católicas para imprimir grátis, desenhos católicos para colorir, caça-palavras da Bíblia, cruzadinha bíblica infantil, jogos cristãos para crianças, material completo de catequese, apostilas de catequese, livros digitais católicos, atividades para escola dominical católica, atividades para Primeira Comunhão, atividades para Advento, atividades para Quaresma, atividades para Páscoa, atividades para Natal, educação religiosa infantil, materiais para escolas católicas">
 <meta name="author" content="Universo Católico Kids">
 <meta name="theme-color" content="#15418c">
 <link rel="canonical" href="https://universocatolicokids.com.br/documentarios/">
@@ -15,19 +15,21 @@
 <meta property="og:site_name" content="Universo Católico Kids">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:locale:alternate" content="en_US">
-<meta property="og:title" content="Documentários Católicos · Universo Católico Kids">
-<meta property="og:description" content="Documentários católicos para a família: vida de Jesus, santos e aparições. Catholic documentaries for the whole family.">
+<meta property="og:title" content="Documentários Católicos para Crianças e Família — Universo Católico Kids">
+<meta property="og:description" content="Documentários católicos para assistir em família: vida de Jesus, santos, Nossa Senhora e histórias da fé para crianças.">
 <meta property="og:url" content="https://universocatolicokids.com.br/documentarios/">
 <meta property="og:image" content="https://universocatolicokids.com.br/assets/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Documentários Católicos · Universo Católico Kids">
-<meta name="twitter:description" content="Documentários católicos para a família: vida de Jesus, santos e aparições. Catholic documentaries for the whole family.">
+<meta name="twitter:title" content="Documentários Católicos para Crianças e Família — Universo Católico Kids">
+<meta name="twitter:description" content="Documentários católicos para assistir em família: vida de Jesus, santos, Nossa Senhora e histórias da fé para crianças.">
 <meta name="twitter:image" content="https://universocatolicokids.com.br/assets/og-image.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Universo Católico Kids","url":"https://universocatolicokids.com.br/","logo":"https://universocatolicokids.com.br/assets/og-image.png","description":"Materiais católicos para crianças / Catholic materials for kids"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "name": "Documentários Católicos para Crianças e Família — Universo Católico Kids", "description": "Documentários católicos para assistir em família: vida de Jesus, santos, Nossa Senhora e histórias da fé para crianças.", "url": "https://universocatolicokids.com.br/documentarios/", "inLanguage": "pt-BR", "isPartOf": {"@type": "WebSite", "name": "Universo Católico Kids", "url": "https://universocatolicokids.com.br/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Início", "item": "https://universocatolicokids.com.br/"}, {"@type": "ListItem", "position": 2, "name": "Documentários", "item": "https://universocatolicokids.com.br/documentarios/"}]}</script>
 <!-- /SEO -->
-<title>Documentários Católicos · Universo Católico Kids</title>
+<title>Documentários Católicos para Crianças e Família — Universo Católico Kids</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2315418c'/%3E%3Ccircle cx='50' cy='44' r='20' fill='%23f5b21a'/%3E%3Crect x='34' y='66' width='32' height='14' rx='3' fill='%23e8533f'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -119,6 +121,17 @@ async function carregar(){
       </div>
     </${tag}>`;
   }).join('');
+  // Rich snippet: VideoObject (lista de vídeos) para o Google
+  try{
+    const itens=data.filter(d=>d.link_video).map((d,i)=>({'@type':'ListItem',position:i+1,item:{
+      '@type':'VideoObject', name:d.titulo, description:(d.descricao||d.titulo),
+      thumbnailUrl:(d.capa_url||ytThumb(d.link_video)), contentUrl:d.link_video, embedUrl:d.link_video,
+      uploadDate:(d.criado_em||undefined)}}));
+    if(itens.length){
+      const ld={'@context':'https://schema.org','@type':'ItemList',itemListElement:itens};
+      const s=document.createElement('script');s.type='application/ld+json';s.textContent=JSON.stringify(ld);document.head.appendChild(s);
+    }
+  }catch(e){}
 }
 carregar();
 </script>
