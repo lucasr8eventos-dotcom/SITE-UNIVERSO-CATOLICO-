@@ -30,8 +30,10 @@ Clica no PDF  →  Edge Function confere a compra  →  link temporário (5 min)
 
 No painel do Supabase → **SQL Editor**, rode **na ordem**:
 
-1. `db/schema.sql`         (conteúdo do site: categorias, livros, atividades)
+1. `db/schema.sql`          (conteúdo do site: categorias, livros, atividades)
 2. `db/02_loja_membros.sql` (loja, membros, produtos, PDFs, pedidos, acessos)
+3. `db/03_tipos_produto.sql` (tipos de produto: infoproduto/físico/externo)
+4. `db/04_frete_envio.sql`  (frete e controle de envio dos pedidos físicos)
 
 Isso cria inclusive o bucket **privado** `produtos-pdf` para os PDFs.
 
@@ -60,11 +62,15 @@ supabase secrets set MP_ACCESS_TOKEN="APP_USR-xxxxxxxx"      # Access Token do M
 supabase secrets set SERVICE_ROLE_KEY="eyJ...service_role"   # Project Settings → API
 supabase secrets set SITE_URL="https://seudominio.com.br"    # endereço do site publicado
 
-# Publicar as três funções:
+# Publicar as funções:
 supabase functions deploy criar-pagamento --no-verify-jwt
 supabase functions deploy baixar-arquivo --no-verify-jwt
 supabase functions deploy webhook-mercadopago --no-verify-jwt
+supabase functions deploy admin-clientes --no-verify-jwt
 ```
+
+> O `SITE_URL` é **opcional** (o checkout funciona sem ele), mas defina-o
+> para o cliente ser redirecionado de volta ao site após pagar.
 
 > `SUPABASE_URL` e `SUPABASE_ANON_KEY` já existem por padrão no ambiente das
 > funções — não precisa defini-los.

@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
     // Busca o produto (preço vem do banco, nunca do cliente — segurança)
     const { data: produto, error: e1 } = await db
       .from("produtos")
-      .select("id, nome, preco, ativo, tipo")
+      .select("id, nome, preco, ativo, tipo, frete")
       .eq("id", produto_id)
       .single();
     if (e1 || !produto) return json({ erro: "Produto não encontrado" }, 404);
@@ -38,14 +38,18 @@ Deno.serve(async (req) => {
       return json({ erro: "Informe o endereço de entrega" }, 400);
     }
 
-    // Cria o pedido pendente
+    const emailLimpo = String(email).toLowerCase().trim();
+    const frete = produto.tipo === "fisico" ? Number(produto.frete || 0) : 0;
+    const valorTotal = Number(produto.preco) + frete;
+
+    // Cria o pedido pendente (valor já com frete, quando houver)
     const { data: pedido, error: e2 } = await db
       .from("pedidos")
       .insert({
         produto_id: produto.id,
-        email: String(email).toLowerCase().trim(),
+        email: emailLimpo,
         nome: nome ?? null,
-        valor: produto.preco,
+        valor: valorTotal,
         status: "pendente",
         endereco: endereco ?? null,
       })
@@ -55,23 +59,32 @@ Deno.serve(async (req) => {
 
     // Cria a preference no Mercado Pago
     const webhook = `${SUPABASE_URL}/functions/v1/webhook-mercadopago`;
-    const pref = {
+    const pref: Record<string, unknown> = {
       items: [{
         title: produto.nome,
         quantity: 1,
         currency_id: "BRL",
         unit_price: Number(produto.preco),
       }],
-      payer: { email: String(email).toLowerCase().trim() },
+      payer: { email: emailLimpo },
       external_reference: pedido.id, // liga o pagamento ao nosso pedido
       notification_url: webhook,
-      back_urls: {
-        success: `${SITE_URL}/conta/?compra=sucesso`,
-        pending: `${SITE_URL}/conta/?compra=pendente`,
-        failure: `${SITE_URL}/conta/?compra=falha`,
-      },
-      auto_return: "approved",
     };
+    if (frete > 0) pref.shipments = { cost: frete, mode: "not_specified" };
+
+    // back_urls/auto_return só entram quando há SITE_URL válido — se enviarmos
+    // uma URL relativa, o Mercado Pago RECUSA a preferência. Sem SITE_URL, o
+    // checkout funciona igual (só não redireciona sozinho de volta ao site).
+    const site = (SITE_URL || "").replace(/\/+$/, "");
+    if (/^https?:\/\//i.test(site)) {
+      const em = encodeURIComponent(emailLimpo);
+      pref.back_urls = {
+        success: `${site}/conta/?compra=sucesso&email=${em}`,
+        pending: `${site}/conta/?compra=pendente&email=${em}`,
+        failure: `${site}/conta/?compra=falha`,
+      };
+      pref.auto_return = "approved";
+    }
 
     const mp = await fetch("https://api.mercadopago.com/checkout/preferences", {
       method: "POST",

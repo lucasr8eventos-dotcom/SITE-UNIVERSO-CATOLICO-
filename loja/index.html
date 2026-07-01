@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Loja · Universo Católico Kids</title>
+<meta name="description" content="Livros, atividades e materiais católicos para crianças. Compre uma vez e acesse na sua área. Pix, cartão e boleto.">
+<meta property="og:title" content="Universo Católico Kids — Loja de Materiais">
+<meta property="og:description" content="Livros, atividades e infoprodutos católicos para crianças.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2315418c'/%3E%3Ccircle cx='50' cy='44' r='20' fill='%23f5b21a'/%3E%3Crect x='34' y='66' width='32' height='14' rx='3' fill='%23e8533f'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -80,7 +85,12 @@
 </div>
 
 <div class="wrap"><div id="lista" class="grid"></div></div>
-<div class="rodape">Pagamento seguro via Mercado Pago · Pix, cartão e boleto · Já comprou? <a href="../conta/">Acesse sua área</a></div>
+<div class="rodape">
+  Pagamento seguro via Mercado Pago · Pix, cartão e boleto · Já comprou? <a href="../conta/">Acesse sua área</a><br>
+  <span style="display:inline-block;margin-top:8px">
+    <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/termos.html">Termos de Uso</a> · <a href="../legal/reembolso.html">Reembolso</a>
+  </span>
+</div>
 
 <div id="modal" class="overlay oculto"></div>
 
@@ -106,20 +116,24 @@ async function carregar(){
   el.innerHTML = data.map(p=>{
     const tipo=p.tipo||'infoproduto';
     const resumo=p.descricao_curta||p.descricao||'';
+    const href=`produto.html?id=${encodeURIComponent(p.id)}`;
     const botao = tipo==='externo'
       ? `<a class="btn btn-azul" href="${esc(p.link_externo||'#')}" target="_blank" rel="noopener">Ver na Amazon →</a>`
       : `<button class="btn btn-verde" data-id="${p.id}">Comprar agora</button>`;
     const precos = tipo==='externo' ? '' :
       `<div class="precos"><span class="preco">${brl(p.preco)}</span>${p.preco_antigo?`<span class="antigo">${brl(p.preco_antigo)}</span>`:''}</div>`;
     return `<div class="prod">
-      <div class="capa" style="background:${p.capa_url?`url('${esc(p.capa_url)}') center/cover`:`linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`}">
+      <a href="${href}" class="capa" style="background:${p.capa_url?`url('${esc(p.capa_url)}') center/cover`:`linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`}">
         <span class="selo">${SELO[tipo]||''}</span>${p.capa_url?'':'📚'}
-      </div>
+      </a>
       <div class="corpo">
-        <h3>${esc(p.nome)}</h3>
+        <h3><a href="${href}" style="color:inherit">${esc(p.nome)}</a></h3>
         <div class="desc">${esc(resumo)}</div>
         ${precos}
-        ${botao}
+        <div style="display:flex;gap:10px;align-items:center;margin-top:auto">
+          ${botao}
+          <a href="${href}" style="font-weight:800;font-size:13px">Detalhes →</a>
+        </div>
       </div>
     </div>`;
   }).join('');

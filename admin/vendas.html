@@ -182,19 +182,73 @@ function renderAba(){
     el.querySelectorAll('[data-senha]').forEach(b=> b.onclick=()=>modalSenha(b.dataset.senha, b.dataset.email));
   } else {
     el.innerHTML = `<div class="painel">
-      <div class="cabpar"><h3>Pedidos</h3><span class="quem">${pedidos.length} no total</span></div>
+      <div class="cabpar"><h3>Pedidos</h3><div style="display:flex;gap:10px;align-items:center"><span class="quem">${pedidos.length} no total</span><button class="btn btn-borda btn-sm" id="btnCsv">⬇ Exportar CSV</button></div></div>
       ${pedidos.length? `<table>
-        <thead><tr><th>Data</th><th>Cliente</th><th>Produto</th><th>Valor</th><th>Status</th></tr></thead>
-        <tbody>${pedidos.map(p=>`<tr>
-          <td>${data(p.criado_em)}</td>
-          <td><b>${esc(p.nome||'—')}</b><br><span class="quem">${esc(p.email)}</span>${p.endereco?'<br><span class="tag-prod">📦 com entrega</span>':''}</td>
-          <td>${esc(nomeProd(p.produto_id))}</td>
-          <td><b>${esc(brl(p.valor))}</b></td>
-          <td><span class="badge b-${esc(p.status)}">${esc(p.status)}</span></td>
-        </tr>`).join('')}</tbody></table>`
+        <thead><tr><th>Data</th><th>Cliente</th><th>Produto</th><th>Valor</th><th>Status</th><th>Entrega</th></tr></thead>
+        <tbody>${pedidos.map(p=>{
+          const fisico=tipoProd(p.produto_id)==='fisico';
+          let entrega='—';
+          if(fisico){
+            if(p.status!=='aprovado') entrega='<span class="quem">aguardando pagamento</span>';
+            else if(p.enviado) entrega=`<span class="badge b-aprovado">✔ enviado</span>${p.rastreio?`<br><span class="quem">${esc(p.rastreio)}</span>`:''}<br><button class="btn btn-borda btn-sm" data-envio="${p.id}" style="margin-top:4px">editar</button>`;
+            else entrega=`<button class="btn btn-azul btn-sm" data-envio="${p.id}">📦 marcar enviado</button>`;
+          }
+          return `<tr>
+            <td>${data(p.criado_em)}</td>
+            <td><b>${esc(p.nome||'—')}</b><br><span class="quem">${esc(p.email)}</span>${p.endereco?`<br><span class="tag-prod" data-end="${p.id}" style="cursor:pointer">📦 ver endereço</span>`:''}</td>
+            <td>${esc(nomeProd(p.produto_id))}</td>
+            <td><b>${esc(brl(p.valor))}</b></td>
+            <td><span class="badge b-${esc(p.status)}">${esc(p.status)}</span></td>
+            <td>${entrega}</td>
+          </tr>`; }).join('')}</tbody></table>`
         : '<div class="vazio">Nenhum pedido ainda.</div>'}
     </div>`;
+    const csv=document.getElementById('btnCsv'); if(csv) csv.onclick=exportarCsv;
+    el.querySelectorAll('[data-envio]').forEach(b=> b.onclick=()=>modalEnvio(b.dataset.envio));
+    el.querySelectorAll('[data-end]').forEach(b=> b.onclick=()=>verEndereco(b.dataset.end));
   }
+}
+function tipoProd(id){ const p=produtos.find(x=>x.id===id); return p?p.tipo:''; }
+
+function verEndereco(pedidoId){
+  const p=pedidos.find(x=>x.id===pedidoId); const e=p&&p.endereco?p.endereco:{};
+  const m=document.getElementById('modal');
+  m.innerHTML=`<div class="modal"><h3>Endereço de entrega</h3>
+    <p style="line-height:1.7"><b>${esc(e.nome||p.nome||'')}</b><br>${esc(e.endereco||'')}<br>${esc(e.cidade||'')}<br>CEP: ${esc(e.cep||'')}<br>Tel: ${esc(e.telefone||'')}</p>
+    <button class="btn btn-borda btn-bloco" id="mFechar">Fechar</button></div>`;
+  m.classList.remove('oculto'); m.onclick=ev=>{ if(ev.target===m) m.classList.add('oculto'); };
+  document.getElementById('mFechar').onclick=()=>m.classList.add('oculto');
+}
+
+function modalEnvio(pedidoId){
+  const p=pedidos.find(x=>x.id===pedidoId);
+  const m=document.getElementById('modal');
+  m.innerHTML=`<div class="modal"><h3>Envio do pedido</h3>
+    <p class="quem" style="margin-bottom:12px">${esc(nomeProd(p.produto_id))} — ${esc(p.nome||p.email)}</p>
+    <div id="mErro" class="erro oculto"></div>
+    <div class="campo"><label>Código de rastreio (opcional)</label><input id="mRast" value="${esc(p.rastreio||'')}" placeholder="Ex.: AA123456789BR"></div>
+    <label style="font-weight:800;font-size:13px;display:block;margin-bottom:12px"><input type="checkbox" id="mEnviado" ${p.enviado?'checked':''}> Marcar como enviado</label>
+    <button class="btn btn-azul btn-bloco" id="mSalvar" style="margin-bottom:10px">Salvar</button>
+    <button class="btn btn-borda btn-bloco" id="mFechar">Fechar</button></div>`;
+  m.classList.remove('oculto'); const err=document.getElementById('mErro');
+  const fechar=()=>m.classList.add('oculto');
+  m.onclick=ev=>{ if(ev.target===m) fechar(); };
+  document.getElementById('mFechar').onclick=fechar;
+  document.getElementById('mSalvar').onclick=async()=>{
+    try{
+      const { error } = await sb.from('pedidos').update({ enviado:document.getElementById('mEnviado').checked, rastreio:document.getElementById('mRast').value.trim()||null }).eq('id',pedidoId);
+      if(error) throw error;
+      fechar(); toast('Envio atualizado'); await carregar();
+    }catch(ex){ err.textContent=ex.message; err.classList.remove('oculto'); }
+  };
+}
+
+function exportarCsv(){
+  const linhas=[['Data','Nome','Email','Produto','Valor','Status','Enviado','Rastreio','Cidade']];
+  pedidos.forEach(p=>{ const e=p.endereco||{}; linhas.push([data(p.criado_em),p.nome||'',p.email,nomeProd(p.produto_id),String(p.valor||'').replace('.',','),p.status,p.enviado?'sim':'',p.rastreio||'',e.cidade||'']); });
+  const csv=linhas.map(l=>l.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pedidos.csv'; a.click(); URL.revokeObjectURL(a.href);
 }
 
 function modalSenha(user_id, email){

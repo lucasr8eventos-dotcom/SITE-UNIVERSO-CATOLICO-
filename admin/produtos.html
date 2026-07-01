@@ -189,6 +189,9 @@ function renderPainel(){
              <div class="campo"><label>Preço (R$) *</label><input id="p_preco" type="number" step="0.01" value="${esc(p.preco??'')}"></div>
              <div class="campo"><label>Preço antigo (R$)</label><input id="p_preco_antigo" type="number" step="0.01" value="${esc(p.preco_antigo??'')}"></div>
            </div>`}
+      ${p.tipo==='fisico'
+        ? `<div class="campo"><label>Frete fixo (R$) — deixe 0 para frete grátis</label><input id="p_frete" type="number" step="0.01" value="${esc(p.frete??0)}"></div>`
+        : `<input type="hidden" id="p_frete" value="${esc(p.frete??0)}">`}
       <div class="campo"><label>Imagem de capa do produto (opcional)</label>
         <input id="p_capa_arquivo" type="file" accept="image/*">
         <input id="p_capa_url" type="hidden" value="${esc(p.capa_url||'')}">
@@ -267,6 +270,7 @@ function syncForm(p){
   const c1=g('p_c1'); if(c1!==undefined) p.capa_cor1=c1;
   const c2=g('p_c2'); if(c2!==undefined) p.capa_cor2=c2;
   const tp=g('p_tipo'); if(tp!==undefined) p.tipo=tp;
+  const fr=g('p_frete'); if(fr!==undefined) p.frete=parseFloat(fr)||0;
   const at=document.getElementById('p_ativo'); if(at) p.ativo=at.checked;
 }
 
@@ -320,6 +324,7 @@ async function salvarProduto(p){
       preco:parseFloat(document.getElementById('p_preco').value)||0,
       preco_antigo:document.getElementById('p_preco_antigo').value?parseFloat(document.getElementById('p_preco_antigo').value):null,
       capa_url, capa_cor1:document.getElementById('p_c1').value, capa_cor2:document.getElementById('p_c2').value,
+      frete:document.getElementById('p_frete')?parseFloat(document.getElementById('p_frete').value)||0:0,
       ativo:document.getElementById('p_ativo').checked };
     const { error } = await sb.from('produtos').update(patch).eq('id',p.id);
     if(error) throw error;

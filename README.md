@@ -8,11 +8,21 @@ membros**, usando **Supabase** (banco PostgreSQL + login + storage) e
 
 | Caminho | O que é | Quem usa |
 |---|---|---|
-| `Universo Católico Kids - Site.html` | Site/landing page | Público |
+| `Universo Católico Kids - Site.html` | Site/landing (com barra Loja/Minha conta) | Público |
 | `loja/index.html` | Vitrine de produtos + checkout (Mercado Pago) | Público |
-| `conta/index.html` | Área do cliente: login e acesso aos PDFs comprados | Cliente |
-| `admin/index.html` | Admin do conteúdo do site (categorias, livros, atividades) | Você |
+| `loja/produto.html` | Página do produto com a descrição completa | Público |
+| `conta/index.html` | Área do cliente: login, PDFs, trocar senha | Cliente |
+| `legal/*.html` | Privacidade (LGPD), Termos e Reembolso | Público |
+| `admin/index.html` | Conteúdo do site (categorias, livros, atividades)* | Você |
 | `admin/produtos.html` | Cadastro de produtos + upload dos PDFs | Você |
+| `admin/vendas.html` | Vendas, clientes, envios e reset de senha | Você |
+
+> *O admin de **conteúdo** (`admin/index.html`) gerencia um catálogo no banco
+> que é independente da landing page atual (que é um arquivo estático). A
+> **loja** e a **área do cliente**, sim, leem tudo do banco em tempo real.
+>
+> **Antes de publicar:** preencha os dados entre colchetes nas páginas de
+> `legal/` (nome/empresa, CNPJ, e-mail de contato).
 
 ## Como funciona a venda (automática)
 
