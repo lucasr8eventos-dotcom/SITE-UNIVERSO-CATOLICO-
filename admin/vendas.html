@@ -71,14 +71,14 @@
 
 <div id="telaConfig" class="tela-centro oculto">
   <div class="login" style="text-align:center">
-    <div class="marca"><div class="m">📊</div><div><b>Vendas & Clientes</b><span>ADMIN</span></div></div>
+    <div class="marca"><div class="m" style="background:none;box-shadow:none;padding:0"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div><div><b>Vendas & Clientes</b><span>ADMIN</span></div></div>
     <div class="nota" style="text-align:left">Configure o <b>Supabase</b> no arquivo <code>config.js</code> (raiz). Veja o <b>BACKEND.md</b>.</div>
   </div>
 </div>
 
 <div id="telaLogin" class="tela-centro oculto">
   <form class="login" id="formLogin">
-    <div class="marca"><div class="m">📊</div><div><b>Vendas & Clientes</b><span>ADMIN</span></div></div>
+    <div class="marca"><div class="m" style="background:none;box-shadow:none;padding:0"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div><div><b>Vendas & Clientes</b><span>ADMIN</span></div></div>
     <div id="loginErro" class="erro oculto"></div>
     <div class="campo"><label>E-mail do admin</label><input type="email" id="loginEmail" required></div>
     <div class="campo"><label>Senha</label><input type="password" id="loginSenha" required></div>
@@ -88,7 +88,7 @@
 
 <div id="app" class="oculto">
   <header class="topo">
-    <div class="marca"><div class="m">📊</div><div><b>Vendas & Clientes</b><span>ADMIN</span></div></div>
+    <div class="marca"><div class="m" style="background:none;box-shadow:none;padding:0"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div><div><b>Vendas & Clientes</b><span>ADMIN</span></div></div>
     <div class="dir">
       <a href="./index.html" class="btn btn-claro btn-sm">Conteúdo</a>
       <a href="./produtos.html" class="btn btn-claro btn-sm">Produtos</a>
@@ -99,8 +99,8 @@
   <div class="wrap">
     <div class="stats" id="stats"></div>
     <div class="tabs">
-      <button class="tab ativo" data-tab="clientes">👥 Clientes</button>
-      <button class="tab" data-tab="pedidos">🧾 Pedidos</button>
+      <button class="tab ativo" data-tab="clientes"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Clientes</button>
+      <button class="tab" data-tab="pedidos"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/></svg> Pedidos</button>
     </div>
     <div id="conteudo"></div>
   </div>
@@ -109,6 +109,7 @@
 <div id="modal" class="overlay oculto"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/icons.js"></script>
 <script src="../config.js"></script>
 <script>
 const CFG = window.UCK_CONFIG || {};
@@ -146,10 +147,10 @@ function renderStats(){
   const aprov = pedidos.filter(p=>p.status==='aprovado');
   const receita = aprov.reduce((s,p)=>s+(Number(p.valor)||0),0);
   const cards=[
-    {ico:'👥', num:clientes.length, lbl:'Clientes cadastrados'},
-    {ico:'✅', num:aprov.length, lbl:'Vendas aprovadas'},
-    {ico:'💰', num:brl(receita), lbl:'Receita (aprovada)'},
-    {ico:'🧾', num:pedidos.length, lbl:'Pedidos no total'},
+    {ico:'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>', num:clientes.length, lbl:'Clientes cadastrados'},
+    {ico:'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>', num:aprov.length, lbl:'Vendas aprovadas'},
+    {ico:'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 6v2m0 8v2"/></svg>', num:brl(receita), lbl:'Receita (aprovada)'},
+    {ico:'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/></svg>', num:pedidos.length, lbl:'Pedidos no total'},
   ];
   document.getElementById('stats').innerHTML = cards.map(c=>`<div class="stat"><div class="ico">${c.ico}</div><div class="num">${esc(c.num)}</div><div class="lbl">${esc(c.lbl)}</div></div>`).join('');
 }
@@ -163,7 +164,7 @@ function renderAba(){
   const el=document.getElementById('conteudo');
   if(aba==='clientes'){
     el.innerHTML = `
-      <div class="nota">🔒 Por segurança, a senha do cliente <b>não pode ser exibida</b> (fica criptografada). Você pode <b>definir uma nova senha</b> ou enviar um <b>link de redefinição</b>.</div>
+      <div class="nota"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Por segurança, a senha do cliente <b>não pode ser exibida</b> (fica criptografada). Você pode <b>definir uma nova senha</b> ou enviar um <b>link de redefinição</b>.</div>
       <div class="painel">
         <div class="cabpar"><h3>Clientes cadastrados</h3><span class="quem">${clientes.length} no total</span></div>
         ${clientes.length? `<table>
@@ -175,14 +176,14 @@ function renderAba(){
               <td>${prods.length? prods.map(p=>`<span class="tag-prod">${esc(p)}</span>`).join(''):'<span class="quem">—</span>'}</td>
               <td>${data(c.criado_em)}</td>
               <td>${data(c.ultimo_acesso)}</td>
-              <td style="white-space:nowrap"><button class="btn btn-borda btn-sm" data-senha="${c.id}" data-email="${esc(c.email)}">🔑 Senha</button></td>
+              <td style="white-space:nowrap"><button class="btn btn-borda btn-sm" data-senha="${c.id}" data-email="${esc(c.email)}"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg> Senha</button></td>
             </tr>`; }).join('')}</tbody></table>`
           : '<div class="vazio">Nenhum cliente cadastrado ainda. Eles aparecem aqui quando criam login na área do cliente.</div>'}
       </div>`;
     el.querySelectorAll('[data-senha]').forEach(b=> b.onclick=()=>modalSenha(b.dataset.senha, b.dataset.email));
   } else {
     el.innerHTML = `<div class="painel">
-      <div class="cabpar"><h3>Pedidos</h3><div style="display:flex;gap:10px;align-items:center"><span class="quem">${pedidos.length} no total</span><button class="btn btn-borda btn-sm" id="btnCsv">⬇ Exportar CSV</button></div></div>
+      <div class="cabpar"><h3>Pedidos</h3><div style="display:flex;gap:10px;align-items:center"><span class="quem">${pedidos.length} no total</span><button class="btn btn-borda btn-sm" id="btnCsv"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Exportar CSV</button></div></div>
       ${pedidos.length? `<table>
         <thead><tr><th>Data</th><th>Cliente</th><th>Produto</th><th>Valor</th><th>Status</th><th>Entrega</th></tr></thead>
         <tbody>${pedidos.map(p=>{
@@ -190,12 +191,12 @@ function renderAba(){
           let entrega='—';
           if(fisico){
             if(p.status!=='aprovado') entrega='<span class="quem">aguardando pagamento</span>';
-            else if(p.enviado) entrega=`<span class="badge b-aprovado">✔ enviado</span>${p.rastreio?`<br><span class="quem">${esc(p.rastreio)}</span>`:''}<br><button class="btn btn-borda btn-sm" data-envio="${p.id}" style="margin-top:4px">editar</button>`;
-            else entrega=`<button class="btn btn-azul btn-sm" data-envio="${p.id}">📦 marcar enviado</button>`;
+            else if(p.enviado) entrega=`<span class="badge b-aprovado"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M20 6 9 17l-5-5"/></svg> enviado</span>${p.rastreio?`<br><span class="quem">${esc(p.rastreio)}</span>`:''}<br><button class="btn btn-borda btn-sm" data-envio="${p.id}" style="margin-top:4px">editar</button>`;
+            else entrega=`<button class="btn btn-azul btn-sm" data-envio="${p.id}"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> marcar enviado</button>`;
           }
           return `<tr>
             <td>${data(p.criado_em)}</td>
-            <td><b>${esc(p.nome||'—')}</b><br><span class="quem">${esc(p.email)}</span>${p.endereco?`<br><span class="tag-prod" data-end="${p.id}" style="cursor:pointer">📦 ver endereço</span>`:''}</td>
+            <td><b>${esc(p.nome||'—')}</b><br><span class="quem">${esc(p.email)}</span>${p.endereco?`<br><span class="tag-prod" data-end="${p.id}" style="cursor:pointer"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> ver endereço</span>`:''}</td>
             <td>${esc(nomeProd(p.produto_id))}</td>
             <td><b>${esc(brl(p.valor))}</b></td>
             <td><span class="badge b-${esc(p.status)}">${esc(p.status)}</span></td>

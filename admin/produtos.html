@@ -85,14 +85,14 @@
 
 <div id="telaConfig" class="tela-centro oculto">
   <div class="login" style="text-align:center">
-    <div class="marca"><div class="m">📦</div><div><b>Produtos & PDFs</b><span>ADMIN</span></div></div>
+    <div class="marca"><div class="m" style="background:none;box-shadow:none;padding:0"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div><div><b>Produtos & PDFs</b><span>ADMIN</span></div></div>
     <div class="aviso" style="text-align:left">Esta área precisa do <b>Supabase configurado</b>. Preencha o arquivo <code>config.js</code> na raiz do site com a URL e a chave anon do seu projeto. Veja o <b>BACKEND.md</b>.</div>
   </div>
 </div>
 
 <div id="telaLogin" class="tela-centro oculto">
   <form class="login" id="formLogin">
-    <div class="marca"><div class="m">📦</div><div><b>Produtos & PDFs</b><span>ADMIN</span></div></div>
+    <div class="marca"><div class="m" style="background:none;box-shadow:none;padding:0"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div><div><b>Produtos & PDFs</b><span>ADMIN</span></div></div>
     <div id="loginErro" class="erro oculto"></div>
     <div class="campo"><label>E-mail do admin</label><input type="email" id="loginEmail" required></div>
     <div class="campo"><label>Senha</label><input type="password" id="loginSenha" required></div>
@@ -102,7 +102,7 @@
 
 <div id="app" class="oculto">
   <header class="topo">
-    <div class="marca"><div class="m">📦</div><div><b>Produtos & PDFs</b><span>ADMIN</span></div></div>
+    <div class="marca"><div class="m" style="background:none;box-shadow:none;padding:0"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div><div><b>Produtos & PDFs</b><span>ADMIN</span></div></div>
     <div class="dir"><a href="./index.html" class="btn btn-claro btn-sm">Conteúdo</a><a href="./vendas.html" class="btn btn-claro btn-sm">Vendas & Clientes</a><span class="quem" id="quem"></span><button class="btn btn-borda btn-sm" id="btnSair">Sair</button></div>
   </header>
   <div class="wrap">
@@ -116,6 +116,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/icons.js"></script>
 <script src="../config.js"></script>
 <script>
 const CFG = window.UCK_CONFIG || {};
@@ -173,9 +174,9 @@ function renderPainel(){
       <h3>Dados do produto <button class="btn btn-perigo btn-sm" id="delProd">Excluir produto</button></h3>
       <div class="campo"><label>Tipo de produto *</label>
         <select id="p_tipo">
-          <option value="infoproduto" ${isInfo?'selected':''}>📦 Infoproduto (PDFs) — libera acesso após a compra</option>
-          <option value="fisico" ${p.tipo==='fisico'?'selected':''}>📕 Livro físico — venda com entrega</option>
-          <option value="externo" ${isExterno?'selected':''}>🔗 Link externo (Amazon) — só divulgação</option>
+          <option value="infoproduto" ${isInfo?'selected':''}><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> Infoproduto (PDFs) — libera acesso após a compra</option>
+          <option value="fisico" ${p.tipo==='fisico'?'selected':''}><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Livro físico — venda com entrega</option>
+          <option value="externo" ${isExterno?'selected':''}><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg> Link externo (Amazon) — só divulgação</option>
         </select>
       </div>
       <div class="campo"><label>Nome *</label><input id="p_nome" value="${esc(p.nome)}"></div>
@@ -211,7 +212,7 @@ function renderPainel(){
       <h3>Módulos (pastas) <button class="btn btn-claro btn-sm" id="addMod">+ Módulo</button></h3>
       <div id="mods">${p.modulos.length? p.modulos.map(m=>`
         <div class="mod-item">
-          <span class="nm">📂 ${esc(m.nome)}</span>
+          <span class="nm"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> ${esc(m.nome)}</span>
           <span class="quem">${p.arquivos.filter(a=>a.modulo_id===m.id).length} PDF</span>
           <button class="btn btn-borda btn-sm" data-renmod="${m.id}">Renomear</button>
           <button class="btn btn-perigo btn-sm" data-delmod="${m.id}">Excluir</button>
@@ -228,7 +229,7 @@ function renderPainel(){
         </select>
       </div>
       <div class="drop" id="drop">
-        📄 <b>Clique ou arraste os PDFs aqui</b><br>
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg> <b>Clique ou arraste os PDFs aqui</b><br>
         <span style="font-size:12.5px">Pode selecionar vários de uma vez (os 300 de um pacote, por exemplo).</span>
         <input type="file" id="inFiles" accept="application/pdf" multiple hidden>
       </div>
@@ -236,8 +237,8 @@ function renderPainel(){
       <div id="listaArq">${renderArqs(p)}</div>
     </div>`
     : `<div class="card"><div class="aviso">${isExterno
-        ? '🔗 Produto de <b>link externo</b>: aparece na loja com um botão que leva ao link (ex.: Amazon). Não tem PDFs nem área de membros.'
-        : '📕 <b>Livro físico</b>: vendido pela loja com endereço de entrega. O pedido aprovado aparece em <b>Vendas &amp; Clientes</b> para você enviar. Não tem PDFs.'}</div></div>`}`;
+        ? '<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg> Produto de <b>link externo</b>: aparece na loja com um botão que leva ao link (ex.: Amazon). Não tem PDFs nem área de membros.'
+        : '<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> <b>Livro físico</b>: vendido pela loja com endereço de entrega. O pedido aprovado aparece em <b>Vendas &amp; Clientes</b> para você enviar. Não tem PDFs.'}</div></div>`}`;
 
   // eventos
   document.getElementById('salvarProd').onclick=()=>salvarProduto(p);
@@ -283,7 +284,7 @@ function renderArqs(p){
   return grupos.filter(g=>g.itens.length).map(g=>`
     <div class="grupo-tit">${esc(g.nome)}</div>
     ${g.itens.map(a=>`<div class="arq-item">
-      <div class="ic">📄</div>
+      <div class="ic"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
       <div class="nm"><b title="${esc(a.titulo)}">${esc(a.titulo)}</b><span>${tam(a.tamanho_bytes)}</span></div>
       <button class="btn btn-borda btn-sm" data-renarq="${a.id}">Renomear</button>
       <button class="btn btn-perigo btn-sm" data-delarq="${a.id}">Excluir</button>
