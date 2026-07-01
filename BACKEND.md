@@ -34,6 +34,7 @@ No painel do Supabase → **SQL Editor**, rode **na ordem**:
 2. `db/02_loja_membros.sql` (loja, membros, produtos, PDFs, pedidos, acessos)
 3. `db/03_tipos_produto.sql` (tipos de produto: infoproduto/físico/externo)
 4. `db/04_frete_envio.sql`  (frete e controle de envio dos pedidos físicos)
+5. `db/05_seguranca_admin.sql` (corrige RLS: escrita de conteúdo só para admin)
 
 Isso cria inclusive o bucket **privado** `produtos-pdf` para os PDFs.
 
