@@ -1,0 +1,17 @@
+# Configuração do projeto Supabase (CLI).
+# O "project_id" é preenchido ao rodar: supabase link --project-ref SEU_REF
+
+project_id = "universo-catolico"
+
+# O webhook do Mercado Pago é chamado pelo MP (sem login),
+# então NÃO exige token JWT.
+[functions.webhook-mercadopago]
+verify_jwt = false
+
+# As demais funções exigem contexto normal (a de download confere o login
+# manualmente pelo cabeçalho Authorization).
+[functions.criar-pagamento]
+verify_jwt = false
+
+[functions.baixar-arquivo]
+verify_jwt = false
