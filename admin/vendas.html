@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vendas & Clientes · Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--azul:#1f57c3;--azul-esc:#15418c;--amarelo:#f5b21a;--vermelho:#e8533f;--verde:#2fa15a;--bg:#f4f6fb;--card:#fff;--borda:#e7e9f2;--texto:#232733;--suave:#7a7f8f}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--texto)}
+  h1,h2,h3{font-family:'Baloo 2',sans-serif}
+  button{font-family:inherit;cursor:pointer} input,select{font-family:inherit;font-size:14px}
+  .oculto{display:none!important} a{color:var(--azul)}
+  .tela-centro{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .login{background:#fff;border:1px solid var(--borda);border-radius:20px;max-width:400px;width:100%;padding:32px 28px;box-shadow:0 14px 50px rgba(20,40,90,.10)}
+  .marca{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:20px}
+  .marca .m{width:44px;height:44px;border-radius:12px;background:var(--amarelo);display:flex;align-items:center;justify-content:center;font-size:23px}
+  .marca b{font-family:'Baloo 2';font-size:18px;color:var(--azul-esc);display:block;line-height:1}
+  .marca span{font-size:11px;color:var(--suave);letter-spacing:.5px}
+  .erro{background:#fdecea;color:var(--vermelho);font-weight:700;font-size:13px;padding:10px 13px;border-radius:10px;margin-bottom:14px}
+  .campo{margin-bottom:13px}.campo label{display:block;font-weight:800;font-size:13px;margin-bottom:6px;color:#444}
+  .campo input{width:100%;padding:11px 13px;border:1.5px solid var(--borda);border-radius:11px;background:#fcfcfd}
+  .campo input:focus{outline:0;border-color:var(--azul);background:#fff}
+  .btn{border:0;border-radius:11px;padding:10px 16px;font-weight:800;font-size:13.5px;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:.15s}
+  .btn:hover{transform:translateY(-1px)}.btn:disabled{opacity:.55;transform:none}
+  .btn-azul{background:var(--azul);color:#fff}.btn-claro{background:#eef1f9;color:var(--azul)}.btn-borda{background:#fff;color:var(--texto);border:1.5px solid var(--borda)}
+  .btn-bloco{width:100%;padding:13px}.btn-sm{padding:6px 11px;font-size:12.5px;border-radius:9px}
+
+  .topo{background:#fff;border-bottom:1px solid var(--borda);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+  .topo .marca{margin:0} .topo .dir{display:flex;gap:10px;align-items:center}
+  .quem{font-size:13px;color:var(--suave);font-weight:700}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px}
+  .tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+  .tab{background:#fff;border:1.5px solid var(--borda);border-radius:11px;padding:9px 16px;font-weight:800;font-size:14px;color:var(--suave)}
+  .tab.ativo{background:var(--azul);color:#fff;border-color:var(--azul)}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:24px}
+  .stat{background:#fff;border:1px solid var(--borda);border-radius:16px;padding:20px;position:relative;overflow:hidden}
+  .stat .ico{position:absolute;right:-6px;top:-6px;font-size:60px;opacity:.06}
+  .stat .num{font-family:'Baloo 2';font-size:30px;color:var(--azul-esc);line-height:1}
+  .stat .lbl{color:var(--suave);font-weight:700;font-size:13.5px;margin-top:6px}
+
+  .painel{background:#fff;border:1px solid var(--borda);border-radius:16px;padding:6px 0;overflow:hidden}
+  .painel .cabpar{padding:16px 20px 6px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .painel h3{font-size:17px;color:var(--azul-esc)}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:12px 20px;font-size:13.5px;border-top:1px solid var(--borda)}
+  th{color:var(--suave);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+  tr:hover td{background:#fafbff}
+  .badge{font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px}
+  .b-aprovado{background:#e4f5ea;color:#1c7a42}.b-pendente{background:#fff3d6;color:#9a6b00}
+  .b-recusado{background:#fdecea;color:var(--vermelho)}.b-estornado{background:#eee;color:#666}
+  .b-tipo{background:#eef1f9;color:var(--azul)}
+  .tag-prod{display:inline-block;background:#f3f4f9;color:#555;font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;margin:2px 2px 0 0}
+  .vazio{padding:40px;text-align:center;color:var(--suave)}
+  .nota{background:#eef4ff;border:1px solid #d7e3ff;color:#2b4b8f;font-size:12.5px;font-weight:600;padding:12px 16px;border-radius:12px;margin-bottom:18px;line-height:1.5}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--azul-esc);color:#fff;padding:13px 22px;border-radius:14px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:200}
+  .toast.erro-toast{background:var(--vermelho)}
+  .overlay{position:fixed;inset:0;background:rgba(20,30,60,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+  .modal{background:#fff;border-radius:18px;max-width:420px;width:100%;padding:24px}
+  .modal h3{color:var(--azul-esc);margin-bottom:8px}
+  @media(max-width:760px){ th:nth-child(3),td:nth-child(3){display:none} }
+</style>
+</head>
+<body>
+
+<div id="telaCarregando" class="tela-centro"><div class="quem">Carregando…</div></div>
+
+<div id="telaConfig" class="tela-centro oculto">
+  <div class="login" style="text-align:center">
+    <div class="marca"><div class="m">📊</div><div><b>Vendas & Clientes</b><span>ADMIN</span></div></div>
+    <div class="nota" style="text-align:left">Configure o <b>Supabase</b> no arquivo <code>config.js</code> (raiz). Veja o <b>BACKEND.md</b>.</div>
+  </div>
+</div>
+
+<div id="telaLogin" class="tela-centro oculto">
+  <form class="login" id="formLogin">
+    <div class="marca"><div class="m">📊</div><div><b>Vendas & Clientes</b><span>ADMIN</span></div></div>
+    <div id="loginErro" class="erro oculto"></div>
+    <div class="campo"><label>E-mail do admin</label><input type="email" id="loginEmail" required></div>
+    <div class="campo"><label>Senha</label><input type="password" id="loginSenha" required></div>
+    <button class="btn btn-azul btn-bloco" id="btnEntrar">Entrar</button>
+  </form>
+</div>
+
+<div id="app" class="oculto">
+  <header class="topo">
+    <div class="marca"><div class="m">📊</div><div><b>Vendas & Clientes</b><span>ADMIN</span></div></div>
+    <div class="dir">
+      <a href="./index.html" class="btn btn-claro btn-sm">Conteúdo</a>
+      <a href="./produtos.html" class="btn btn-claro btn-sm">Produtos</a>
+      <span class="quem" id="quem"></span>
+      <button class="btn btn-borda btn-sm" id="btnSair">Sair</button>
+    </div>
+  </header>
+  <div class="wrap">
+    <div class="stats" id="stats"></div>
+    <div class="tabs">
+      <button class="tab ativo" data-tab="clientes">👥 Clientes</button>
+      <button class="tab" data-tab="pedidos">🧾 Pedidos</button>
+    </div>
+    <div id="conteudo"></div>
+  </div>
+</div>
+
+<div id="modal" class="overlay oculto"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../config.js"></script>
+<script>
+const CFG = window.UCK_CONFIG || {};
+const OK = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
+let sb = OK ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
+
+let clientes=[], pedidos=[], acessos=[], produtos=[], aba='clientes';
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function brl(n){ return n==null?'R$ 0,00':'R$ '+Number(n).toFixed(2).replace('.',','); }
+function data(d){ if(!d) return '—'; const x=new Date(d); return x.toLocaleDateString('pt-BR')+' '+x.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+function mostra(id){ ['telaCarregando','telaConfig','telaLogin','app'].forEach(t=>document.getElementById(t).classList.toggle('oculto',t!==id)); }
+function toast(m,e){ const t=document.createElement('div'); t.className='toast'+(e?' erro-toast':''); t.textContent=m; document.body.appendChild(t); setTimeout(()=>{t.style.transition='.3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);}, e?3200:1900); }
+async function fn(acao, extra){
+  const { data:s } = await sb.auth.getSession();
+  const r = await fetch(`${CFG.SUPABASE_URL}/functions/v1/admin-clientes`,{
+    method:'POST', headers:{ 'Authorization':`Bearer ${s.session.access_token}`, 'apikey':CFG.SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify({ acao, ...(extra||{}) }) });
+  const j = await r.json(); if(!r.ok) throw new Error(j.erro||'Erro'); return j;
+}
+
+async function carregar(){
+  const [pd, ac, pr, cl] = await Promise.all([
+    sb.from('pedidos').select('*').order('criado_em',{ascending:false}),
+    sb.from('acessos').select('*').eq('ativo',true),
+    sb.from('produtos').select('id,nome,tipo'),
+    fn('listar').catch(e=>({clientes:[],_erro:e.message})),
+  ]);
+  pedidos=pd.data||[]; acessos=ac.data||[]; produtos=pr.data||[]; clientes=cl.clientes||[];
+  if(cl._erro) toast('Clientes: '+cl._erro, true);
+  renderStats(); renderAba();
+}
+function nomeProd(id){ const p=produtos.find(x=>x.id===id); return p?p.nome:'—'; }
+
+function renderStats(){
+  const aprov = pedidos.filter(p=>p.status==='aprovado');
+  const receita = aprov.reduce((s,p)=>s+(Number(p.valor)||0),0);
+  const cards=[
+    {ico:'👥', num:clientes.length, lbl:'Clientes cadastrados'},
+    {ico:'✅', num:aprov.length, lbl:'Vendas aprovadas'},
+    {ico:'💰', num:brl(receita), lbl:'Receita (aprovada)'},
+    {ico:'🧾', num:pedidos.length, lbl:'Pedidos no total'},
+  ];
+  document.getElementById('stats').innerHTML = cards.map(c=>`<div class="stat"><div class="ico">${c.ico}</div><div class="num">${esc(c.num)}</div><div class="lbl">${esc(c.lbl)}</div></div>`).join('');
+}
+
+function produtosDoCliente(email){
+  return acessos.filter(a=>String(a.email).toLowerCase()===String(email).toLowerCase()).map(a=>nomeProd(a.produto_id));
+}
+
+function renderAba(){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('ativo',t.dataset.tab===aba));
+  const el=document.getElementById('conteudo');
+  if(aba==='clientes'){
+    el.innerHTML = `
+      <div class="nota">🔒 Por segurança, a senha do cliente <b>não pode ser exibida</b> (fica criptografada). Você pode <b>definir uma nova senha</b> ou enviar um <b>link de redefinição</b>.</div>
+      <div class="painel">
+        <div class="cabpar"><h3>Clientes cadastrados</h3><span class="quem">${clientes.length} no total</span></div>
+        ${clientes.length? `<table>
+          <thead><tr><th>E-mail</th><th>Produtos que tem acesso</th><th>Cadastro</th><th>Último acesso</th><th></th></tr></thead>
+          <tbody>${clientes.map(c=>{
+            const prods=produtosDoCliente(c.email);
+            return `<tr>
+              <td><b>${esc(c.email)}</b>${c.confirmado?'':' <span class="badge b-pendente">não confirmado</span>'}</td>
+              <td>${prods.length? prods.map(p=>`<span class="tag-prod">${esc(p)}</span>`).join(''):'<span class="quem">—</span>'}</td>
+              <td>${data(c.criado_em)}</td>
+              <td>${data(c.ultimo_acesso)}</td>
+              <td style="white-space:nowrap"><button class="btn btn-borda btn-sm" data-senha="${c.id}" data-email="${esc(c.email)}">🔑 Senha</button></td>
+            </tr>`; }).join('')}</tbody></table>`
+          : '<div class="vazio">Nenhum cliente cadastrado ainda. Eles aparecem aqui quando criam login na área do cliente.</div>'}
+      </div>`;
+    el.querySelectorAll('[data-senha]').forEach(b=> b.onclick=()=>modalSenha(b.dataset.senha, b.dataset.email));
+  } else {
+    el.innerHTML = `<div class="painel">
+      <div class="cabpar"><h3>Pedidos</h3><span class="quem">${pedidos.length} no total</span></div>
+      ${pedidos.length? `<table>
+        <thead><tr><th>Data</th><th>Cliente</th><th>Produto</th><th>Valor</th><th>Status</th></tr></thead>
+        <tbody>${pedidos.map(p=>`<tr>
+          <td>${data(p.criado_em)}</td>
+          <td><b>${esc(p.nome||'—')}</b><br><span class="quem">${esc(p.email)}</span>${p.endereco?'<br><span class="tag-prod">📦 com entrega</span>':''}</td>
+          <td>${esc(nomeProd(p.produto_id))}</td>
+          <td><b>${esc(brl(p.valor))}</b></td>
+          <td><span class="badge b-${esc(p.status)}">${esc(p.status)}</span></td>
+        </tr>`).join('')}</tbody></table>`
+        : '<div class="vazio">Nenhum pedido ainda.</div>'}
+    </div>`;
+  }
+}
+
+function modalSenha(user_id, email){
+  const m=document.getElementById('modal');
+  m.innerHTML = `<div class="modal">
+    <h3>Senha de ${esc(email)}</h3>
+    <p class="quem" style="margin-bottom:14px">Defina uma nova senha (o cliente pode trocar depois) ou envie um link de redefinição para o e-mail dele.</p>
+    <div id="mErro" class="erro oculto"></div>
+    <div class="campo"><label>Nova senha (mín. 6)</label><input id="mSenha" type="text" placeholder="ex.: NovaSenha123"></div>
+    <button class="btn btn-azul btn-bloco" id="mDefinir" style="margin-bottom:10px">Definir nova senha</button>
+    <button class="btn btn-borda btn-bloco" id="mReset">Enviar link de redefinição por e-mail</button>
+    <button class="btn btn-borda btn-bloco" id="mFechar" style="margin-top:10px">Fechar</button>
+  </div>`;
+  m.classList.remove('oculto');
+  const err=document.getElementById('mErro');
+  const fechar=()=>m.classList.add('oculto');
+  m.onclick=e=>{ if(e.target===m) fechar(); };
+  document.getElementById('mFechar').onclick=fechar;
+  document.getElementById('mDefinir').onclick=async()=>{
+    const senha=document.getElementById('mSenha').value;
+    if(!senha||senha.length<6){ err.textContent='A senha precisa ter ao menos 6 caracteres.'; err.classList.remove('oculto'); return; }
+    try{ await fn('definir_senha',{ user_id, senha }); fechar(); toast('Senha definida com sucesso'); }
+    catch(ex){ err.textContent=ex.message; err.classList.remove('oculto'); }
+  };
+  document.getElementById('mReset').onclick=async()=>{
+    try{ await fn('enviar_reset',{ email }); fechar(); toast('Link de redefinição enviado'); }
+    catch(ex){ err.textContent=ex.message; err.classList.remove('oculto'); }
+  };
+}
+
+async function entrar(){
+  mostra('telaCarregando');
+  const { data:u } = await sb.auth.getUser();
+  document.getElementById('quem').textContent=u?.user?.email||'';
+  const { data:adm } = await sb.from('administradores').select('user_id').eq('user_id',u.user.id).maybeSingle();
+  if(!adm){ await sb.auth.signOut(); mostra('telaLogin'); const e=document.getElementById('loginErro'); e.textContent='Este usuário não é administrador.'; e.classList.remove('oculto'); return; }
+  mostra('app'); await carregar();
+}
+async function iniciar(){
+  if(!OK){ mostra('telaConfig'); return; }
+  document.querySelectorAll('.tab').forEach(t=> t.onclick=()=>{ aba=t.dataset.tab; renderAba(); });
+  document.getElementById('btnSair').onclick=async()=>{ await sb.auth.signOut(); location.reload(); };
+  document.getElementById('formLogin').onsubmit=async(e)=>{
+    e.preventDefault(); const b=document.getElementById('btnEntrar'); const err=document.getElementById('loginErro');
+    err.classList.add('oculto'); b.disabled=true; b.textContent='Entrando…';
+    try{ const { error } = await sb.auth.signInWithPassword({ email:document.getElementById('loginEmail').value.trim(), password:document.getElementById('loginSenha').value }); if(error) throw error; await entrar(); }
+    catch(ex){ err.textContent='Não foi possível entrar: '+(ex.message||ex); err.classList.remove('oculto'); b.disabled=false; b.textContent='Entrar'; }
+  };
+  const { data:s } = await sb.auth.getSession();
+  if(s?.session) await entrar(); else { mostra('telaLogin'); document.getElementById('loginEmail').focus(); }
+}
+iniciar().catch(e=>{ mostra('telaLogin'); const err=document.getElementById('loginErro'); err.textContent='Erro: '+(e.message||e); err.classList.remove('oculto'); });
+</script>
+</body>
+</html>

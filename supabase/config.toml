@@ -15,3 +15,6 @@ verify_jwt = false
 
 [functions.baixar-arquivo]
 verify_jwt = false
+
+[functions.admin-clientes]
+verify_jwt = false

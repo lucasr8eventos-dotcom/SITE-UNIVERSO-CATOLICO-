@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ erro: "Método inválido" }, 405);
 
   try {
-    const { produto_id, email, nome } = await req.json();
+    const { produto_id, email, nome, endereco } = await req.json();
     if (!produto_id || !email) {
       return json({ erro: "Informe produto_id e email" }, 400);
     }
@@ -26,11 +26,17 @@ Deno.serve(async (req) => {
     // Busca o produto (preço vem do banco, nunca do cliente — segurança)
     const { data: produto, error: e1 } = await db
       .from("produtos")
-      .select("id, nome, preco, ativo")
+      .select("id, nome, preco, ativo, tipo")
       .eq("id", produto_id)
       .single();
     if (e1 || !produto) return json({ erro: "Produto não encontrado" }, 404);
     if (!produto.ativo) return json({ erro: "Produto indisponível" }, 400);
+    if (produto.tipo === "externo") {
+      return json({ erro: "Este produto é vendido em link externo" }, 400);
+    }
+    if (produto.tipo === "fisico" && !endereco) {
+      return json({ erro: "Informe o endereço de entrega" }, 400);
+    }
 
     // Cria o pedido pendente
     const { data: pedido, error: e2 } = await db
@@ -41,6 +47,7 @@ Deno.serve(async (req) => {
         nome: nome ?? null,
         valor: produto.preco,
         status: "pendente",
+        endereco: endereco ?? null,
       })
       .select("id")
       .single();

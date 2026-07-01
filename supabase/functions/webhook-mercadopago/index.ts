@@ -79,15 +79,23 @@ Deno.serve(async (req) => {
       mp_payment_id: String(paymentId),
     }).eq("id", pedido.id);
 
-    // Pagamento aprovado -> libera o acesso (idempotente por unique email+produto)
+    // Pagamento aprovado -> libera o acesso SÓ para infoproduto (que tem PDFs).
+    // Produtos físicos ficam registrados como pedido aprovado para você enviar.
     if (novoStatus === "aprovado") {
       const email = pedido.email || emailPagador;
-      await db.from("acessos").upsert({
-        email,
-        produto_id: pedido.produto_id,
-        pedido_id: pedido.id,
-        ativo: true,
-      }, { onConflict: "email,produto_id" });
+      const { data: prod } = await db
+        .from("produtos")
+        .select("tipo")
+        .eq("id", pedido.produto_id)
+        .maybeSingle();
+      if (!prod || prod.tipo === "infoproduto") {
+        await db.from("acessos").upsert({
+          email,
+          produto_id: pedido.produto_id,
+          pedido_id: pedido.id,
+          ativo: true,
+        }, { onConflict: "email,produto_id" });
+      }
     }
 
     // Acesso estornado/cancelado -> revoga

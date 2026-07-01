@@ -30,7 +30,8 @@
   .wrap{max-width:1080px;margin:0 auto;padding:24px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
   .prod{background:#fff;border:1px solid var(--borda);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
-  .prod .capa{height:150px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:44px}
+  .prod .capa{height:150px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:44px;position:relative}
+  .prod .selo{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.92);color:#333;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px}
   .prod .corpo{padding:18px;flex:1;display:flex;flex-direction:column}
   .prod h3{font-size:19px;color:var(--azul-esc);margin-bottom:6px}
   .prod .desc{font-size:14px;color:var(--suave);line-height:1.5;flex:1}
@@ -78,54 +79,83 @@ let sb = OK ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_K
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function brl(n){ return n==null?'':'R$ '+Number(n).toFixed(2).replace('.',','); }
 
+let PRODS={};
+const SELO={ infoproduto:'📦 Acesso digital', fisico:'📕 Livro físico', externo:'🔗 Disponível na Amazon' };
+
 async function carregar(){
   const el=document.getElementById('lista');
   if(!OK){ el.innerHTML='<div class="vazio">Loja em configuração. Volte em breve.</div>'; return; }
   const { data, error } = await sb.from('produtos').select('*').eq('ativo',true).order('criado_em');
   if(error){ el.innerHTML='<div class="vazio">Não foi possível carregar os produtos.</div>'; return; }
   if(!data||!data.length){ el.innerHTML='<div class="vazio">Nenhum produto disponível no momento.</div>'; return; }
-  el.innerHTML = data.map(p=>`
-    <div class="prod">
-      <div class="capa" style="background:${p.capa_url?`url('${esc(p.capa_url)}') center/cover`:`linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`}">${p.capa_url?'':'📚'}</div>
+  PRODS={}; data.forEach(p=>PRODS[p.id]=p);
+  el.innerHTML = data.map(p=>{
+    const tipo=p.tipo||'infoproduto';
+    const resumo=p.descricao_curta||p.descricao||'';
+    const botao = tipo==='externo'
+      ? `<a class="btn btn-azul" href="${esc(p.link_externo||'#')}" target="_blank" rel="noopener">Ver na Amazon →</a>`
+      : `<button class="btn btn-verde" data-id="${p.id}">Comprar agora</button>`;
+    const precos = tipo==='externo' ? '' :
+      `<div class="precos"><span class="preco">${brl(p.preco)}</span>${p.preco_antigo?`<span class="antigo">${brl(p.preco_antigo)}</span>`:''}</div>`;
+    return `<div class="prod">
+      <div class="capa" style="background:${p.capa_url?`url('${esc(p.capa_url)}') center/cover`:`linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`}">
+        <span class="selo">${SELO[tipo]||''}</span>${p.capa_url?'':'📚'}
+      </div>
       <div class="corpo">
         <h3>${esc(p.nome)}</h3>
-        <div class="desc">${esc(p.descricao||'')}</div>
-        <div class="precos"><span class="preco">${brl(p.preco)}</span>${p.preco_antigo?`<span class="antigo">${brl(p.preco_antigo)}</span>`:''}</div>
-        <button class="btn btn-verde" data-id="${p.id}" data-nome="${esc(p.nome)}">Comprar agora</button>
+        <div class="desc">${esc(resumo)}</div>
+        ${precos}
+        ${botao}
       </div>
-    </div>`).join('');
-  el.querySelectorAll('[data-id]').forEach(b=> b.onclick=()=>abrirCheckout(b.dataset.id,b.dataset.nome));
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-id]').forEach(b=> b.onclick=()=>abrirCheckout(b.dataset.id));
 }
 
-function abrirCheckout(id,nome){
+function abrirCheckout(id){
+  const p=PRODS[id]; if(!p) return;
+  const fisico = p.tipo==='fisico';
   const m=document.getElementById('modal');
   m.innerHTML = `<div class="modal">
     <button class="fechar" id="fechar">×</button>
     <h3>Comprar</h3>
-    <p>${esc(nome)}</p>
+    <p>${esc(p.nome)} — <b>${esc(brl(p.preco))}</b></p>
     <div id="ckErro" class="erro oculto"></div>
-    <div class="campo"><label>Seu nome</label><input id="ckNome" placeholder="Nome completo"></div>
-    <div class="campo"><label>Seu e-mail *</label><input id="ckEmail" type="email" placeholder="usado para acessar os PDFs depois"></div>
+    <div class="campo"><label>Seu nome ${fisico?'*':''}</label><input id="ckNome" placeholder="Nome completo"></div>
+    <div class="campo"><label>Seu e-mail *</label><input id="ckEmail" type="email" placeholder="${fisico?'para acompanhar o pedido':'usado para acessar os PDFs depois'}"></div>
+    ${fisico?`
+      <div class="campo"><label>Telefone *</label><input id="ckTel" placeholder="(00) 00000-0000"></div>
+      <div class="campo"><label>CEP *</label><input id="ckCep" placeholder="00000-000"></div>
+      <div class="campo"><label>Endereço *</label><input id="ckEnd" placeholder="Rua, número, complemento"></div>
+      <div class="campo"><label>Cidade / UF *</label><input id="ckCidade" placeholder="Cidade - UF"></div>
+    `:''}
     <button class="btn btn-verde" id="ckPagar" style="width:100%;padding:13px">Ir para o pagamento</button>
     <div class="seguro">🔒 Você será levado ao ambiente seguro do Mercado Pago</div>
   </div>`;
   m.classList.remove('oculto');
   m.onclick=e=>{ if(e.target===m) m.classList.add('oculto'); };
   document.getElementById('fechar').onclick=()=>m.classList.add('oculto');
-  document.getElementById('ckPagar').onclick=()=>pagar(id);
+  document.getElementById('ckPagar').onclick=()=>pagar(p);
 }
 
-async function pagar(produto_id){
+async function pagar(p){
   const email=document.getElementById('ckEmail').value.trim().toLowerCase();
   const nome=document.getElementById('ckNome').value.trim();
-  const err=document.getElementById('ckErro');
+  const err=document.getElementById('ckErro'); const fisico=p.tipo==='fisico';
   if(!email || !/.+@.+\..+/.test(email)){ err.textContent='Digite um e-mail válido.'; err.classList.remove('oculto'); return; }
+  let endereco=null;
+  if(fisico){
+    const tel=document.getElementById('ckTel').value.trim(), cep=document.getElementById('ckCep').value.trim();
+    const end=document.getElementById('ckEnd').value.trim(), cidade=document.getElementById('ckCidade').value.trim();
+    if(!nome||!tel||!cep||!end||!cidade){ err.textContent='Preencha nome, telefone e o endereço completo.'; err.classList.remove('oculto'); return; }
+    endereco={ nome, telefone:tel, cep, endereco:end, cidade };
+  }
   const btn=document.getElementById('ckPagar'); btn.disabled=true; btn.textContent='Gerando pagamento…';
   try{
     const r = await fetch(`${CFG.SUPABASE_URL}/functions/v1/criar-pagamento`,{
       method:'POST',
       headers:{ 'Content-Type':'application/json', 'apikey':CFG.SUPABASE_ANON_KEY, 'Authorization':`Bearer ${CFG.SUPABASE_ANON_KEY}` },
-      body: JSON.stringify({ produto_id, email, nome }),
+      body: JSON.stringify({ produto_id:p.id, email, nome, endereco }),
     });
     const j = await r.json();
     if(!r.ok) throw new Error(j.erro||'Falha ao iniciar pagamento');

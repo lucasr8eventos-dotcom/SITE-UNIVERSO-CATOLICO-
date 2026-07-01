@@ -103,7 +103,7 @@
 <div id="app" class="oculto">
   <header class="topo">
     <div class="marca"><div class="m">📦</div><div><b>Produtos & PDFs</b><span>ADMIN</span></div></div>
-    <div class="dir"><a href="./index.html" class="btn btn-claro btn-sm">← Conteúdo do site</a><span class="quem" id="quem"></span><button class="btn btn-borda btn-sm" id="btnSair">Sair</button></div>
+    <div class="dir"><a href="./index.html" class="btn btn-claro btn-sm">Conteúdo</a><a href="./vendas.html" class="btn btn-claro btn-sm">Vendas & Clientes</a><span class="quem" id="quem"></span><button class="btn btn-borda btn-sm" id="btnSair">Sair</button></div>
   </header>
   <div class="wrap">
     <div class="col">
@@ -160,6 +160,8 @@ function renderPainel(){
   const el=document.getElementById('painel');
   if(sel<0 || !produtos[sel]){ el.innerHTML=`<div class="card"><div class="vazio-mini">Selecione um produto à esquerda ou crie um novo.</div></div>`; return; }
   const p=produtos[sel];
+  const isInfo=(p.tipo||'infoproduto')==='infoproduto';
+  const isExterno=p.tipo==='externo';
 
   el.innerHTML = `
     <div class="cab-prod">
@@ -169,12 +171,24 @@ function renderPainel(){
 
     <div class="card">
       <h3>Dados do produto <button class="btn btn-perigo btn-sm" id="delProd">Excluir produto</button></h3>
-      <div class="campo"><label>Nome *</label><input id="p_nome" value="${esc(p.nome)}"></div>
-      <div class="campo"><label>Descrição</label><textarea id="p_desc">${esc(p.descricao||'')}</textarea></div>
-      <div class="linha">
-        <div class="campo"><label>Preço (R$) *</label><input id="p_preco" type="number" step="0.01" value="${esc(p.preco??'')}"></div>
-        <div class="campo"><label>Preço antigo (R$)</label><input id="p_preco_antigo" type="number" step="0.01" value="${esc(p.preco_antigo??'')}"></div>
+      <div class="campo"><label>Tipo de produto *</label>
+        <select id="p_tipo">
+          <option value="infoproduto" ${isInfo?'selected':''}>📦 Infoproduto (PDFs) — libera acesso após a compra</option>
+          <option value="fisico" ${p.tipo==='fisico'?'selected':''}>📕 Livro físico — venda com entrega</option>
+          <option value="externo" ${isExterno?'selected':''}>🔗 Link externo (Amazon) — só divulgação</option>
+        </select>
       </div>
+      <div class="campo"><label>Nome *</label><input id="p_nome" value="${esc(p.nome)}"></div>
+      <div class="campo"><label>Resumo curto (aparece no card da loja)</label><input id="p_desc_curta" value="${esc(p.descricao_curta||'')}" placeholder="Uma frase chamativa"></div>
+      <div class="campo"><label>Descrição completa (página do produto)</label><textarea id="p_desc" style="min-height:120px" placeholder="Descreva bem o produto, com todos os detalhes…">${esc(p.descricao||'')}</textarea></div>
+      ${isExterno
+        ? `<div class="campo"><label>Link externo (Amazon etc.) *</label><input id="p_link" value="${esc(p.link_externo||'')}" placeholder="https://www.amazon.com.br/…"></div>
+           <input type="hidden" id="p_preco" value="${esc(p.preco??0)}"><input type="hidden" id="p_preco_antigo" value="${esc(p.preco_antigo??'')}">`
+        : `<input type="hidden" id="p_link" value="${esc(p.link_externo||'')}">
+           <div class="linha">
+             <div class="campo"><label>Preço (R$) *</label><input id="p_preco" type="number" step="0.01" value="${esc(p.preco??'')}"></div>
+             <div class="campo"><label>Preço antigo (R$)</label><input id="p_preco_antigo" type="number" step="0.01" value="${esc(p.preco_antigo??'')}"></div>
+           </div>`}
       <div class="campo"><label>Imagem de capa do produto (opcional)</label>
         <input id="p_capa_arquivo" type="file" accept="image/*">
         <input id="p_capa_url" type="hidden" value="${esc(p.capa_url||'')}">
@@ -185,10 +199,11 @@ function renderPainel(){
         <div class="campo"><label>Cor capa (topo)</label><input id="p_c1" type="color" value="${esc(p.capa_cor1||'#2f8fd6')}" style="height:44px;padding:4px"></div>
         <div class="campo"><label>Cor capa (base)</label><input id="p_c2" type="color" value="${esc(p.capa_cor2||'#1f57c3')}" style="height:44px;padding:4px"></div>
       </div>
-      <div class="campo"><label><input type="checkbox" id="p_ativo" ${p.ativo?'checked':''}> Produto ativo (à venda)</label></div>
+      <div class="campo"><label><input type="checkbox" id="p_ativo" ${p.ativo?'checked':''}> Produto ativo (aparece na loja)</label></div>
       <button class="btn btn-azul" id="salvarProd">Salvar dados</button>
     </div>
 
+    ${isInfo ? `
     <div class="card">
       <h3>Módulos (pastas) <button class="btn btn-claro btn-sm" id="addMod">+ Módulo</button></h3>
       <div id="mods">${p.modulos.length? p.modulos.map(m=>`
@@ -216,22 +231,43 @@ function renderPainel(){
       </div>
       <div class="prog oculto" id="progWrap"><i id="progBar"></i></div>
       <div id="listaArq">${renderArqs(p)}</div>
-    </div>`;
+    </div>`
+    : `<div class="card"><div class="aviso">${isExterno
+        ? '🔗 Produto de <b>link externo</b>: aparece na loja com um botão que leva ao link (ex.: Amazon). Não tem PDFs nem área de membros.'
+        : '📕 <b>Livro físico</b>: vendido pela loja com endereço de entrega. O pedido aprovado aparece em <b>Vendas &amp; Clientes</b> para você enviar. Não tem PDFs.'}</div></div>`}`;
 
   // eventos
   document.getElementById('salvarProd').onclick=()=>salvarProduto(p);
   document.getElementById('delProd').onclick=()=>excluirProduto(p);
-  document.getElementById('addMod').onclick=()=>addModulo(p);
-  el.querySelectorAll('[data-renmod]').forEach(b=>b.onclick=()=>renomearModulo(p,b.dataset.renmod));
-  el.querySelectorAll('[data-delmod]').forEach(b=>b.onclick=()=>excluirModulo(p,b.dataset.delmod));
-  el.querySelectorAll('[data-delarq]').forEach(b=>b.onclick=()=>excluirArquivo(p,b.dataset.delarq));
-  el.querySelectorAll('[data-renarq]').forEach(b=>b.onclick=()=>renomearArquivo(p,b.dataset.renarq));
-  const drop=document.getElementById('drop'), inp=document.getElementById('inFiles');
-  drop.onclick=()=>inp.click();
-  drop.ondragover=e=>{e.preventDefault();drop.classList.add('hover');};
-  drop.ondragleave=()=>drop.classList.remove('hover');
-  drop.ondrop=e=>{e.preventDefault();drop.classList.remove('hover');enviarArquivos(p,[...e.dataTransfer.files]);};
-  inp.onchange=e=>enviarArquivos(p,[...e.target.files]);
+  document.getElementById('p_tipo').onchange=()=>{ syncForm(p); renderPainel(); };
+  if(isInfo){
+    document.getElementById('addMod').onclick=()=>addModulo(p);
+    el.querySelectorAll('[data-renmod]').forEach(b=>b.onclick=()=>renomearModulo(p,b.dataset.renmod));
+    el.querySelectorAll('[data-delmod]').forEach(b=>b.onclick=()=>excluirModulo(p,b.dataset.delmod));
+    el.querySelectorAll('[data-delarq]').forEach(b=>b.onclick=()=>excluirArquivo(p,b.dataset.delarq));
+    el.querySelectorAll('[data-renarq]').forEach(b=>b.onclick=()=>renomearArquivo(p,b.dataset.renarq));
+    const drop=document.getElementById('drop'), inp=document.getElementById('inFiles');
+    drop.onclick=()=>inp.click();
+    drop.ondragover=e=>{e.preventDefault();drop.classList.add('hover');};
+    drop.ondragleave=()=>drop.classList.remove('hover');
+    drop.ondrop=e=>{e.preventDefault();drop.classList.remove('hover');enviarArquivos(p,[...e.dataTransfer.files]);};
+    inp.onchange=e=>enviarArquivos(p,[...e.target.files]);
+  }
+}
+
+// lê o formulário atual de volta para o objeto (usado ao trocar o tipo sem perder o que foi digitado)
+function syncForm(p){
+  const g=id=>{const e=document.getElementById(id);return e?e.value:undefined;};
+  const v=g('p_nome'); if(v!==undefined) p.nome=v;
+  const d=g('p_desc'); if(d!==undefined) p.descricao=d;
+  const dc=g('p_desc_curta'); if(dc!==undefined) p.descricao_curta=dc;
+  const pr=g('p_preco'); if(pr!==undefined) p.preco=parseFloat(pr)||0;
+  const pa=g('p_preco_antigo'); if(pa!==undefined) p.preco_antigo=pa?parseFloat(pa):null;
+  const lk=g('p_link'); if(lk!==undefined) p.link_externo=lk;
+  const c1=g('p_c1'); if(c1!==undefined) p.capa_cor1=c1;
+  const c2=g('p_c2'); if(c2!==undefined) p.capa_cor2=c2;
+  const tp=g('p_tipo'); if(tp!==undefined) p.tipo=tp;
+  const at=document.getElementById('p_ativo'); if(at) p.ativo=at.checked;
 }
 
 function renderArqs(p){
@@ -274,7 +310,13 @@ async function salvarProduto(p){
       if(up.error) throw new Error('capa: '+up.error.message);
       capa_url=sb.storage.from('midia').getPublicUrl(caminho).data.publicUrl;
     }
-    const patch={ nome, descricao:document.getElementById('p_desc').value.trim(),
+    const tipo=document.getElementById('p_tipo').value;
+    const link=document.getElementById('p_link')?document.getElementById('p_link').value.trim():'';
+    if(tipo==='externo' && !link){ throw new Error('Informe o link externo (Amazon).'); }
+    const patch={ nome, tipo,
+      descricao:document.getElementById('p_desc').value.trim(),
+      descricao_curta:document.getElementById('p_desc_curta').value.trim(),
+      link_externo:link||null,
       preco:parseFloat(document.getElementById('p_preco').value)||0,
       preco_antigo:document.getElementById('p_preco_antigo').value?parseFloat(document.getElementById('p_preco_antigo').value):null,
       capa_url, capa_cor1:document.getElementById('p_c1').value, capa_cor2:document.getElementById('p_c2').value,
