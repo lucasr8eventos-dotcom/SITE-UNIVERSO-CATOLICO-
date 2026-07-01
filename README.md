@@ -11,10 +11,14 @@ membros**, usando **Supabase** (banco PostgreSQL + login + storage) e
 | `Universo Católico Kids - Site.html` | Site/landing (com barra Loja/Minha conta) | Público |
 | `loja/index.html` | Vitrine de produtos + checkout (Mercado Pago) | Público |
 | `loja/produto.html` | Página do produto com a descrição completa | Público |
+| `atividades/index.html` | Atividades para imprimir (lê a tabela de atividades) | Público |
+| `documentarios/index.html` | Lista de documentários | Público |
+| `blog/index.html` + `blog/artigo.html` | Blog e página do artigo | Público |
 | `conta/index.html` | Área do cliente: login, PDFs, trocar senha | Cliente |
 | `legal/*.html` | Privacidade (LGPD), Termos e Reembolso | Público |
 | `admin/index.html` | Conteúdo do site (categorias, livros, atividades)* | Você |
 | `admin/produtos.html` | Cadastro de produtos + upload dos PDFs | Você |
+| `admin/conteudo.html` | Cadastro de documentários e blog/artigos | Você |
 | `admin/vendas.html` | Vendas, clientes, envios e reset de senha | Você |
 
 > *O admin de **conteúdo** (`admin/index.html`) gerencia um catálogo no banco

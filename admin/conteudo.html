@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentários & Blog · Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--azul:#1f57c3;--azul-esc:#15418c;--amarelo:#f5b21a;--vermelho:#e8533f;--verde:#2fa15a;--bg:#f4f6fb;--borda:#e7e9f2;--texto:#232733;--suave:#7a7f8f}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--texto)}
+  h1,h2,h3{font-family:'Baloo 2',sans-serif}
+  button{font-family:inherit;cursor:pointer} input,select,textarea{font-family:inherit;font-size:14px}
+  .oculto{display:none!important} a{color:var(--azul)}
+  .tela-centro{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .login{background:#fff;border:1px solid var(--borda);border-radius:20px;max-width:400px;width:100%;padding:32px 28px;box-shadow:0 14px 50px rgba(20,40,90,.10)}
+  .marca{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:20px}
+  .marca b{font-family:'Baloo 2';font-size:18px;color:var(--azul-esc);display:block;line-height:1}
+  .marca span{font-size:11px;color:var(--suave);letter-spacing:.5px}
+  .erro{background:#fdecea;color:var(--vermelho);font-weight:700;font-size:13px;padding:10px 13px;border-radius:10px;margin-bottom:14px}
+  .campo{margin-bottom:13px}.campo label{display:block;font-weight:800;font-size:13px;margin-bottom:6px;color:#444}
+  .campo input,.campo select,.campo textarea{width:100%;padding:11px 13px;border:1.5px solid var(--borda);border-radius:11px;background:#fcfcfd}
+  .campo input:focus,.campo select:focus,.campo textarea:focus{outline:0;border-color:var(--azul);background:#fff}
+  .campo textarea{resize:vertical;min-height:80px}
+  .linha{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .btn{border:0;border-radius:11px;padding:10px 16px;font-weight:800;font-size:13.5px;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:.15s}
+  .btn:hover{transform:translateY(-1px)} .btn:disabled{opacity:.55;transform:none}
+  .btn-azul{background:var(--azul);color:#fff}.btn-verde{background:var(--verde);color:#fff}.btn-claro{background:#eef1f9;color:var(--azul)}
+  .btn-borda{background:#fff;color:var(--texto);border:1.5px solid var(--borda)}.btn-perigo{background:#fdecea;color:var(--vermelho)}
+  .btn-bloco{width:100%;padding:13px}.btn-sm{padding:6px 11px;font-size:12.5px;border-radius:9px}
+  .topo{background:#fff;border-bottom:1px solid var(--borda);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+  .topo .marca{margin:0}.topo .dir{display:flex;gap:10px;align-items:center}
+  .quem{font-size:13px;color:var(--suave);font-weight:700}
+  .wrap{max-width:1080px;margin:0 auto;padding:24px}
+  .tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+  .tab{background:#fff;border:1.5px solid var(--borda);border-radius:11px;padding:9px 16px;font-weight:800;font-size:14px;color:var(--suave)}
+  .tab.ativo{background:var(--azul);color:#fff;border-color:var(--azul)}
+  .cabpar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+  .cabpar h2{font-size:20px;color:var(--azul-esc)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .item{background:#fff;border:1px solid var(--borda);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+  .item .capa{height:96px;background-size:cover;background-position:center}
+  .item .corpo{padding:14px;flex:1}
+  .item h3{font-size:16px;color:var(--azul-esc);margin-bottom:5px}
+  .item .sub{font-size:12.5px;color:var(--suave);font-weight:700;line-height:1.5}
+  .item .rodape{padding:10px 14px;border-top:1px solid var(--borda);display:flex;gap:8px;background:#fafbff}
+  .item .rodape .btn-sm{flex:1;justify-content:center}
+  .off{font-size:10px;background:#fde9e5;color:var(--vermelho);padding:1px 7px;border-radius:10px;font-weight:800;vertical-align:middle}
+  .vazio{background:#fff;border:2px dashed var(--borda);border-radius:16px;padding:44px;text-align:center;color:var(--suave)}
+  .overlay{position:fixed;inset:0;background:rgba(20,30,60,.45);display:flex;align-items:flex-start;justify-content:center;padding:28px 16px;z-index:100;overflow:auto}
+  .modal{background:#fff;border-radius:18px;max-width:560px;width:100%;box-shadow:0 18px 60px rgba(0,0,0,.25)}
+  .modal-topo{padding:18px 22px;border-bottom:1px solid var(--borda);display:flex;justify-content:space-between;align-items:center}
+  .modal-topo h3{color:var(--azul-esc);font-size:19px}.modal-topo button{background:#f3f3ec;border:0;width:32px;height:32px;border-radius:50%;font-size:17px;color:var(--suave)}
+  .modal-corpo{padding:20px 22px;display:grid;gap:13px}.modal-rodape{padding:14px 22px;border-top:1px solid var(--borda);display:flex;justify-content:flex-end;gap:10px}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--azul-esc);color:#fff;padding:13px 22px;border-radius:14px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:200}
+  .toast.erro-toast{background:var(--vermelho)}
+  .nota{background:#eef4ff;border:1px solid #d7e3ff;color:#2b4b8f;font-size:12.5px;font-weight:600;padding:11px 15px;border-radius:12px;margin-bottom:16px}
+</style>
+</head>
+<body>
+<div id="telaCarregando" class="tela-centro"><div class="quem">Carregando…</div></div>
+<div id="telaConfig" class="tela-centro oculto"><div class="login" style="text-align:center"><div class="marca"><div><b>Documentários & Blog</b><span>ADMIN</span></div></div><div class="nota" style="text-align:left">Configure o <b>Supabase</b> no <code>config.js</code> (raiz) e rode <code>db/06_conteudo_site.sql</code>. Veja o <b>BACKEND.md</b>.</div></div></div>
+<div id="telaLogin" class="tela-centro oculto">
+  <form class="login" id="formLogin">
+    <div class="marca"><div><b>Documentários & Blog</b><span>ADMIN</span></div></div>
+    <div id="loginErro" class="erro oculto"></div>
+    <div class="campo"><label>E-mail do admin</label><input type="email" id="loginEmail" required></div>
+    <div class="campo"><label>Senha</label><input type="password" id="loginSenha" required></div>
+    <button class="btn btn-azul btn-bloco" id="btnEntrar">Entrar</button>
+  </form>
+</div>
+<div id="app" class="oculto">
+  <header class="topo">
+    <div class="marca"><b>Documentários & Blog</b></div>
+    <div class="dir"><a href="./index.html" class="btn btn-claro btn-sm">Conteúdo</a><a href="./produtos.html" class="btn btn-claro btn-sm">Produtos</a><a href="./vendas.html" class="btn btn-claro btn-sm">Vendas</a><span class="quem" id="quem"></span><button class="btn btn-borda btn-sm" id="btnSair">Sair</button></div>
+  </header>
+  <div class="wrap">
+    <div class="tabs">
+      <button class="tab ativo" data-tab="documentarios">🎬 Documentários</button>
+      <button class="tab" data-tab="artigos">📝 Blog / Artigos</button>
+    </div>
+    <div class="cabpar"><h2 id="tituloAba">Documentários</h2><button class="btn btn-verde" id="btnNovo">+ Novo</button></div>
+    <div id="lista"></div>
+  </div>
+</div>
+<div id="modal"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../config.js"></script>
+<script>
+const CFG=window.UCK_CONFIG||{};
+const OK=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase);
+let sb=OK?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
+let aba='documentarios', dados={documentarios:[],artigos:[]};
+const META={documentarios:'Documentários', artigos:'Blog / Artigos'};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function mostra(id){['telaCarregando','telaConfig','telaLogin','app'].forEach(t=>document.getElementById(t).classList.toggle('oculto',t!==id));}
+function toast(m,e){const t=document.createElement('div');t.className='toast'+(e?' erro-toast':'');t.textContent=m;document.body.appendChild(t);setTimeout(()=>{t.style.transition='.3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},e?3200:1800);}
+
+async function carregar(){
+  const [d,a]=await Promise.all([
+    sb.from('documentarios').select('*').order('ordem'),
+    sb.from('artigos').select('*').order('ordem'),
+  ]);
+  dados.documentarios=d.data||[]; dados.artigos=a.data||[];
+  render();
+}
+function render(){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('ativo',t.dataset.tab===aba));
+  document.getElementById('tituloAba').textContent=META[aba];
+  const el=document.getElementById('lista'); const lista=dados[aba];
+  if(!lista.length){ el.innerHTML='<div class="vazio">Nada cadastrado ainda. Clique em “+ Novo”.</div>'; return; }
+  el.innerHTML='<div class="grid">'+lista.map(x=>{
+    const fundo=x.capa_url?`url('${esc(x.capa_url)}')`:`linear-gradient(160deg,${esc(x.capa_cor1||'#2f8fd6')},${esc(x.capa_cor2||'#1f57c3')})`;
+    const sub = aba==='documentarios'
+      ? `${esc(x.tema||'')} ${x.duracao?'· '+esc(x.duracao):''} ${x.faixa?'· '+esc(x.faixa):''}`
+      : `${esc(x.tag||'')} ${x.tempo_leitura?'· '+esc(x.tempo_leitura):''}`;
+    return `<div class="item">
+      <div class="capa" style="background:${fundo}"></div>
+      <div class="corpo"><h3>${esc(x.titulo)} ${x.ativo?'':'<span class="off">oculto</span>'}</h3><div class="sub">${sub}</div></div>
+      <div class="rodape"><button class="btn btn-sm btn-claro" data-ed="${x.id}">Editar</button><button class="btn btn-sm btn-perigo" data-del="${x.id}">Excluir</button></div>
+    </div>`;
+  }).join('')+'</div>';
+  el.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>abrir(b.dataset.ed));
+  el.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>excluir(b.dataset.del));
+}
+
+function campo(l,id,v,ph,tipo){ return `<div class="campo"><label>${l}</label><input id="${id}" ${tipo?`type="${tipo}"`:''} value="${esc(v||'')}" placeholder="${esc(ph||'')}"></div>`; }
+
+function abrir(id){
+  const editando=!!id; const it=editando?dados[aba].find(x=>x.id===id):{};
+  let corpo;
+  if(aba==='documentarios'){
+    corpo=`
+      ${campo('Título *','f_titulo',it.titulo,'Ex.: A Vida de Jesus')}
+      <div class="linha">${campo('Tema','f_tema',it.tema,'Ex.: Santos')}${campo('Duração','f_duracao',it.duracao,'Ex.: 48 min')}</div>
+      <div class="linha">${campo('Faixa etária','f_faixa',it.faixa,'Ex.: Livre / 6+')}${campo('Ordem','f_ordem',it.ordem,'1','number')}</div>
+      <div class="campo"><label>Descrição</label><textarea id="f_descricao" placeholder="Sobre o documentário">${esc(it.descricao||'')}</textarea></div>
+      ${campo('Link do vídeo (YouTube/Vimeo)','f_link_video',it.link_video,'https://...')}
+      <div class="campo"><label>Imagem de capa (opcional)</label><input id="f_capa_arquivo" type="file" accept="image/*"><input type="hidden" id="f_capa_url" value="${esc(it.capa_url||'')}"></div>
+      <div class="linha"><div class="campo"><label>Cor capa (topo)</label><input id="f_capa_cor1" type="color" value="${esc(it.capa_cor1||'#2f8fd6')}" style="height:44px"></div><div class="campo"><label>Cor capa (base)</label><input id="f_capa_cor2" type="color" value="${esc(it.capa_cor2||'#15418c')}" style="height:44px"></div></div>
+      <div class="campo"><label><input type="checkbox" id="f_ativo" ${it.ativo!==false?'checked':''}> Publicado (aparece no site)</label></div>`;
+  } else {
+    corpo=`
+      ${campo('Título *','f_titulo',it.titulo,'Ex.: 10 histórias para dormir')}
+      ${campo('Resumo (aparece no card)','f_resumo',it.resumo,'Uma frase chamativa')}
+      <div class="campo"><label>Conteúdo do artigo</label><textarea id="f_conteudo" style="min-height:160px" placeholder="Texto completo do artigo…">${esc(it.conteudo||'')}</textarea></div>
+      <div class="linha">${campo('Tag','f_tag',it.tag,'Ex.: Catequese')}${campo('Tempo de leitura','f_tempo_leitura',it.tempo_leitura,'Ex.: 5 min de leitura')}</div>
+      <div class="linha">${campo('Ordem','f_ordem',it.ordem,'1','number')}<div class="campo"><label>Cor da tag</label><input id="f_tag_cor" type="color" value="${esc(it.tag_cor||'#1f57c3')}" style="height:44px"></div></div>
+      <div class="campo"><label>Imagem de capa (opcional)</label><input id="f_capa_arquivo" type="file" accept="image/*"><input type="hidden" id="f_capa_url" value="${esc(it.capa_url||'')}"></div>
+      <div class="linha"><div class="campo"><label>Cor capa (topo)</label><input id="f_capa_cor1" type="color" value="${esc(it.capa_cor1||'#2f8fd6')}" style="height:44px"></div><div class="campo"><label>Cor capa (base)</label><input id="f_capa_cor2" type="color" value="${esc(it.capa_cor2||'#1f57c3')}" style="height:44px"></div></div>
+      <div class="campo"><label><input type="checkbox" id="f_ativo" ${it.ativo!==false?'checked':''}> Publicado (aparece no blog)</label></div>`;
+  }
+  const m=document.getElementById('modal');
+  m.innerHTML=`<div class="overlay"><div class="modal">
+    <div class="modal-topo"><h3>${editando?'Editar':'Novo'} — ${META[aba]}</h3><button id="m_x">×</button></div>
+    <div class="modal-corpo">${corpo}</div>
+    <div class="modal-rodape"><button class="btn btn-borda" id="m_cancel">Cancelar</button><button class="btn btn-azul" id="m_save">${editando?'Salvar':'Adicionar'}</button></div>
+  </div></div>`;
+  const ov=m.querySelector('.overlay'); const fechar=()=>m.innerHTML='';
+  ov.onclick=e=>{if(e.target===ov)fechar();};
+  m.querySelector('#m_x').onclick=fechar; m.querySelector('#m_cancel').onclick=fechar;
+  m.querySelector('#m_save').onclick=()=>salvar(id,fechar);
+}
+
+function v(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function num(id){const x=v(id);return x===''?0:Number(x);}
+
+async function salvar(id,fechar){
+  const titulo=v('f_titulo'); if(!titulo) return toast('Informe o título',true);
+  const btn=document.getElementById('m_save'); btn.disabled=true; btn.textContent='Salvando…';
+  try{
+    let capa_url=v('f_capa_url'); const fa=document.getElementById('f_capa_arquivo');
+    if(fa && fa.files[0]){ const f=fa.files[0]; const cam='capas/'+aba+'-'+Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_'); const up=await sb.storage.from('midia').upload(cam,f,{upsert:true,contentType:f.type}); if(up.error) throw new Error('capa: '+up.error.message); capa_url=sb.storage.from('midia').getPublicUrl(cam).data.publicUrl; }
+    let obj;
+    if(aba==='documentarios'){
+      obj={ titulo, tema:v('f_tema'), descricao:v('f_descricao'), duracao:v('f_duracao'), faixa:v('f_faixa'), link_video:v('f_link_video')||null, capa_url, capa_cor1:v('f_capa_cor1'), capa_cor2:v('f_capa_cor2'), ordem:num('f_ordem'), ativo:document.getElementById('f_ativo').checked };
+    } else {
+      obj={ titulo, resumo:v('f_resumo'), conteudo:v('f_conteudo'), tag:v('f_tag'), tag_cor:v('f_tag_cor'), tempo_leitura:v('f_tempo_leitura'), capa_url, capa_cor1:v('f_capa_cor1'), capa_cor2:v('f_capa_cor2'), ordem:num('f_ordem'), ativo:document.getElementById('f_ativo').checked };
+    }
+    const r = id ? await sb.from(aba).update(obj).eq('id',id) : await sb.from(aba).insert(obj);
+    if(r.error) throw r.error;
+    fechar(); toast(id?'Salvo':'Adicionado'); await carregar();
+  }catch(e){ btn.disabled=false; btn.textContent=id?'Salvar':'Adicionar'; toast('Erro: '+(e.message||e),true); }
+}
+async function excluir(id){
+  const it=dados[aba].find(x=>x.id===id);
+  if(!confirm(`Excluir "${it?it.titulo:''}"?`)) return;
+  const { error } = await sb.from(aba).delete().eq('id',id);
+  if(error) return toast(error.message,true);
+  toast('Excluído'); await carregar();
+}
+
+async function entrar(){
+  mostra('telaCarregando');
+  const { data:u }=await sb.auth.getUser();
+  document.getElementById('quem').textContent=u?.user?.email||'';
+  const { data:adm }=await sb.from('administradores').select('user_id').eq('user_id',u.user.id).maybeSingle();
+  if(!adm){ await sb.auth.signOut(); mostra('telaLogin'); const e=document.getElementById('loginErro'); e.textContent='Este usuário não é administrador.'; e.classList.remove('oculto'); return; }
+  mostra('app'); await carregar();
+}
+async function iniciar(){
+  if(!OK){ mostra('telaConfig'); return; }
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{ aba=t.dataset.tab; render(); });
+  document.getElementById('btnNovo').onclick=()=>abrir();
+  document.getElementById('btnSair').onclick=async()=>{ await sb.auth.signOut(); location.reload(); };
+  document.getElementById('formLogin').onsubmit=async(e)=>{ e.preventDefault(); const b=document.getElementById('btnEntrar'); const err=document.getElementById('loginErro'); err.classList.add('oculto'); b.disabled=true; b.textContent='Entrando…';
+    try{ const { error }=await sb.auth.signInWithPassword({ email:document.getElementById('loginEmail').value.trim(), password:document.getElementById('loginSenha').value }); if(error) throw error; await entrar(); }
+    catch(ex){ err.textContent='Não foi possível entrar: '+(ex.message||ex); err.classList.remove('oculto'); b.disabled=false; b.textContent='Entrar'; } };
+  const { data:s }=await sb.auth.getSession();
+  if(s?.session) await entrar(); else { mostra('telaLogin'); document.getElementById('loginEmail').focus(); }
+}
+iniciar().catch(e=>{ mostra('telaLogin'); const err=document.getElementById('loginErro'); err.textContent='Erro: '+(e.message||e); err.classList.remove('oculto'); });
+</script>
+</body>
+</html>
