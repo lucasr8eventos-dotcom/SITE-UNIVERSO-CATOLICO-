@@ -91,6 +91,9 @@ const CFG=window.UCK_CONFIG||{};
 const OK=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase);
 const sb=OK?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function safeHref(u){u=String(u==null?'':u).trim();return /^https?:\/\//i.test(u)?u:'#';}
+function cssUrl(u){u=String(u==null?'':u).trim();return /^https?:\/\/[^'"()\s]+$/i.test(u)?u:'';}
+function safeColor(c){c=String(c==null?'':c).trim();return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(c)?c:'';}
 const DL='<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>';
 async function carregar(){
   const el=document.getElementById('lista');
@@ -100,11 +103,11 @@ async function carregar(){
   if(!data||!data.length){ el.innerHTML='<div class="vazio">Nenhuma atividade publicada ainda.</div>'; return; }
   el.innerHTML=data.map(a=>`
     <div class="card">
-      <div class="capa" style="background:${esc(a.cor_fundo||'#eef1f9')};color:${esc(a.cor||'#1f57c3')}">${esc(a.tipo||'Atividade')}</div>
+      <div class="capa" style="background:${safeColor(a.cor_fundo)||'#eef1f9'};color:${safeColor(a.cor)||'#1f57c3'}">${esc(a.tipo||'Atividade')}</div>
       <div class="corpo">
         <h3>${esc(a.titulo)}</h3>
         <div class="meta">${a.faixa_etaria?`<span>👶 ${esc(a.faixa_etaria)}</span>`:''}${a.tipo?`<span>${esc(a.tipo)}</span>`:''}</div>
-        ${a.arquivo_url?`<a class="baixar" href="${esc(a.arquivo_url)}" target="_blank" rel="noopener">${DL} Baixar para imprimir</a>`:`<div class="semarq">Em breve para download</div>`}
+        ${a.arquivo_url?`<a class="baixar" href="${safeHref(a.arquivo_url)}" target="_blank" rel="noopener">${DL} Baixar para imprimir</a>`:`<div class="semarq">Em breve para download</div>`}
       </div>
     </div>`).join('');
 }

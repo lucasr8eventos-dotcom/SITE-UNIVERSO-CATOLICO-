@@ -92,6 +92,9 @@ const CFG=window.UCK_CONFIG||{};
 const OK=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase);
 const sb=OK?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function safeHref(u){ u=String(u==null?'':u).trim(); return /^https?:\/\//i.test(u)?u:'#'; }
+function cssUrl(u){ u=String(u==null?'':u).trim(); return /^https?:\/\/[^'"()\s]+$/i.test(u)?u:''; }
+function safeColor(c){ c=String(c==null?'':c).trim(); return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(c)?c:''; }
 const PLAY='<svg width="24" height="24" viewBox="0 0 24 24" fill="#e8533f"><path d="M8 5v14l11-7z"/></svg>';
 // Extrai o ID do vídeo do YouTube (aceita youtu.be, watch?v=, embed, shorts…)
 function ytId(u){ if(!u) return ''; const m=String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?[^ ]*v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{11})/); return m?m[1]:''; }
@@ -104,10 +107,10 @@ async function carregar(){
   if(!data||!data.length){ el.innerHTML='<div class="vazio">Nenhum documentário publicado ainda.</div>'; return; }
   el.innerHTML=data.map(d=>{
     const thumb=d.capa_url||ytThumb(d.link_video);
-    const fundo=thumb?`url('${esc(thumb)}')`:`linear-gradient(160deg,${esc(d.capa_cor1||'#2f8fd6')},${esc(d.capa_cor2||'#15418c')})`;
+    const fundo=cssUrl(thumb)?`url('${cssUrl(thumb)}')`:`linear-gradient(160deg,${safeColor(d.capa_cor1)||'#2f8fd6'},${safeColor(d.capa_cor2)||'#15418c'})`;
     const temLink=!!d.link_video;
     const tag = temLink?'a':'div';
-    const attrs = temLink?`href="${esc(d.link_video)}" target="_blank" rel="noopener"`:'';
+    const attrs = temLink?`href="${safeHref(d.link_video)}" target="_blank" rel="noopener"`:'';
     return `<${tag} class="card" ${attrs} style="text-decoration:none;color:inherit">
       <div class="capa" style="background:${fundo}">
         ${d.faixa?`<span class="selo">${esc(d.faixa)}</span>`:''}

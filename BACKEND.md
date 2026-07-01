@@ -36,6 +36,7 @@ No painel do Supabase → **SQL Editor**, rode **na ordem**:
 4. `db/04_frete_envio.sql`   (frete e controle de envio dos pedidos físicos)
 5. `db/05_fix_acesso_produto.sql` (comprador vê produto mesmo se desativado)
 6. `db/06_conteudo_site.sql` (documentários e blog/artigos)
+7. `db/07_fix_seguranca_rls.sql` (correções de segurança de RLS/Storage)
 
 Isso cria inclusive o bucket **privado** `produtos-pdf` para os PDFs.
 

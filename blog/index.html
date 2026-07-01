@@ -89,6 +89,8 @@ const CFG=window.UCK_CONFIG||{};
 const OK=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase);
 const sb=OK?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cssUrl(u){ u=String(u==null?'':u).trim(); return /^https?:\/\/[^'"()\s]+$/i.test(u)?u:''; }
+function safeColor(c){ c=String(c==null?'':c).trim(); return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(c)?c:''; }
 async function carregar(){
   const el=document.getElementById('lista');
   if(!OK){ el.innerHTML='<div class="vazio">Área em configuração. Volte em breve.</div>'; return; }
@@ -96,7 +98,7 @@ async function carregar(){
   if(error){ el.innerHTML='<div class="vazio">Não foi possível carregar os artigos.</div>'; return; }
   if(!data||!data.length){ el.innerHTML='<div class="vazio">Nenhum artigo publicado ainda.</div>'; return; }
   el.innerHTML=data.map(a=>{
-    const fundo=a.capa_url?`url('${esc(a.capa_url)}')`:`linear-gradient(160deg,${esc(a.capa_cor1||'#2f8fd6')},${esc(a.capa_cor2||'#1f57c3')})`;
+    const fundo=cssUrl(a.capa_url)?`url('${cssUrl(a.capa_url)}')`:`linear-gradient(160deg,${safeColor(a.capa_cor1)||'#2f8fd6'},${safeColor(a.capa_cor2)||'#1f57c3'})`;
     return `<a class="card" href="artigo.html?id=${encodeURIComponent(a.id)}">
       <div class="capa" style="background:${fundo}"></div>
       <div class="corpo">

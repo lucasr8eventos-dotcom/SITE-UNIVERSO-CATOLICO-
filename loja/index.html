@@ -154,6 +154,9 @@ const CFG = window.UCK_CONFIG || {};
 const OK = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
 let sb = OK ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function safeHref(u){ u=String(u==null?'':u).trim(); return /^https?:\/\//i.test(u)?u:'#'; }
+function cssUrl(u){ u=String(u==null?'':u).trim(); return /^https?:\/\/[^'"()\s]+$/i.test(u)?u:''; }
+function safeColor(c){ c=String(c==null?'':c).trim(); return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(c)?c:''; }
 function brl(n){ return n==null?'':'R$ '+Number(n).toFixed(2).replace('.',','); }
 
 let PRODS={};
@@ -171,12 +174,12 @@ async function carregar(){
     const resumo=p.descricao_curta||p.descricao||'';
     const href=`produto.html?id=${encodeURIComponent(p.id)}`;
     const botao = tipo==='externo'
-      ? `<a class="btn btn-azul" href="${esc(p.link_externo||'#')}" target="_blank" rel="noopener">Ver na Amazon <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>`
+      ? `<a class="btn btn-azul" href="${safeHref(p.link_externo)}" target="_blank" rel="noopener">Ver na Amazon <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>`
       : `<button class="btn btn-verde" data-id="${p.id}">Comprar agora</button>`;
     const precos = tipo==='externo' ? '' :
       `<div class="precos"><span class="preco">${brl(p.preco)}</span>${p.preco_antigo?`<span class="antigo">${brl(p.preco_antigo)}</span>`:''}</div>`;
     return `<div class="prod">
-      <a href="${href}" class="capa" style="background:${p.capa_url?`url('${esc(p.capa_url)}') center/cover`:`linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`}">
+      <a href="${href}" class="capa" style="background:${cssUrl(p.capa_url)?`url('${cssUrl(p.capa_url)}') center/cover`:`linear-gradient(160deg,${safeColor(p.capa_cor1)||'#2f8fd6'},${safeColor(p.capa_cor2)||'#1f57c3'})`}">
         <span class="selo">${SELO[tipo]||''}</span>${p.capa_url?'':'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>'}
       </a>
       <div class="corpo">

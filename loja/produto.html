@@ -108,6 +108,9 @@ const OK = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
 let sb = OK ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
 let PROD=null;
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function safeHref(u){ u=String(u==null?'':u).trim(); return /^https?:\/\//i.test(u)?u:'#'; }
+function cssUrl(u){ u=String(u==null?'':u).trim(); return /^https?:\/\/[^'"()\s]+$/i.test(u)?u:''; }
+function safeColor(c){ c=String(c==null?'':c).trim(); return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(c)?c:''; }
 function brl(n){ return n==null?'':'R$ '+Number(n).toFixed(2).replace('.',','); }
 const SELO={ infoproduto:'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> Acesso digital', fisico:'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Livro físico', externo:'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg> Amazon' };
 
@@ -137,10 +140,10 @@ async function carregar(){
     const s=document.createElement('script'); s.type='application/ld+json'; s.textContent=JSON.stringify(ld); document.head.appendChild(s);
     const md=document.querySelector('meta[name="description"]'); if(md && (data.descricao_curta||data.descricao)) md.setAttribute('content',(data.descricao_curta||data.descricao).slice(0,160));
   }catch(e){}
-  const fundo = data.capa_url ? `url('${esc(data.capa_url)}')` : `linear-gradient(160deg,${data.capa_cor1||'#2f8fd6'},${data.capa_cor2||'#1f57c3'})`;
+  const fundo = cssUrl(data.capa_url) ? `url('${cssUrl(data.capa_url)}')` : `linear-gradient(160deg,${safeColor(data.capa_cor1)||'#2f8fd6'},${safeColor(data.capa_cor2)||'#1f57c3'})`;
   const off = (data.preco_antigo && data.preco_antigo>data.preco) ? Math.round((1-data.preco/data.preco_antigo)*100) : 0;
   const cta = tipo==='externo'
-    ? `<a class="btn btn-azul" href="${esc(data.link_externo||'#')}" target="_blank" rel="noopener">Ver na Amazon <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>`
+    ? `<a class="btn btn-azul" href="${safeHref(data.link_externo)}" target="_blank" rel="noopener">Ver na Amazon <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>`
     : `<button class="btn btn-verde" id="btnComprar"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg> Comprar agora</button>`;
   const precos = tipo==='externo' ? '' :
     `<div class="precos"><span class="preco">${brl(data.preco)}</span>${data.preco_antigo?`<span class="antigo">${brl(data.preco_antigo)}</span>`:''}${off?`<span class="off">-${off}%</span>`:''}</div>`;

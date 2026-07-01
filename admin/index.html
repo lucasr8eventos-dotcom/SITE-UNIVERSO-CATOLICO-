@@ -278,6 +278,8 @@ const store = {
 /* ===================== UTILIDADES ===================== */
 function uid(p){ return p + Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-3); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function cssUrl(u){ u=String(u==null?'':u).trim(); return /^https?:\/\/[^'"()\s]+$/i.test(u)?u:''; }
+function safeColor(c){ c=String(c==null?'':c).trim(); return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(c)?c:''; }
 function brl(n){ if(n===''||n==null||isNaN(n)) return ''; return 'R$ '+Number(n).toFixed(2).replace('.',','); }
 function arquivoParaDataUrl(f){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(f); }); }
 function toast(msg, erro){ const t=document.createElement('div'); t.className='toast'+(erro?' erro-toast':''); t.textContent=msg; document.body.appendChild(t); setTimeout(()=>{ t.style.transition='.3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, erro?3000:1800); }
@@ -352,7 +354,7 @@ function cardCat(c){
 
 function viewLivros(){ if(!cache.livros.length) return vazio('<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>','Nenhum livro cadastrado.'); return `<div class="grid grid-livro">${cache.livros.map(cardLivro).join('')}</div>`; }
 function cardLivro(b){
-  const fundo = b.capa_url ? `url('${esc(b.capa_url)}')` : `linear-gradient(160deg,${b.capa_cor1||'#2f8fd6'},${b.capa_cor2||'#1f57c3'})`;
+  const fundo = cssUrl(b.capa_url) ? `url('${cssUrl(b.capa_url)}')` : `linear-gradient(160deg,${safeColor(b.capa_cor1)||'#2f8fd6'},${safeColor(b.capa_cor2)||'#1f57c3'})`;
   return `<div class="item">
     <div class="capa" style="background:${fundo}"><span class="preco">${esc(brl(b.preco)||'—')}</span></div>
     <div class="corpo">

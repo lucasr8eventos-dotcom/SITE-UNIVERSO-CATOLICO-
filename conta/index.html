@@ -180,6 +180,8 @@ let atual = 0;                // índice do produto selecionado
 let filtro = '';
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function cssUrl(u){ u=String(u==null?'':u).trim(); return /^https?:\/\/[^'"()\s]+$/i.test(u)?u:''; }
+function safeColor(c){ c=String(c==null?'':c).trim(); return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(c)?c:''; }
 function mostra(id){ ['telaCarregando','telaConfig','telaLogin','telaNovaSenha','app'].forEach(t=>document.getElementById(t).classList.toggle('oculto', t!==id)); }
 function toast(m,e){ const t=document.createElement('div'); t.className='toast'+(e?' erro-toast':''); t.textContent=m; document.body.appendChild(t); setTimeout(()=>{t.style.transition='.3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);}, e?3200:2000); }
 function erro(m){ const e=document.getElementById('msgErro'); e.textContent=m; e.classList.remove('oculto'); document.getElementById('msgOk').classList.add('oculto'); }
@@ -268,7 +270,7 @@ function renderLista(){
   if(!produtos.length){ el.innerHTML=''; return; }
   el.innerHTML = `<h4>Meus produtos</h4>` + produtos.map((p,i)=>`
     <button class="prod-btn ${i===atual?'ativo':''}" data-i="${i}">
-      <span class="cap" style="background:${p.capa_url?`url('${esc(p.capa_url)}') center/cover`:`linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`}"></span>
+      <span class="cap" style="background:${cssUrl(p.capa_url)?`url('${cssUrl(p.capa_url)}') center/cover`:`linear-gradient(160deg,${safeColor(p.capa_cor1)||'#2f8fd6'},${safeColor(p.capa_cor2)||'#1f57c3'})`}"></span>
       <span>${esc(p.nome)}</span></button>`).join('');
   el.querySelectorAll('[data-i]').forEach(b=> b.onclick=()=>{ atual=+b.dataset.i; filtro=''; renderLista(); renderPainel(); });
 }
@@ -310,9 +312,9 @@ function renderPainel(){
   }
 
   const primeiroNome = (document.getElementById('quem').textContent||'').split('@')[0];
-  const fundoHero = p.capa_url
-    ? `url('${esc(p.capa_url)}'), linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`
-    : `linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})`;
+  const fundoHero = cssUrl(p.capa_url)
+    ? `url('${cssUrl(p.capa_url)}'), linear-gradient(160deg,${safeColor(p.capa_cor1)||'#2f8fd6'},${safeColor(p.capa_cor2)||'#1f57c3'})`
+    : `linear-gradient(160deg,${safeColor(p.capa_cor1)||'#2f8fd6'},${safeColor(p.capa_cor2)||'#1f57c3'})`;
   el.innerHTML = `
     <div class="ola"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M7 11.5V14a6 6 0 0 0 6 6h1a6 6 0 0 0 6-6V8a1.5 1.5 0 0 0-3 0v2"/><path d="M14 10V6a1.5 1.5 0 0 0-3 0v4"/><path d="M11 9.5V4a1.5 1.5 0 0 0-3 0v6"/><path d="M8 10V6.5a1.5 1.5 0 0 0-3 0v6a6 6 0 0 0 1.5 4"/></svg> Olá, <b>${esc(primeiroNome)}</b>! Bem-vindo(a) à sua área. Aqui estão os materiais que você já tem acesso.</div>
     <div class="hero-prod" style="background-image:${fundoHero}">

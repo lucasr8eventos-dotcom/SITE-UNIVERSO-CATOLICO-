@@ -77,6 +77,8 @@ const CFG=window.UCK_CONFIG||{};
 const OK=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase);
 const sb=OK?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cssUrl(u){ u=String(u==null?'':u).trim(); return /^https?:\/\/[^'"()\s]+$/i.test(u)?u:''; }
+function safeColor(c){ c=String(c==null?'':c).trim(); return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(c)?c:''; }
 async function carregar(){
   const el=document.getElementById('conteudo');
   if(!OK){ el.innerHTML='<div class="vazio">Área em configuração.</div>'; return; }
@@ -96,7 +98,7 @@ async function carregar(){
     const md=document.querySelector('meta[name="description"]'); if(md && data.resumo) md.setAttribute('content',data.resumo.slice(0,160));
     const ot=document.querySelector('meta[property="og:title"]'); if(ot) ot.setAttribute('content',data.titulo);
   }catch(e){}
-  const fundo=data.capa_url?`url('${esc(data.capa_url)}')`:`linear-gradient(160deg,${esc(data.capa_cor1||'#2f8fd6')},${esc(data.capa_cor2||'#1f57c3')})`;
+  const fundo=cssUrl(data.capa_url)?`url('${cssUrl(data.capa_url)}')`:`linear-gradient(160deg,${safeColor(data.capa_cor1)||'#2f8fd6'},${safeColor(data.capa_cor2)||'#1f57c3'})`;
   el.innerHTML=`
     <div class="capa" style="background:${fundo}"></div>
     ${data.tag?`<span class="tag">${esc(data.tag)}</span>`:''}

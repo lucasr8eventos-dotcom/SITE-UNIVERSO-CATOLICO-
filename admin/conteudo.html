@@ -95,6 +95,8 @@ let sb=OK?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):n
 let aba='documentarios', dados={documentarios:[],artigos:[]};
 const META={documentarios:'Documentários', artigos:'Blog / Artigos'};
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cssUrl(u){ u=String(u==null?'':u).trim(); return /^https?:\/\/[^'"()\s]+$/i.test(u)?u:''; }
+function safeColor(c){ c=String(c==null?'':c).trim(); return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(c)?c:''; }
 function ytId(u){ if(!u) return ''; const m=String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?[^ ]*v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{11})/); return m?m[1]:''; }
 function ytThumb(u){ const id=ytId(u); return id?`https://img.youtube.com/vi/${id}/hqdefault.jpg`:''; }
 function atualizarPreview(){
@@ -123,7 +125,7 @@ function render(){
   if(!lista.length){ el.innerHTML='<div class="vazio">Nada cadastrado ainda. Clique em “+ Novo”.</div>'; return; }
   el.innerHTML='<div class="grid">'+lista.map(x=>{
     const thumb=x.capa_url||(aba==='documentarios'?ytThumb(x.link_video):'');
-    const fundo=thumb?`url('${esc(thumb)}')`:`linear-gradient(160deg,${esc(x.capa_cor1||'#2f8fd6')},${esc(x.capa_cor2||'#1f57c3')})`;
+    const fundo=cssUrl(thumb)?`url('${cssUrl(thumb)}')`:`linear-gradient(160deg,${safeColor(x.capa_cor1)||'#2f8fd6'},${safeColor(x.capa_cor2)||'#15418c'})`;
     const sub = aba==='documentarios'
       ? `${esc(x.tema||'')} ${x.duracao?'· '+esc(x.duracao):''} ${x.faixa?'· '+esc(x.faixa):''}`
       : `${esc(x.tag||'')} ${x.tempo_leitura?'· '+esc(x.tempo_leitura):''}`;

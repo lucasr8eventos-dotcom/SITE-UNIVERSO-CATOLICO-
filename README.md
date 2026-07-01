@@ -61,7 +61,7 @@ Twitter Cards (prévia bonita ao compartilhar), dados estruturados (JSON-LD),
 ## Configuração (resumo)
 
 1. Preencha `config.js` (raiz) com a URL e a chave **anon** do Supabase.
-2. Rode `db/schema.sql` e depois `db/02_loja_membros.sql` no Supabase.
+2. Rode os SQLs do `db/` **em ordem** (`schema.sql`, `02`…`07`) no Supabase.
 3. Publique as Edge Functions e configure o Mercado Pago — passo a passo em
    **`BACKEND.md`**.
 4. Cadastre-se como admin (**`BACKEND.md`**, seção 3).
