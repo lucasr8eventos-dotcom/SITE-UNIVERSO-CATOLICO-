@@ -72,6 +72,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../config.js"></script>
+<script src="../assets/analytics.js"></script>
 <script>
 const CFG=window.UCK_CONFIG||{};
 const OK=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase);
@@ -87,6 +88,13 @@ async function carregar(){
   const { data, error } = await sb.from('artigos').select('*').eq('id',id).eq('ativo',true).maybeSingle();
   if(error||!data){ el.innerHTML='<div class="vazio">Artigo não encontrado.</div>'; return; }
   document.title=data.titulo+' · Universo Católico Kids';
+  // SEO dinâmico: canonical/og apontam para a URL real deste artigo
+  try{
+    const urlArt = location.origin + location.pathname + '?id=' + encodeURIComponent(id);
+    const cn=document.querySelector('link[rel="canonical"]'); if(cn) cn.setAttribute('href', urlArt);
+    const ou=document.querySelector('meta[property="og:url"]'); if(ou) ou.setAttribute('content', urlArt);
+    const tt=document.querySelector('meta[name="twitter:title"]'); if(tt) tt.setAttribute('content', data.titulo+' · Universo Católico Kids');
+  }catch(e){}
   // Rich snippet: Article para o Google
   try{
     const img=data.capa_url||'https://universocatolicokids.com.br/assets/og-image.png';

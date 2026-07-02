@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
 <title>Documentários & Blog · Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -97,6 +98,22 @@ const META={documentarios:'Documentários', artigos:'Blog / Artigos'};
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function cssUrl(u){ u=String(u==null?'':u).trim(); return /^https?:\/\/[^'"()\s]+$/i.test(u)?u:''; }
 function safeColor(c){ c=String(c==null?'':c).trim(); return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(c)?c:''; }
+async function comprimirImagem(file, maxLado=1200, qualidade=0.82){
+  if(!file || !/^image\//.test(file.type) || file.type==='image/gif') return file;
+  try{
+    const url=URL.createObjectURL(file);
+    const img=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=url; });
+    URL.revokeObjectURL(url);
+    const fator=Math.min(1, maxLado/Math.max(img.width,img.height));
+    if(fator===1 && file.size<400*1024) return file;
+    const c=document.createElement('canvas');
+    c.width=Math.max(1,Math.round(img.width*fator)); c.height=Math.max(1,Math.round(img.height*fator));
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',qualidade));
+    if(!blob || blob.size>=file.size) return file;
+    return new File([blob], file.name.replace(/\.[^.]+$/,'')+'.jpg', { type:'image/jpeg' });
+  }catch(e){ return file; }
+}
 function ytId(u){ if(!u) return ''; const m=String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?[^ ]*v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{11})/); return m?m[1]:''; }
 function ytThumb(u){ const id=ytId(u); return id?`https://img.youtube.com/vi/${id}/hqdefault.jpg`:''; }
 function atualizarPreview(){
@@ -194,7 +211,7 @@ async function salvar(id,fechar){
   const btn=document.getElementById('m_save'); btn.disabled=true; btn.textContent='Salvando…';
   try{
     let capa_url=v('f_capa_url'); const fa=document.getElementById('f_capa_arquivo');
-    if(fa && fa.files[0]){ const f=fa.files[0]; const cam='capas/'+aba+'-'+Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_'); const up=await sb.storage.from('midia').upload(cam,f,{upsert:true,contentType:f.type}); if(up.error) throw new Error('capa: '+up.error.message); capa_url=sb.storage.from('midia').getPublicUrl(cam).data.publicUrl; }
+    if(fa && fa.files[0]){ const f=await comprimirImagem(fa.files[0]); const cam='capas/'+aba+'-'+Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_'); const up=await sb.storage.from('midia').upload(cam,f,{upsert:true,contentType:f.type}); if(up.error) throw new Error('capa: '+up.error.message); capa_url=sb.storage.from('midia').getPublicUrl(cam).data.publicUrl; }
     let obj;
     if(aba==='documentarios'){
       obj={ titulo, tema:v('f_tema'), descricao:v('f_descricao'), duracao:v('f_duracao'), faixa:v('f_faixa'), link_video:v('f_link_video')||null, capa_url, capa_cor1:v('f_capa_cor1'), capa_cor2:v('f_capa_cor2'), ordem:num('f_ordem'), ativo:document.getElementById('f_ativo').checked };
