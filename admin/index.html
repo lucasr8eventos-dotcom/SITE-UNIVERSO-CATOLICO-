@@ -297,9 +297,19 @@ const TIPOS_ATIV = ['Colorir','Cruzadinha','Jogo','Labirinto','Caça-palavras','
 let cache = { categorias:[], livros:[], atividades:[] };
 let abaAtual = 'dashboard';
 
+let pedidosDash = [];
 async function recarregar(){
   const [categorias, livros, atividades] = await Promise.all([ store.list('categorias'), store.list('livros'), store.list('atividades') ]);
   cache = { categorias, livros, atividades };
+  // resumo de vendas para o dashboard (só com Supabase; a RLS exige admin)
+  if(TEM_SUPABASE){
+    try{ const { data } = await sb.from('pedidos').select('valor,status,enviado,itens,produto_id,endereco'); pedidosDash = data||[]; }
+    catch(e){ pedidosDash = []; }
+  }
+}
+function pedidoDashFisico(p){
+  const itens = (Array.isArray(p.itens)&&p.itens.length)? p.itens : [];
+  return itens.some(i=>i.tipo==='fisico') || !!p.endereco;
 }
 function nomeCategoria(id){ const c=cache.categorias.find(x=>String(x.id)===String(id)); return c?c.nome:''; }
 function contarLivros(catId){ return cache.livros.filter(b=>String(b.categoria_id)===String(catId)).length; }
@@ -327,7 +337,28 @@ function viewDashboard(){
     { ico:'<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>', bg:'#fff3d6', n:med, l:'Avaliação média' },
   ];
   const ultimos = cache.livros.slice(-4).reverse();
+
+  // resumo de vendas (aparece quando o Supabase está configurado)
+  let vendasHtml = '';
+  if(TEM_SUPABASE){
+    const aprov = pedidosDash.filter(p=>p.status==='aprovado');
+    const receita = aprov.reduce((s,p)=>s+(Number(p.valor)||0),0);
+    const pendentes = pedidosDash.filter(p=>p.status==='pendente').length;
+    const aEnviar = aprov.filter(p=>pedidoDashFisico(p) && !p.enviado).length;
+    const vCards = [
+      { bg:'#e4f5ea', n:'R$ '+receita.toFixed(2).replace('.',','), l:'Receita aprovada' },
+      { bg:'#e7efff', n:aprov.length, l:'Vendas aprovadas' },
+      { bg:'#fff3d6', n:pendentes, l:'Pagamentos em processamento' },
+      { bg:'#fde9e5', n:aEnviar, l:'Pedidos físicos a enviar' },
+    ];
+    vendasHtml = `
+      <div class="secao-titulo"><h2>Vendas</h2><a href="./vendas.html" style="font-weight:800;font-size:13px">Abrir Vendas & Clientes →</a></div>
+      <div class="stats">${vCards.map(c=>`<a class="stat" href="./vendas.html" style="text-decoration:none;color:inherit"><div class="ico" style="background:${c.bg}"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 6v2m0 8v2"/></svg></div><div class="num">${esc(c.n)}</div><div class="lbl">${esc(c.l)}</div></a>`).join('')}</div>`;
+  }
+
   return `
+    ${vendasHtml}
+    <div class="secao-titulo"${vendasHtml?' style="margin-top:8px"':''}><h2>Conteúdo do site</h2></div>
     <div class="stats">${cards.map(c=>`<div class="stat"><div class="ico" style="background:${c.bg}">${c.ico}</div><div class="num">${esc(c.n)}</div><div class="lbl">${esc(c.l)}</div></div>`).join('')}</div>
     <div class="secao-titulo"><h2>Atalhos rápidos</h2></div>
     <div class="stats">

@@ -76,6 +76,10 @@
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--azul-esc);color:#fff;padding:13px 22px;border-radius:14px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:200}
   .toast.erro-toast{background:var(--vermelho)}
   .sel-mini{padding:7px 10px;border:1.5px solid var(--borda);border-radius:9px;background:#fcfcf9;font-weight:700}
+  .overlay{position:fixed;inset:0;background:rgba(20,30,60,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+  .modal{background:#fff;border-radius:18px;max-width:420px;width:100%;padding:24px;box-shadow:0 18px 60px rgba(0,0,0,.25)}
+  .modal h3{color:var(--azul-esc);margin-bottom:8px}
+  .modal p{color:var(--suave);font-size:14px;line-height:1.6;margin:4px 0 16px}
   @media(max-width:820px){.wrap{grid-template-columns:1fr}.linha{grid-template-columns:1fr}}
 </style>
 </head>
@@ -103,17 +107,20 @@
 <div id="app" class="oculto">
   <header class="topo">
     <div class="marca"><div class="m" style="background:none;box-shadow:none;padding:0"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div><div><b>Produtos & PDFs</b><span>ADMIN</span></div></div>
-    <div class="dir"><a href="./index.html" class="btn btn-claro btn-sm">Conteúdo</a><a href="./vendas.html" class="btn btn-claro btn-sm">Vendas & Clientes</a><a href="./conteudo.html" class="btn btn-claro btn-sm">Doc & Blog</a><span class="quem" id="quem"></span><button class="btn btn-borda btn-sm" id="btnSair">Sair</button></div>
+    <div class="dir"><a href="./index.html" class="btn btn-claro btn-sm">Dashboard</a><a href="./produtos.html" class="btn btn-azul btn-sm">Produtos & PDFs</a><a href="./vendas.html" class="btn btn-claro btn-sm">Vendas & Clientes</a><a href="./conteudo.html" class="btn btn-claro btn-sm">Doc & Blog</a><span class="quem" id="quem"></span><button class="btn btn-borda btn-sm" id="btnSair">Sair</button></div>
   </header>
   <div class="wrap">
     <div class="col">
       <h4>Produtos</h4>
+      <input id="buscaProd" placeholder="Buscar produto…" style="width:100%;padding:9px 12px;border:1.5px solid var(--borda);border-radius:11px;background:#fff;margin-bottom:10px">
       <div class="prod-lista" id="prodLista"></div>
       <button class="btn btn-verde btn-bloco" id="btnNovoProd" style="margin-top:12px">+ Novo produto</button>
     </div>
     <div class="col" id="painel"></div>
   </div>
 </div>
+
+<div id="modal" class="overlay oculto"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../assets/icons.js"></script>
@@ -124,8 +131,42 @@ const OK = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
 let sb = OK ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
 const BUCKET='produtos-pdf';
 
-let produtos=[], sel=-1;
+let produtos=[], sel=-1, filtroProd='';
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ---------- Modais (substituem prompt/confirm nativos) ---------- */
+function uiConfirm(titulo, msgHtml, botao='Confirmar', perigo=true){
+  return new Promise(res=>{
+    const m=document.getElementById('modal');
+    m.innerHTML=`<div class="modal"><h3>${esc(titulo)}</h3><p>${msgHtml}</p>
+      <div style="display:flex;gap:10px">
+        <button class="btn ${perigo?'btn-perigo':'btn-azul'}" id="mOk" style="flex:1">${esc(botao)}</button>
+        <button class="btn btn-borda" id="mCancelar" style="flex:1">Cancelar</button>
+      </div></div>`;
+    m.classList.remove('oculto');
+    const done=v=>{ m.classList.add('oculto'); m.innerHTML=''; res(v); };
+    m.onclick=e=>{ if(e.target===m) done(false); };
+    document.getElementById('mOk').onclick=()=>done(true);
+    document.getElementById('mCancelar').onclick=()=>done(false);
+  });
+}
+function uiPrompt(titulo, rotulo, valor=''){
+  return new Promise(res=>{
+    const m=document.getElementById('modal');
+    m.innerHTML=`<div class="modal"><h3>${esc(titulo)}</h3>
+      <form id="mForm"><div class="campo"><label>${esc(rotulo)}</label><input id="mInput" value="${esc(valor)}"></div>
+      <div style="display:flex;gap:10px">
+        <button type="submit" class="btn btn-azul" style="flex:1">Salvar</button>
+        <button type="button" class="btn btn-borda" id="mCancelar" style="flex:1">Cancelar</button>
+      </div></form></div>`;
+    m.classList.remove('oculto');
+    const inp=document.getElementById('mInput'); inp.focus(); inp.select();
+    const done=v=>{ m.classList.add('oculto'); m.innerHTML=''; res(v); };
+    m.onclick=e=>{ if(e.target===m) done(null); };
+    document.getElementById('mForm').onsubmit=e=>{ e.preventDefault(); const v=inp.value.trim(); done(v||null); };
+    document.getElementById('mCancelar').onclick=()=>done(null);
+  });
+}
 function slugify(s){ return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,60); }
 function mostra(id){ ['telaCarregando','telaConfig','telaLogin','app'].forEach(t=>document.getElementById(t).classList.toggle('oculto',t!==id)); }
 function toast(m,e){ const t=document.createElement('div'); t.className='toast'+(e?' erro-toast':''); t.textContent=m; document.body.appendChild(t); setTimeout(()=>{t.style.transition='.3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);}, e?3200:1900); }
@@ -148,12 +189,16 @@ async function carregar(){
 
 function renderLista(){
   const el=document.getElementById('prodLista');
-  el.innerHTML = produtos.length ? produtos.map((p,i)=>`
-    <button class="prod-btn ${i===sel?'ativo':''}" data-i="${i}">
-      <span class="cap" style="background:linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})"></span>
-      <span class="n">${esc(p.nome)}</span>
-      ${!p.ativo?'<span class="off">off</span>':''}
-    </button>`).join('') : '<div class="vazio-mini" style="padding:0 4px">Nenhum produto ainda.</div>';
+  const f=filtroProd.trim().toLowerCase();
+  const visiveis = produtos.map((p,i)=>({p,i})).filter(x=> !f || x.p.nome.toLowerCase().includes(f));
+  el.innerHTML = produtos.length
+    ? (visiveis.length ? visiveis.map(({p,i})=>`
+      <button class="prod-btn ${i===sel?'ativo':''}" data-i="${i}">
+        <span class="cap" style="background:linear-gradient(160deg,${p.capa_cor1||'#2f8fd6'},${p.capa_cor2||'#1f57c3'})"></span>
+        <span class="n">${esc(p.nome)}</span>
+        ${!p.ativo?'<span class="off">off</span>':''}
+      </button>`).join('') : '<div class="vazio-mini" style="padding:0 4px">Nada encontrado.</div>')
+    : '<div class="vazio-mini" style="padding:0 4px">Nenhum produto ainda.</div>';
   el.querySelectorAll('[data-i]').forEach(b=> b.onclick=()=>{ sel=+b.dataset.i; renderLista(); renderPainel(); });
 }
 
@@ -174,9 +219,9 @@ function renderPainel(){
       <h3>Dados do produto <button class="btn btn-perigo btn-sm" id="delProd">Excluir produto</button></h3>
       <div class="campo"><label>Tipo de produto *</label>
         <select id="p_tipo">
-          <option value="infoproduto" ${isInfo?'selected':''}><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> Infoproduto (PDFs) — libera acesso após a compra</option>
-          <option value="fisico" ${p.tipo==='fisico'?'selected':''}><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Livro físico — venda com entrega</option>
-          <option value="externo" ${isExterno?'selected':''}><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg> Link externo (Amazon) — só divulgação</option>
+          <option value="infoproduto" ${isInfo?'selected':''}>Infoproduto (PDFs) — libera acesso após a compra</option>
+          <option value="fisico" ${p.tipo==='fisico'?'selected':''}>Livro físico — venda com entrega</option>
+          <option value="externo" ${isExterno?'selected':''}>Link externo (Amazon) — só divulgação</option>
         </select>
       </div>
       <div class="campo"><label>Nome *</label><input id="p_nome" value="${esc(p.nome)}"></div>
@@ -196,7 +241,7 @@ function renderPainel(){
       <div class="campo"><label>Imagem de capa do produto (opcional)</label>
         <input id="p_capa_arquivo" type="file" accept="image/*">
         <input id="p_capa_url" type="hidden" value="${esc(p.capa_url||'')}">
-        ${p.capa_url?`<div style="margin-top:8px"><img src="${esc(p.capa_url)}" style="height:66px;border-radius:10px" alt="capa"></div>`:''}
+        <div id="capaPrev" style="margin-top:8px">${p.capa_url?`<img src="${esc(p.capa_url)}" style="height:66px;border-radius:10px" alt="capa">`:''}</div>
         <div class="quem" style="margin-top:5px">Aparece no portal do cliente e na loja. Sem imagem, usamos as cores abaixo.</div>
       </div>
       <div class="linha">
@@ -210,10 +255,12 @@ function renderPainel(){
     ${isInfo ? `
     <div class="card">
       <h3>Módulos (pastas) <button class="btn btn-claro btn-sm" id="addMod">+ Módulo</button></h3>
-      <div id="mods">${p.modulos.length? p.modulos.map(m=>`
+      <div id="mods">${p.modulos.length? p.modulos.map((m,mi)=>`
         <div class="mod-item">
           <span class="nm"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> ${esc(m.nome)}</span>
           <span class="quem">${p.arquivos.filter(a=>a.modulo_id===m.id).length} PDF</span>
+          <button class="btn btn-borda btn-sm" data-upmod="${m.id}" title="Subir" ${mi===0?'disabled':''}>↑</button>
+          <button class="btn btn-borda btn-sm" data-downmod="${m.id}" title="Descer" ${mi===p.modulos.length-1?'disabled':''}>↓</button>
           <button class="btn btn-borda btn-sm" data-renmod="${m.id}">Renomear</button>
           <button class="btn btn-perigo btn-sm" data-delmod="${m.id}">Excluir</button>
         </div>`).join('') : '<div class="vazio-mini">Nenhum módulo. Crie pastas para organizar os PDFs (ex.: “Antigo Testamento”).</div>'}</div>
@@ -244,10 +291,18 @@ function renderPainel(){
   document.getElementById('salvarProd').onclick=()=>salvarProduto(p);
   document.getElementById('delProd').onclick=()=>excluirProduto(p);
   document.getElementById('p_tipo').onchange=()=>{ syncForm(p); renderPainel(); };
+  // prévia imediata da capa escolhida (antes de salvar)
+  const inCapa=document.getElementById('p_capa_arquivo');
+  if(inCapa) inCapa.onchange=()=>{
+    const f=inCapa.files[0], pv=document.getElementById('capaPrev');
+    if(f && pv) pv.innerHTML=`<img src="${URL.createObjectURL(f)}" style="height:66px;border-radius:10px" alt="prévia"> <span class="quem">prévia — clique em “Salvar dados” para aplicar</span>`;
+  };
   if(isInfo){
     document.getElementById('addMod').onclick=()=>addModulo(p);
     el.querySelectorAll('[data-renmod]').forEach(b=>b.onclick=()=>renomearModulo(p,b.dataset.renmod));
     el.querySelectorAll('[data-delmod]').forEach(b=>b.onclick=()=>excluirModulo(p,b.dataset.delmod));
+    el.querySelectorAll('[data-upmod]').forEach(b=>b.onclick=()=>moverModulo(p,b.dataset.upmod,-1));
+    el.querySelectorAll('[data-downmod]').forEach(b=>b.onclick=()=>moverModulo(p,b.dataset.downmod,1));
     el.querySelectorAll('[data-delarq]').forEach(b=>b.onclick=()=>excluirArquivo(p,b.dataset.delarq));
     el.querySelectorAll('[data-renarq]').forEach(b=>b.onclick=()=>renomearArquivo(p,b.dataset.renarq));
     const drop=document.getElementById('drop'), inp=document.getElementById('inFiles');
@@ -293,7 +348,7 @@ function renderArqs(p){
 
 /* ---------- Produto ---------- */
 async function novoProduto(){
-  const nome=prompt('Nome do novo produto:'); if(!nome) return;
+  const nome=await uiPrompt('Novo produto','Nome do produto'); if(!nome) return;
   let slug=slugify(nome)||('produto-'+Date.now());
   // garante slug único
   const existe=produtos.find(p=>p.slug===slug); if(existe) slug+='-'+Math.random().toString(36).slice(2,5);
@@ -333,7 +388,10 @@ async function salvarProduto(p){
   }catch(ex){ toast(ex.message||String(ex),true); btn.disabled=false; btn.textContent='Salvar dados'; }
 }
 async function excluirProduto(p){
-  if(!confirm(`ATENÇÃO: excluir "${p.nome}" apaga TODOS os PDFs e REMOVE O ACESSO de quem já comprou. Se o produto já teve vendas, prefira DESATIVAR (desmarque "Produto ativo" e salve). Excluir mesmo assim?`)) return;
+  const ok=await uiConfirm('Excluir produto',
+    `<b>ATENÇÃO:</b> excluir <b>${esc(p.nome)}</b> apaga TODOS os PDFs e <b>remove o acesso de quem já comprou</b>.<br><br>Se o produto já teve vendas, prefira <b>desativar</b> (desmarque “Produto ativo” e salve).`,
+    'Excluir mesmo assim');
+  if(!ok) return;
   // remove arquivos do storage
   if(p.arquivos.length){ await sb.storage.from(BUCKET).remove(p.arquivos.map(a=>a.caminho)); }
   const { error } = await sb.from('produtos').delete().eq('id',p.id); // cascata remove modulos/arquivos
@@ -343,19 +401,29 @@ async function excluirProduto(p){
 
 /* ---------- Módulos ---------- */
 async function addModulo(p){
-  const nome=prompt('Nome do módulo (pasta):'); if(!nome) return;
+  const nome=await uiPrompt('Novo módulo','Nome do módulo (pasta)'); if(!nome) return;
   const { error } = await sb.from('modulos').insert({ produto_id:p.id, nome, ordem:p.modulos.length });
   if(error) return toast(error.message,true); toast('Módulo criado'); await carregar();
 }
 async function renomearModulo(p,id){
-  const m=p.modulos.find(x=>x.id===id); const nome=prompt('Novo nome do módulo:',m?.nome||''); if(!nome) return;
+  const m=p.modulos.find(x=>x.id===id);
+  const nome=await uiPrompt('Renomear módulo','Novo nome',m?.nome||''); if(!nome) return;
   const { error } = await sb.from('modulos').update({nome}).eq('id',id);
   if(error) return toast(error.message,true); await carregar();
 }
 async function excluirModulo(p,id){
-  if(!confirm('Excluir este módulo? Os PDFs dentro dele ficam “sem módulo” (não são apagados).')) return;
+  const ok=await uiConfirm('Excluir módulo','Os PDFs dentro dele ficam “sem módulo” (não são apagados).','Excluir');
+  if(!ok) return;
   const { error } = await sb.from('modulos').delete().eq('id',id);
   if(error) return toast(error.message,true); toast('Módulo excluído'); await carregar();
+}
+async function moverModulo(p,id,dir){
+  const i=p.modulos.findIndex(m=>m.id===id); const j=i+dir;
+  if(i<0 || j<0 || j>=p.modulos.length) return;
+  const arr=[...p.modulos]; [arr[i],arr[j]]=[arr[j],arr[i]];
+  const rs=await Promise.all(arr.map((m,k)=> sb.from('modulos').update({ordem:k}).eq('id',m.id)));
+  const errou=rs.find(r=>r.error); if(errou) return toast(errou.error.message,true);
+  await carregar();
 }
 
 /* ---------- Arquivos (upload em lote) ---------- */
@@ -382,13 +450,15 @@ async function enviarArquivos(p, files){
 }
 async function excluirArquivo(p,id){
   const a=p.arquivos.find(x=>x.id===id); if(!a) return;
-  if(!confirm(`Excluir o PDF "${a.titulo}"?`)) return;
+  const ok=await uiConfirm('Excluir PDF',`Excluir <b>${esc(a.titulo)}</b>? Quem comprou deixa de ver este arquivo.`,'Excluir');
+  if(!ok) return;
   await sb.storage.from(BUCKET).remove([a.caminho]);
   const { error } = await sb.from('arquivos').delete().eq('id',id);
   if(error) return toast(error.message,true); toast('PDF excluído'); await carregar();
 }
 async function renomearArquivo(p,id){
-  const a=p.arquivos.find(x=>x.id===id); const titulo=prompt('Novo nome do PDF:',a?.titulo||''); if(!titulo) return;
+  const a=p.arquivos.find(x=>x.id===id);
+  const titulo=await uiPrompt('Renomear PDF','Novo nome',a?.titulo||''); if(!titulo) return;
   const { error } = await sb.from('arquivos').update({titulo}).eq('id',id);
   if(error) return toast(error.message,true); await carregar();
 }
@@ -406,6 +476,7 @@ async function entrar(){
 async function iniciar(){
   if(!OK){ mostra('telaConfig'); return; }
   document.getElementById('btnNovoProd').onclick=novoProduto;
+  document.getElementById('buscaProd').oninput=e=>{ filtroProd=e.target.value; renderLista(); };
   document.getElementById('btnSair').onclick=async()=>{ await sb.auth.signOut(); location.reload(); };
   document.getElementById('formLogin').onsubmit=async(e)=>{
     e.preventDefault(); const b=document.getElementById('btnEntrar'); const err=document.getElementById('loginErro');
