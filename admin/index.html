@@ -161,7 +161,7 @@
 <div class="app oculto" id="app">
   <aside class="sidebar" id="sidebar">
     <div class="logo">
-      <div class="logo-mark">📖</div>
+      <div class="logo-mark" style="background:none"><svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#15418c"/><circle cx="50" cy="44" r="20" fill="#f5b21a"/><rect x="46.5" y="32" width="7" height="24" rx="2" fill="#15418c"/><rect x="40" y="40" width="20" height="7" rx="2" fill="#15418c"/><rect x="34" y="66" width="32" height="14" rx="3" fill="#e8533f"/><rect x="38" y="69" width="24" height="8" rx="2" fill="#fff"/></svg></div>
       <div><b>Universo Católico</b><span>PAINEL ADMIN</span></div>
     </div>
     <button class="navbtn ativo" data-aba="dashboard"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span> Dashboard</button>
@@ -170,6 +170,7 @@
     <button class="navbtn" data-aba="atividades"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C22 6.012 17.461 2 12 2Z"/></svg></span> Atividades</button>
     <a class="navbtn" href="./produtos.html" style="text-decoration:none"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span> Produtos &amp; PDFs</a>
     <a class="navbtn" href="./vendas.html" style="text-decoration:none"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span> Vendas &amp; Clientes</a>
+    <a class="navbtn" href="./conteudo.html" style="text-decoration:none"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M7 3v18M17 3v18M2 9h5M2 15h5M17 9h5M17 15h5"/></svg></span> Documentários &amp; Blog</a>
     <div class="rodape">
       <div class="usuario" id="infoUsuario"></div>
       <button class="btn-sair" id="btnSair">Sair</button>
@@ -277,6 +278,8 @@ const store = {
 /* ===================== UTILIDADES ===================== */
 function uid(p){ return p + Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-3); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function cssUrl(u){ u=String(u==null?'':u).trim(); return /^https?:\/\/[^'"()\s]+$/i.test(u)?u:''; }
+function safeColor(c){ c=String(c==null?'':c).trim(); return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(c)?c:''; }
 function brl(n){ if(n===''||n==null||isNaN(n)) return ''; return 'R$ '+Number(n).toFixed(2).replace('.',','); }
 function arquivoParaDataUrl(f){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(f); }); }
 function toast(msg, erro){ const t=document.createElement('div'); t.className='toast'+(erro?' erro-toast':''); t.textContent=msg; document.body.appendChild(t); setTimeout(()=>{ t.style.transition='.3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, erro?3000:1800); }
@@ -351,7 +354,7 @@ function cardCat(c){
 
 function viewLivros(){ if(!cache.livros.length) return vazio('<svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>','Nenhum livro cadastrado.'); return `<div class="grid grid-livro">${cache.livros.map(cardLivro).join('')}</div>`; }
 function cardLivro(b){
-  const fundo = b.capa_url ? `url('${esc(b.capa_url)}')` : `linear-gradient(160deg,${b.capa_cor1||'#2f8fd6'},${b.capa_cor2||'#1f57c3'})`;
+  const fundo = cssUrl(b.capa_url) ? `url('${cssUrl(b.capa_url)}')` : `linear-gradient(160deg,${safeColor(b.capa_cor1)||'#2f8fd6'},${safeColor(b.capa_cor2)||'#1f57c3'})`;
   return `<div class="item">
     <div class="capa" style="background:${fundo}"><span class="preco">${esc(brl(b.preco)||'—')}</span></div>
     <div class="corpo">

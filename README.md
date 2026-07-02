@@ -11,10 +11,14 @@ membros**, usando **Supabase** (banco PostgreSQL + login + storage) e
 | `Universo Católico Kids - Site.html` | Site/landing (com barra Loja/Minha conta) | Público |
 | `loja/index.html` | Vitrine de produtos + checkout (Mercado Pago) | Público |
 | `loja/produto.html` | Página do produto com a descrição completa | Público |
+| `atividades/index.html` | Atividades para imprimir (lê a tabela de atividades) | Público |
+| `documentarios/index.html` | Lista de documentários | Público |
+| `blog/index.html` + `blog/artigo.html` | Blog e página do artigo | Público |
 | `conta/index.html` | Área do cliente: login, PDFs, trocar senha | Cliente |
 | `legal/*.html` | Privacidade (LGPD), Termos e Reembolso | Público |
 | `admin/index.html` | Conteúdo do site (categorias, livros, atividades)* | Você |
 | `admin/produtos.html` | Cadastro de produtos + upload dos PDFs | Você |
+| `admin/conteudo.html` | Cadastro de documentários e blog/artigos | Você |
 | `admin/vendas.html` | Vendas, clientes, envios e reset de senha | Você |
 
 > *O admin de **conteúdo** (`admin/index.html`) gerencia um catálogo no banco
@@ -39,10 +43,25 @@ Acesso liberado no banco  →  cliente faz login na /conta  →  baixa os PDFs
 - O **download** só acontece via link temporário (5 min), gerado depois de
   conferir a compra — ninguém repassa link.
 
+## SEO (bilíngue PT + EN)
+
+O site já vem com SEO profissional: títulos e descrições em português e inglês,
+palavras-chave (foco no público católico e em todos os produtos), Open Graph +
+Twitter Cards (prévia bonita ao compartilhar), dados estruturados (JSON-LD),
+`robots.txt`, `sitemap.xml` e imagem de compartilhamento (`assets/og-image.png`).
+
+> **⚠️ Antes de publicar, troque o domínio.** Todo o SEO usa o placeholder
+> `https://universocatolicokids.com.br`. Substitua pelo seu domínio real em
+> `robots.txt`, `sitemap.xml` e nas páginas HTML. No terminal, na raiz do projeto:
+>
+> ```bash
+> grep -rl "universocatolicokids.com.br" . | xargs sed -i 's#universocatolicokids.com.br#SEU-DOMINIO.com#g'
+> ```
+
 ## Configuração (resumo)
 
 1. Preencha `config.js` (raiz) com a URL e a chave **anon** do Supabase.
-2. Rode `db/schema.sql` e depois `db/02_loja_membros.sql` no Supabase.
+2. Rode os SQLs do `db/` **em ordem** (`schema.sql`, `02`…`07`) no Supabase.
 3. Publique as Edge Functions e configure o Mercado Pago — passo a passo em
    **`BACKEND.md`**.
 4. Cadastre-se como admin (**`BACKEND.md`**, seção 3).

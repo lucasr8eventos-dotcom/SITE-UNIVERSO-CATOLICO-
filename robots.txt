@@ -1,0 +1,8 @@
+# Universo Católico Kids — robots.txt
+# TROQUE o domínio abaixo pelo seu quando publicar.
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /conta/
+
+Sitemap: https://universocatolicokids.com.br/sitemap.xml

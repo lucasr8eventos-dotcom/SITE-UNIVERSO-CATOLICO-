@@ -30,11 +30,15 @@ Clica no PDF  →  Edge Function confere a compra  →  link temporário (5 min)
 
 No painel do Supabase → **SQL Editor**, rode **na ordem**:
 
-1. `db/schema.sql`          (conteúdo do site: categorias, livros, atividades)
-2. `db/02_loja_membros.sql` (loja, membros, produtos, PDFs, pedidos, acessos)
+1. `db/schema.sql`           (conteúdo do site: categorias, livros, atividades)
+2. `db/02_loja_membros.sql`  (loja, membros, produtos, PDFs, pedidos, acessos)
 3. `db/03_tipos_produto.sql` (tipos de produto: infoproduto/físico/externo)
-4. `db/04_frete_envio.sql`  (frete e controle de envio dos pedidos físicos)
-5. `db/05_seguranca_admin.sql` (corrige RLS: escrita de conteúdo só para admin)
+4. `db/04_frete_envio.sql`   (frete e controle de envio dos pedidos físicos)
+5. `db/05_fix_acesso_produto.sql` (comprador vê produto mesmo se desativado)
+6. `db/05_seguranca_admin.sql` (corrige RLS: escrita de conteúdo só para admin)
+7. `db/06_conteudo_site.sql` (documentários e blog/artigos)
+8. `db/06_sacola.sql`        (sacola: vários produtos em um pagamento só)
+9. `db/07_fix_seguranca_rls.sql` (correções de segurança de RLS/Storage + vínculo por e-mail confirmado)
 
 Isso cria inclusive o bucket **privado** `produtos-pdf` para os PDFs.
 

@@ -121,6 +121,7 @@ Deno.serve(async (req) => {
     const pedidoId = pg.external_reference as string | undefined;
     const status = pg.status as string; // approved | pending | rejected | refunded...
     const emailPagador = (pg.payer?.email ?? "").toLowerCase();
+    const valorPago = Number(pg.transaction_amount ?? 0);
 
     const db = createClient(SUPABASE_URL, SERVICE_ROLE);
 
@@ -154,9 +155,13 @@ Deno.serve(async (req) => {
       mp_payment_id: String(paymentId),
     }).eq("id", pedido.id);
 
+    // Segurança: só libera se o valor pago cobrir o valor do pedido
+    // (tolerância de centavos). Evita liberar por pagamento parcial/manipulado.
+    const pagouOk = valorPago >= Number(pedido.valor ?? 0) - 0.05;
+
     // Pagamento aprovado -> libera o acesso de CADA item infoproduto da sacola
     // (que tem PDFs). Produtos físicos ficam só registrados para você enviar.
-    if (novoStatus === "aprovado") {
+    if (novoStatus === "aprovado" && pagouOk) {
       const email = (pedido.email || emailPagador).toLowerCase();
 
       // Itens da sacola; cai no formato antigo (1 produto) se não houver itens.
