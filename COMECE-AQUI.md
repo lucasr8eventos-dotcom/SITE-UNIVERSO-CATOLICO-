@@ -64,8 +64,13 @@ Abra o arquivo **`config.js`** (na raiz do projeto) e preencha com o que copiou:
 window.UCK_CONFIG = {
   SUPABASE_URL: "https://xxxx.supabase.co",
   SUPABASE_ANON_KEY: "eyJhbGciOi...sua-chave-anon...",
+  GA_MEASUREMENT_ID: "",  // opcional — Google Analytics 4 (ex.: "G-ABC123XYZ")
 };
 ```
+
+> **Google Analytics (opcional, recomendado):** crie uma propriedade GA4 em
+> <https://analytics.google.com>, copie o "ID da métrica" (começa com `G-`) e
+> cole em `GA_MEASUREMENT_ID`. Pronto — todas as páginas passam a medir visitas.
 
 > Só a chave **anon** entra aqui. A **service_role** é secreta e só vai no
 > servidor (Parte 5). Salve o arquivo.

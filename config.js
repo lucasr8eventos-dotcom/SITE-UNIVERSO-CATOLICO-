@@ -10,4 +10,5 @@
 window.UCK_CONFIG = {
   SUPABASE_URL: "",       // ex.: "https://xxxxxxxx.supabase.co"
   SUPABASE_ANON_KEY: "",  // chave "anon public"
+  GA_MEASUREMENT_ID: "",  // Google Analytics 4 (opcional) — ex.: "G-ABC123XYZ"
 };
