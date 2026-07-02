@@ -40,8 +40,10 @@ vez, nesta ordem** (abra o arquivo, copie tudo, cole e clique em **Run**):
 3. `db/03_tipos_produto.sql`
 4. `db/04_frete_envio.sql`
 5. `db/05_fix_acesso_produto.sql`
-6. `db/06_conteudo_site.sql`
-7. `db/07_fix_seguranca_rls.sql`
+6. `db/05_seguranca_admin.sql`
+7. `db/06_conteudo_site.sql`
+8. `db/06_sacola.sql`
+9. `db/07_fix_seguranca_rls.sql`
 
 > Se aparecer algum aviso amarelo (NOTICE), tudo bem — é normal. Só não pode dar
 > erro vermelho. Isso cria as tabelas, a segurança e os buckets de arquivos.
@@ -173,7 +175,7 @@ A partir daí, as compras são **reais** e caem na sua conta do Mercado Pago.
 
 ## Checklist final ✅
 
-- [ ] 7 arquivos SQL rodados no Supabase
+- [ ] 9 arquivos SQL rodados no Supabase
 - [ ] `config.js` preenchido (URL + anon)
 - [ ] Admin criado (usuário + linha em `administradores`)
 - [ ] `MP_ACCESS_TOKEN`, `SERVICE_ROLE_KEY` e `SITE_URL` definidos no Supabase

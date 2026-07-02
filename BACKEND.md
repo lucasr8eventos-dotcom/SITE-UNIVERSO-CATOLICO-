@@ -35,8 +35,10 @@ No painel do Supabase → **SQL Editor**, rode **na ordem**:
 3. `db/03_tipos_produto.sql` (tipos de produto: infoproduto/físico/externo)
 4. `db/04_frete_envio.sql`   (frete e controle de envio dos pedidos físicos)
 5. `db/05_fix_acesso_produto.sql` (comprador vê produto mesmo se desativado)
-6. `db/06_conteudo_site.sql` (documentários e blog/artigos)
-7. `db/07_fix_seguranca_rls.sql` (correções de segurança de RLS/Storage)
+6. `db/05_seguranca_admin.sql` (corrige RLS: escrita de conteúdo só para admin)
+7. `db/06_conteudo_site.sql` (documentários e blog/artigos)
+8. `db/06_sacola.sql`        (sacola: vários produtos em um pagamento só)
+9. `db/07_fix_seguranca_rls.sql` (correções de segurança de RLS/Storage + vínculo por e-mail confirmado)
 
 Isso cria inclusive o bucket **privado** `produtos-pdf` para os PDFs.
 
@@ -64,6 +66,11 @@ supabase link --project-ref SEU_PROJECT_REF     # aparece na URL do painel
 supabase secrets set MP_ACCESS_TOKEN="APP_USR-xxxxxxxx"      # Access Token do Mercado Pago
 supabase secrets set SERVICE_ROLE_KEY="eyJ...service_role"   # Project Settings → API
 supabase secrets set SITE_URL="https://seudominio.com.br"    # endereço do site publicado
+
+# E-mail automático de acesso (opcional, mas recomendado). Sem estes, o
+# acesso é liberado normalmente — só não sai o e-mail pós-compra.
+supabase secrets set RESEND_API_KEY="re_xxxxxxxx"                    # https://resend.com → API Keys
+supabase secrets set EMAIL_FROM="Universo Católico <acesso@seudominio.com>"  # remetente verificado no Resend
 
 # Publicar as funções:
 supabase functions deploy criar-pagamento --no-verify-jwt
@@ -118,6 +125,8 @@ Quando estiver tudo certo, troque para o **Access Token de produção**.
 | `MP_ACCESS_TOKEN`  | Mercado Pago → Credenciais (teste ou produção) |
 | `SERVICE_ROLE_KEY` | Supabase → Project Settings → API → `service_role` |
 | `SITE_URL`         | endereço público do site |
+| `RESEND_API_KEY`   | *(opcional)* Resend → API Keys — para o e-mail automático de acesso |
+| `EMAIL_FROM`       | *(opcional)* remetente verificado no Resend (ex.: `Nome <acesso@seudominio.com>`) |
 
 | Config do frontend (`config.js` na raiz) | Onde pegar |
 |---|---|

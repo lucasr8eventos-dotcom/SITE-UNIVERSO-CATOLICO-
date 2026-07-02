@@ -102,6 +102,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../assets/icons.js"></script>
 <script src="../config.js"></script>
+<script src="../assets/sacola.js"></script>
 <script>
 const CFG = window.UCK_CONFIG || {};
 const OK = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
@@ -144,7 +145,7 @@ async function carregar(){
   const off = (data.preco_antigo && data.preco_antigo>data.preco) ? Math.round((1-data.preco/data.preco_antigo)*100) : 0;
   const cta = tipo==='externo'
     ? `<a class="btn btn-azul" href="${safeHref(data.link_externo)}" target="_blank" rel="noopener">Ver na Amazon <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>`
-    : `<button class="btn btn-verde" id="btnComprar"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg> Comprar agora</button>`;
+    : `<button class="btn btn-verde" id="btnComprar"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Adicionar à sacola</button>`;
   const precos = tipo==='externo' ? '' :
     `<div class="precos"><span class="preco">${brl(data.preco)}</span>${data.preco_antigo?`<span class="antigo">${brl(data.preco_antigo)}</span>`:''}${off?`<span class="off">-${off}%</span>`:''}</div>`;
   const frete = (tipo==='fisico') ? `<div class="frete"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><path d="M14 18V6a2 2 0 0 0-2-2H2v14h2"/><path d="M14 9h4l4 4v5h-2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><path d="M9 18h6"/></svg> Frete: ${data.frete>0?brl(data.frete):'grátis'}</div>` : '';
@@ -168,59 +169,7 @@ async function carregar(){
         </div>
       </div>
     </div>`;
-  const bc=document.getElementById('btnComprar'); if(bc) bc.onclick=abrirCheckout;
-}
-
-function abrirCheckout(){
-  const p=PROD; const fisico=p.tipo==='fisico';
-  const m=document.getElementById('modal');
-  m.innerHTML = `<div class="modal">
-    <button class="fechar" id="fechar">×</button>
-    <h3>Comprar</h3>
-    <p>${esc(p.nome)} — <b>${esc(brl(p.preco))}</b>${fisico&&p.frete>0?` + frete ${esc(brl(p.frete))}`:''}</p>
-    <div id="ckErro" class="erro oculto"></div>
-    <div class="campo"><label>Seu nome ${fisico?'*':''}</label><input id="ckNome" placeholder="Nome completo"></div>
-    <div class="campo"><label>Seu e-mail *</label><input id="ckEmail" type="email" placeholder="${fisico?'para acompanhar o pedido':'usado para acessar os PDFs depois'}"></div>
-    ${fisico?`
-      <div class="campo"><label>Telefone *</label><input id="ckTel" placeholder="(00) 00000-0000"></div>
-      <div class="campo"><label>CEP *</label><input id="ckCep" placeholder="00000-000"></div>
-      <div class="campo"><label>Endereço *</label><input id="ckEnd" placeholder="Rua, número, complemento"></div>
-      <div class="campo"><label>Cidade / UF *</label><input id="ckCidade" placeholder="Cidade - UF"></div>`:''}
-    <button class="btn btn-verde" id="ckPagar" style="width:100%;padding:13px">Ir para o pagamento</button>
-    <div class="seguro"><svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.2em"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Ambiente seguro do Mercado Pago</div>
-  </div>`;
-  m.classList.remove('oculto');
-  m.onclick=e=>{ if(e.target===m) m.classList.add('oculto'); };
-  document.getElementById('fechar').onclick=()=>m.classList.add('oculto');
-  document.getElementById('ckPagar').onclick=pagar;
-}
-
-async function pagar(){
-  const p=PROD; const fisico=p.tipo==='fisico';
-  const email=document.getElementById('ckEmail').value.trim().toLowerCase();
-  const nome=document.getElementById('ckNome').value.trim();
-  const err=document.getElementById('ckErro');
-  if(!email || !/.+@.+\..+/.test(email)){ err.textContent='Digite um e-mail válido.'; err.classList.remove('oculto'); return; }
-  let endereco=null;
-  if(fisico){
-    const tel=document.getElementById('ckTel').value.trim(), cep=document.getElementById('ckCep').value.trim();
-    const end=document.getElementById('ckEnd').value.trim(), cidade=document.getElementById('ckCidade').value.trim();
-    if(!nome||!tel||!cep||!end||!cidade){ err.textContent='Preencha nome, telefone e endereço completo.'; err.classList.remove('oculto'); return; }
-    endereco={ nome, telefone:tel, cep, endereco:end, cidade };
-  }
-  const btn=document.getElementById('ckPagar'); btn.disabled=true; btn.textContent='Gerando pagamento…';
-  try{
-    const r = await fetch(`${CFG.SUPABASE_URL}/functions/v1/criar-pagamento`,{
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'apikey':CFG.SUPABASE_ANON_KEY, 'Authorization':`Bearer ${CFG.SUPABASE_ANON_KEY}` },
-      body: JSON.stringify({ produto_id:p.id, email, nome, endereco }),
-    });
-    const j = await r.json();
-    if(!r.ok) throw new Error(j.erro||'Falha ao iniciar pagamento');
-    const url = j.init_point || j.sandbox_init_point;
-    if(!url) throw new Error('Link de pagamento não recebido');
-    window.location.href = url;
-  }catch(ex){ err.textContent=ex.message||String(ex); err.classList.remove('oculto'); btn.disabled=false; btn.textContent='Ir para o pagamento'; }
+  const bc=document.getElementById('btnComprar'); if(bc) bc.onclick=()=>window.Sacola.add(PROD);
 }
 carregar();
 </script>
