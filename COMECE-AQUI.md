@@ -31,9 +31,19 @@ Você já tem conta no Mercado Pago — ótimo. Vamos configurar o banco de dado
    e escolha a região **São Paulo (South America)**.
 4. Aguarde ~2 minutos até o projeto ficar pronto.
 
-### 1.2 Criar as tabelas (rodar os SQLs)
-No menu lateral do Supabase, abra **SQL Editor → New query**. Rode **um de cada
-vez, nesta ordem** (abra o arquivo, copie tudo, cole e clique em **Run**):
+### 1.2 Criar as tabelas (rodar o SQL)
+No menu lateral do Supabase, abra **SQL Editor → New query**.
+
+**Jeito fácil (recomendado):** abra **`db/INSTALAR-TUDO.sql`**, copie **tudo**,
+cole no editor e clique em **Run**. Esse arquivo já junta os 9 passos na ordem
+certa e cria tabelas, segurança e os buckets de arquivos — tudo de uma vez.
+
+> Se aparecer algum aviso amarelo (NOTICE), tudo bem — é normal. Só não pode dar
+> erro vermelho. É seguro rodar de novo se precisar.
+
+<details><summary>Prefere rodar um de cada vez? (opcional)</summary>
+
+Rode nesta ordem (abra o arquivo, copie tudo, cole e **Run**, um por vez):
 
 1. `db/schema.sql`
 2. `db/02_loja_membros.sql`
@@ -44,9 +54,7 @@ vez, nesta ordem** (abra o arquivo, copie tudo, cole e clique em **Run**):
 7. `db/06_conteudo_site.sql`
 8. `db/06_sacola.sql`
 9. `db/07_fix_seguranca_rls.sql`
-
-> Se aparecer algum aviso amarelo (NOTICE), tudo bem — é normal. Só não pode dar
-> erro vermelho. Isso cria as tabelas, a segurança e os buckets de arquivos.
+</details>
 
 ### 1.3 Pegar as chaves do projeto
 No menu, abra **Project Settings → API** e copie:
@@ -180,7 +188,7 @@ A partir daí, as compras são **reais** e caem na sua conta do Mercado Pago.
 
 ## Checklist final ✅
 
-- [ ] 9 arquivos SQL rodados no Supabase
+- [ ] Banco criado no Supabase (`db/INSTALAR-TUDO.sql`)
 - [ ] `config.js` preenchido (URL + anon)
 - [ ] Admin criado (usuário + linha em `administradores`)
 - [ ] `MP_ACCESS_TOKEN`, `SERVICE_ROLE_KEY` e `SITE_URL` definidos no Supabase
